@@ -1,0 +1,71 @@
+#!/bin/csh
+
+set BSDIR=.
+set DATDIR=$BSDIR/dat
+set EXEDIR=$BSDIR
+
+echo $DATDIR
+echo $EXEDIR
+
+# Clean up if previous run was aborted.
+# Touch prevents "no such file" error.
+touch fort.zorkzork
+rm -f fort.*
+# Compile and clean object files.
+#make ; rm -f *.o
+#unalias rm
+
+# Remove old output files.
+#cd output
+# rm -f \
+# out modout plot out2 plot2 \
+# syntha syntha2 sqynthb synthb2 synthc synthc2 \
+# centre centre2 surface surface2
+#cd ..
+#alias rm rm -i
+#rm -f *
+
+# Link code parameters for run.
+ln -s data fort.1
+# useless debugging in fort.24
+
+# Link physical data files
+ln -s $DATDIR/COtables fort.10
+ln -s $DATDIR/phys02.dat fort.11
+ln -s $DATDIR/nrate.dat fort.13
+ln -s $DATDIR/splinecoefficients.dat fort.14
+
+# Link input for star 1 and 2
+ln -s modin fort.30   ; ln -s nucmodin fort.31   ;
+ln -s modin2 fort.50  ; ln -s nucmodin2 fort.51  ;
+
+# Link status file for watcher program - SMR
+ln -s status fort.21  ; ln -s instatus fort.22   ;
+ln -s hydrogen fort.23; ln -s zams fort.24  ;
+ln -s zams2 fort.25   ;
+
+# Link output for star 1
+ln -s out fort.32     ; ln -s plot fort.33       ;
+ln -s modout fort.34  ; ln -s nucmodout fort.35  ;
+ln -s syntha fort.36  ; ln -s synthb fort.37     ;
+ln -s synthc fort.38  ; ln -s surface fort.39    ;
+ln -s centre fort.40  ; ln -s sprocess fort.41   ;
+ln -s montage fort.42 ; ln -s adata fort.45      ;
+ln -s extra fort.47
+
+# Link output for star 2
+ln -s out2 fort.52    ; ln -s plot2 fort.53      ;
+ln -s modout2 fort.54 ; ln -s nucmodout2 fort.55 ;
+ln -s syntha2 fort.56 ; ln -s synthb2 fort.57    ;
+ln -s synthc2 fort.58 ; ln -s surface2 fort.59   ;
+ln -s centre2 fort.60 ; ln -s sprocess2 fort.61  ;
+ln -s montage2 fort.62;
+ln -s extra2 fort.67  ;
+# need to add - sprocess?
+
+# Run.
+$EXEDIR/bs
+#unalias rm
+#mv fort.99 vini
+rm -f fort.*
+#alias rm rm -i
