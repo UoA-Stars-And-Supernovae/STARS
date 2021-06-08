@@ -1,3 +1,14 @@
 obj/
-models/
-model_plots/
+
+modin
+modout
+montage
+nucmodin
+nucmodout
+out
+data
+plot
+sprocess
+bs
+
+fort.*

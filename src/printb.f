@@ -400,6 +400,7 @@ C Output for use in MONTAGE -- may need smart output control RJS 29/5/08
                END IF
             END IF
          END DO
+C sneplot file here?????? - SMR + JJE
          IF (NWRT3.EQ.1) GO TO 3
 C Write further `pages' for each detailed model, if required
          DO I=2, NWRT3
