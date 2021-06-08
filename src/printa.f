@@ -52,7 +52,8 @@
 99003 FORMAT (12I4,/,12I4,/,7I4,/,1P,5E8.1,0P,/,2(10I3,/,3(30I3,/)),3(15I
      :3,/), 9F5.2, 1P, 3E8.1,
      :/, E9.2, 0P, 9F6.3, /, 1P, 2(7E9.2, /), 0P, I2, 2(I2,1X,E8.2),2(1X,F4.2)
-     : ,/, I2,F6.1,I2,F6.1, 1X, F4.2, I2, I2, 2(1X, E8.2), 1P)
+     : ,/, I2,F6.1,I2,F6.1, 1X, F4.2, I2, I2, 2(1X, E8.2),
+     :/,I2,E8.1)
 99004 FORMAT (1X, 10F7.3)
 99005 FORMAT (1X, 1P, 2E14.6, E17.9, 3E14.6, 0P, 4I6, 1P, 2E11.3)
       IF ( IEND.NE.-1 ) GO TO 30
@@ -93,7 +94,7 @@ C Read miscellaneous data, usually unchanged during one evol run
      :TRB,
      :IRAM, IRS1, VROT1, IRS2, VROT2, FMAC, FAM,
      :IVMC, TRC1, IVMS, TRC2, MWTS, IAGB, ISGFAC, FACSGMIN, SGTHFAC,
-     :ISTART
+     :ISTART, HKH
 C Idiot proofing -- otherwise the logic in solver will fail
       FACSGMIN = DMIN1(1d0, FACSGMIN)
 C Read data for initial model (often last model of previous run)
@@ -101,10 +102,11 @@ C e.g. SM = stellar mass, solar units; DTY = next timestep, years
       READ  (30, 99005) SM, DTY, AGE, PER, BMS, EC,NH,NP,NMOD,IB,PMH(1),PME(1)
 C Adjust parameters if we are doing an evolution run
       IF (ISTART.EQ.1) THEN
+         write(*,*) "override applied"
 C Set the timestep to 10% of the thermal timescale
-         DTY=3e7/(SM**2d0)*0.1d0
-         AGE=0d0
-         NMOD=0
+         DTY = 3e7/(SM**2d0) * HKH
+         AGE = 0d0
+         NMOD = 0
       END IF
 
       WRITE (32,99003) NH2,IT1,IT2,JIN,JOUT,NCH,JP,IZ,IMODE,
@@ -114,8 +116,8 @@ C Set the timestep to 10% of the thermal timescale
      :CNE,CMG,CSI,CFE,RCD,OS,RML,RMG,ECA,XF,DR,RMT,RHL,AC,AK1,AK2,ECT,
      :TRB,
      :IRAM, IRS1, VROT1, IRS2, VROT2, FMAC, FAM,
-     :IVMC, TRC1, IVMS, TRC2, MWTS, IAGB, ISGFAC, FACSGMIN, SGTHFAC
-     :ISTART
+     :IVMC, TRC1, IVMS, TRC2, MWTS, IAGB, ISGFAC, FACSGMIN, SGTHFAC,
+     :ISTART, HKH
       WRITE (32, 99005)
       WRITE (32, 99005) SM, DTY, AGE, PER, BMS, EC,NH,NP,NMOD,IB,PMH(1),PME(1)
 C Convert RML from eta to coefficient required
