@@ -29,13 +29,13 @@
       COMMON /COPDAT/ opacCO(4,4,141,31,305)
       COMMON /EVMODE/ IMODE
       COMMON /MIXFUD/ SGTHFAC, FACSGMIN, FACSG, ISGFAC
-* extra common for mesh-spacing
+C extra common for mesh-spacing
       COMMON /PMESH / PMH(2), PME(2), IAGB
-* first guess of pressure at H, He-burning shell (should be in input file!)
-*      data pmh, pme /1.0e17, 7.5e19/
-*
-* Extra COMMON for main-sequence evolution.
-*
+C first guess of pressure at H, He-burning shell (should be in input file!)
+C      data pmh, pme /1.0e17, 7.5e19/
+C
+C Extra COMMON for main-sequence evolution.
+C
       COMMON /ZAMS  / TKH(2)
       COMMON /MESH  / TRC1,TRC2,DD,DT1,DT2,MWT,MWTS,IVMC,IVMS
       COMMON /DHBLOC/ IDREDGE
@@ -47,7 +47,7 @@
       RLOBE(VX) = 0.49D0*VX*VX/(0.6D0*VX*VX+DLOG(1.0D0+VX)) 
       DIMENSION WW(16),WX(52),DELDAT(22)
       data COcompos /0.0d0,0.01d0,0.03d0,0.1d0,0.2d0,0.4d0,0.6d0,1.0d0/
-*99002 FORMAT (1X, 1P, 12E13.5, 0P)
+C99002 FORMAT (1X, 1P, 12E13.5, 0P)
 99002 FORMAT (1P, 50E15.8, 0P)
 99003 FORMAT (12I4,/,12I4,/,7I4,/,1P,5E8.1,0P,/,2(10I3,/,3(30I3,/)),3(15I
      :3,/), 9F5.2, 1P, 3E8.1,
@@ -57,7 +57,7 @@
 99004 FORMAT (1X, 10F7.3)
 99005 FORMAT (1X, 1P, 2E14.6, E17.9, 3E14.6, 0P, 4I6, 1P, 2E11.3)
       IF ( IEND.NE.-1 ) GO TO 30
-* Initialize physical constants
+C Initialize physical constants
       CALL CONSTS
 C Read opacity, nuclear reaction and neutrino loss rate data
       READ (11,'(I4)') NCSX
@@ -85,7 +85,8 @@ C      CT(J) = 0.0D0
       DO 21 J=1,9999
          MS(J) = 0.0D0
    21    ST(J) = J
-C Read miscellaneous data, usually unchanged during one evol run         
+
+C Read in data
       READ  (1,99003) NH2,IT1,IT2,JIN,JOUT,NCH,JP,IZ,IMODE,
      :ICL,ION,IAM,IOP,IBC,INUC,ICN,IML(1),IML(2),ISGTH,IMO,IDIFF,
      :NT1,NT2,NT3,NT4,NT5,NSV,NMONT,
@@ -95,15 +96,16 @@ C Read miscellaneous data, usually unchanged during one evol run
      :IRAM, IRS1, VROT1, IRS2, VROT2, FMAC, FAM,
      :IVMC, TRC1, IVMS, TRC2, MWTS, IAGB, ISGFAC, FACSGMIN, SGTHFAC,
      :ISTART, HKH
+
 C Idiot proofing -- otherwise the logic in solver will fail
       FACSGMIN = DMIN1(1d0, FACSGMIN)
-C Read data for initial model (often last model of previous run)
-C e.g. SM = stellar mass, solar units; DTY = next timestep, years	 
+
+C Read first line of modin
       READ  (30, 99005) SM, DTY, AGE, PER, BMS, EC,NH,NP,NMOD,IB,PMH(1),PME(1)
+
 C Adjust parameters if we are doing an evolution run
       IF (ISTART.EQ.1) THEN
-         write(*,*) "override applied"
-C Set the timestep to 10% of the thermal timescale
+         write(*,*) "Age, DT, NMOD overriden"
          DTY = 3e7/(SM**2d0) * HKH
          AGE = 0d0
          NMOD = 0
@@ -122,9 +124,9 @@ C Set the timestep to 10% of the thermal timescale
       WRITE (32, 99005) SM, DTY, AGE, PER, BMS, EC,NH,NP,NMOD,IB,PMH(1),PME(1)
 C Convert RML from eta to coefficient required
       RML = 4d-13*RML
-*     
-* Create the spline interpolation data.
-*
+C
+C Create the spline interpolation data.
+C
       IF (IOP .EQ. 1) CALL OPSPLN
 !extra lines for COopac bit
       write(*,*) 'Selection for opacity is:',IOP
@@ -132,8 +134,8 @@ C Convert RML from eta to coefficient required
       obase=ZS*0.482  !CO
       fZ=ZS
 C READ IN NEW OPACITY DATA and SETUP STUFF - JJ 4/11/02
-c     Read in Opal Data
-c     Setup format statements
+C     Read in Opal Data
+C     Setup format statements
 99042 FORMAT (F5.2, 31F7.3)
 99043 FORMAT (5F7.3)
 99045 FORMAT (3F7.3)
@@ -145,9 +147,9 @@ c     Setup format statements
          do J=1,31
             opR(J)=-8d0+0.5d0*(J-1)
          enddo
-c     Load in CO tables and setup splines
+C     Load in CO tables and setup splines
          write(*,*) 'Reading in Variable tables and setting up splines'
-*         OPEN(10,FILE='COtables',STATUS='unknown',ACCESS='SEQUENTIAL')
+C         OPEN(10,FILE='COtables',STATUS='unknown',ACCESS='SEQUENTIAL')
          do K=1,305
             read(10,99045) b3,b1,b2
 C            write (*,*) K,b3
@@ -155,16 +157,16 @@ C            write (*,*) K,b3
                read (10,99042) temp,(opacCO(1,1,I,J,K),J=1,31)
             enddo
          enddo
-*         CLOSE(10)
-c     Bit to add in variable molecular bits from old paper in Marigo
-c     Setup composition matrix
+C         CLOSE(10)
+C     Bit to add in variable molecular bits from old paper in Marigo
+C     Setup composition matrix
          if(IOP.eq.4.or.IOP.eq.6) then
             write(*,*) "Not Available"
          endif
-c     Setup CO spline tables
+C     Setup CO spline tables
          do K=1,305
 C            write(*,*) K
-c     Construct splines in T direciton
+C     Construct splines in T direciton
             do J=1,31
                do I=1,141
                   MAT(1,I)=opacCO(1,1,I,J,K)
@@ -176,7 +178,7 @@ c     Construct splines in T direciton
                   opacCO(4,1,I,J,K)=MAT(4,I)
                enddo
             enddo
-c     Construct splines in R direction
+C     Construct splines in R direction
             do I=1,140
                do IC=1,4
                   do J=1,31
@@ -198,9 +200,9 @@ c     Construct splines in R direction
 C         write (*,*) 'DONE!!'
       endif
                                 !! END of new opac tables bit - JJ - 4/11/02
-*
-* If IAM=0, use integer atomic weights
-*
+C
+C If IAM=0, use integer atomic weights
+C
       IF(IAM.EQ.0)THEN
          DO J = 1, 9
             AM(J) = BN(J)
@@ -210,7 +212,7 @@ C Read the initial model
       DO  K = 1, NH
          READ (30, 99002) (H(J,K), J=1, JIN)
       END DO
-* If available, read initial (last converged) changes
+C If available, read initial (last converged) changes
       DO K = 1, NH
          READ (30, 99002, END = 61, ERR = 61) (DH(J,K), J=1, JIN)
          DO 15 J = 1,JIN
@@ -284,11 +286,11 @@ C Store nucleosynthesis
 C COMPOS puts composition variables to zero if they are very small
       CALL COMPOS
       CALL PRINTB ( DTY, PER, NT1, NT2, NT3, NT4, NMONT, NMOD, IEND )
-*
-* If initial timestep is negative calculate DT as a fraction of the
-* Kelvin-Helmholtz timescale and scale mass loss to evolve up the main
-* sequence.
-*
+C
+C If initial timestep is negative calculate DT as a fraction of the
+C Kelvin-Helmholtz timescale and scale mass loss to evolve up the main
+C sequence.
+C
 C Does this still work??? I never use it...
       IF (ICN .EQ. 1) DT = CSECYR*5D0*TKH(ISTAR)/(SM*SM)
       IF (ICN .EQ. 1) RMG = CLN10/(DT*2D2)
@@ -296,7 +298,7 @@ C Does this still work??? I never use it...
       CLOSE (17)
       CLOSE (20)
       CLOSE (25)
-c Store certain previous values, for possible emergency restart
+C Store certain previous values, for possible emergency restart
       PR(1) = AGE
       PR(2) = DT
       PR(3) = M1
@@ -319,7 +321,7 @@ C   16    PR(J) = CT(J+10)
 C Almost end of initial input section. Start of regular update section
    30 IF ( IEND.NE.0 ) GO TO 31
       CALL COMPOS
-c Store certain previous values, for possible emergency restart
+C Store certain previous values, for possible emergency restart
       PR(1) = AGE
       PR(2) = DT
       PR(3) = M1
@@ -347,7 +349,7 @@ C `pages' per printed model; also 4-line summary for every NT4'th model
       CALL PRINTB ( DTY, PER, NT1, NT2, NT3, NT4, NMONT, NMOD, IEND )
       ANG = ANG/(1.0D0 + RHL*DTY)
       EC = EC*(1.0D0 + DTY*ECT)/(1.0D0 - DTY*ECA*EC) 
-*     TRB = TRB*(1.0D0 + DTY*ECT)
+C     TRB = TRB*(1.0D0 + DTY*ECT)
 C FUDGE TO DEAL WITH KS outside range. THIS ***WILL*** SCREW UP BINARIES!
 C This is no longer used, so I don't care whether it works or not. RJS
       KS = 1
@@ -402,18 +404,18 @@ C      IF (DABS((PER - PPER)/PPER).GT.0.01) DTY = 0.5*DTY
 C      IF (DT1.EQ.1d0) GO TO 6
 C      IF (IDREDGE.EQ.3) GO TO 6      
       IF ( (JP.EQ.1 .AND. DTF.GE.DT1).OR.DTY.LT.6d-5 ) GO TO 6
-c clear DH in some circumstances
+C clear DH in some circumstances
       WRITE (32,*) "Clearing DH..."
       DO 7 K = 1, NH
          DO 7 J = 1, 60
     7       DH(J, K) = 0.0D0
     6 IHOLD = IHOLD + 1 
-c CNO equilibrium on the main sequence.
+C CNO equilibrium on the main sequence.
 C Does this still work???
       IF (ICN .EQ. 1) DT = MSUN*MSUN*CSECYR*5D0*TKH(ISTAR)/(VM*VM)
       IF (ICN .EQ. 1) RMG = CLN10/(DT*2D2)
       CALL COMPOS
-c For *2, some factors relating to accretion from *1. Ignored if this is *1
+C For *2, some factors relating to accretion from *1. Ignored if this is *1
  40   CONTINUE
 C   40 T0 = CSECYR*ST(KS+1)
 C      M0 = MSUN*MS(KS+1)

@@ -1,7 +1,8 @@
       SUBROUTINE CONSTS
       IMPLICIT REAL*8 (A-H,L,M,O-Z)
       COMMON /CNSTS / CPI, PI4, CLN10, CA, CB, CL, CD, CG, CR, CT, CEVB, 
-     &     CEN, CPL, CMEVMU, CSECYR, LSUN, MSUN, RSUN, TSUNYR
+     &     CEN, CPL, CMEVMU, CSECYR, LSUN, MSUN, RSUN, TSUNYR,
+     &     STEFBOLTZ
       COMMON /ATDATA/ DH2(4), CHI(26,9), OMG(27), AM(10), BN(10), IZ(10)
       COMMON /NCDATA/ QRT(20), QNT(20), CZA(92), CZB(92), CZC(92),
      &     CZD(92), VZ(10)
@@ -13,6 +14,7 @@
      &     2.9218E6, 6.672D-8, 8.3143E7, 1.6863E-10/
       DATA CEVB, CSECYR, CMEVMU, LSUN, MSUN, RSUN, TSUNYR /1.1605D4,
      &     3.1557D7, 9.6488D17, 3.8515D0, 1.9891D0, 0.69598D0, 4.57D9/
+      DATA STEFBOLTZ /5.67037D-8/
 * mathematical constants
       CPI = 4*ATAN(1.D0)
       PI4 = 4*CPI
@@ -43,6 +45,7 @@
       CEN = PLANCK/SQRT(2*CPI*AMU*BOLTZM)
       CEN = CEN**3/AMU
       CPL = SQRT(PI4/(AMU*BOLTZM**3))*ECHAR**3
+      STEFBOLTZ = 2d0 * CPI**5d0 * BOLTZM**4 / (15d0 * PLANCK**3d0 * CL**2)
 * solar mass, luminosity, radius, age
       MSUN = 1.9891D0
       LSUN = 3.844D0

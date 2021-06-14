@@ -18,7 +18,8 @@ C first
       COMMON /OP    / ZS, LEDD, MM, DG, GRADT, ETH, RRLF, EGR, RR, Q
       COMMON /MASLOS/ AIJ(6,5),baseN
       COMMON /CNSTS / CPI, PI4, CLN10, CA, CB, CC, CD, CG, CR(2), CEVB,
-     &                CEN, CPL, CMEVMU, CSECYR, LSUN, MSUN, RSUN, TSUNYR
+     &                CEN, CPL, CMEVMU, CSECYR, LSUN, MSUN, RSUN, TSUNYR,
+     &                STEFBOLTZ
       COMMON /EVMODE/ IMODE
       COMMON /INERTI/ VI(2)
       COMMON /ANGMOM/ VROT1, VROT2, FMAC, FAM, IRAM, IRS1, IRS2
@@ -230,6 +231,30 @@ C     WC rate
 C               IF (COHe.GT.1d0) BC1 = 1.9d-5*MSUN/CSECYR
                END IF
             END IF
+C     New Mass loss from Bestenlehner 2020
+            IF (IML(ISTAR).EQ.6) THEN
+C     Bremsstrahlung
+               GFF = 1d0 ! Gaunt Factor - outsource this to data file probably
+               RHO = M(ISTAR)/MSUN
+               RADI = R(ISTAR)/RSUN
+               VOL = (4d0 / 3d0 * CPI * RADI ** 3d0)
+               RHO = RHO / VOL
+               KAP = 3.68D22 * GFF * (1d0 - ZS) * (1d0 + XH(ISTAR))
+               KAP = KAP * RHO * T(ISTAR) ** (-3.5d0)
+C     KAP is the average electron opacity
+               VTH = SQRT(4d0 * BOLTZM * T(ISTAR) / AME)
+
+C     VTH is the thermal velocity
+               CFAC = -2d0 / CG**1.5d0
+               CFAC = CFAC * (3 * CL / (CPI * STEFBOLTZ)) ** 0.5d0
+               CFAC = CFAC * CR(1)**2D0 * (-2.01824D0)
+
+C     ok now compute the mass loss
+               BC1 = CFAC * 4*CPI*CG / (KAP * VTH)
+               BC1 = BC1 * (2d0*XH(ISTAR)+0.75d0*XHE(ISTAR)+0.5*ZS) ** 2d0
+               BC1 = BC1 * 0.0032421531d0 * (L(ISTAR) / LEDD) ** (27d0/14d0)
+               BC1 = BC1 / (1-L(ISTAR)/LEDD)**(1d0/9d0)
+            END IF
 c     New mass loss to get to target mass by JJE - 2/5/2021
             IF (IML(ISTAR).EQ.9) THEN
                BC1 = 0.1d0*(M(ISTAR)/MSUN-RML*2.5d12*CSECYR*RSUN*LSUN/(MSUN**2d0))
@@ -262,7 +287,7 @@ C Fakewind deals with mass-loss in CE systems - will interfer with normal evolut
       DO ISTAR=1,IMODE
          IF (ISTAR.EQ.1) ISTAROTHER = 2
          IF (ISTAR.EQ.2) ISTAROTHER = 1
-         ML(ISTAR) = MT(ISTAR) - RMG*M(ISTAR) + ML(ISTAR)
+         ML(ISTAR) = MT(ISTAR) - RMG*M(ISTAR) + ML(ISTARCOMMON /CNSTS)
      :        + DMIN1(RMT*(PS(RLF(ISTAR)))**3,MASSLIMIT*MSUN/CSECYR)
          IF (IMODE.EQ.2) THEN
 C Add (1-omega/omega_crit) to reduce accretion rate
