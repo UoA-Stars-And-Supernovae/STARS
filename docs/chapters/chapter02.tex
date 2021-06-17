@@ -1,0 +1,90 @@
+\chapter{Basic User Guide}
+
+\epigraph{The story so far: In the beginning the Universe was created. This has made a lot of people very angry and been widely regarded as a bad move.}{Douglas Adams}
+
+\section{Installation}\label{sec:test}
+
+Basic installation is straightforward. Create a directory and download the code from GitHub (replace \mintinline{bash}|<USERNAME>| with your GitHub username):
+
+\begin{minted}{Bash}
+    mkdir STARS
+    cd STARS
+    git clone https://github.com/<USERNAME>/STARS.git
+\end{minted}
+
+\section{Code files}
+
+When downloaded, you will find the following files:
+
+\begin{table}[!htbp]
+    \centering
+    \begin{tabular}{c|c|c}
+        \toprule
+        File & Short Description & Long Description location \\
+        \midrule
+        dat/ & Data files for STARS & tbd \\
+        obj/ & Compiled source files & N/A \\
+        src/ & FORTRAN source files & tbd \\
+        Makefile & \textsc{Make} instructions & \refsec{firststeps} \\
+        run\_bs & The run file for STARS & \refsec{firststeps} \\
+        data.bak & STARS main datafile & \refsec{data} \\
+        modin.bak & Model input for STARS & \refsec{modin} \\
+        \bottomrule
+    \end{tabular}
+    \caption{The structre of the default STARS directory.}
+    \label{tab:stars_structure}
+\end{table}
+
+\section{Your first STARS run}\label{sec:firststeps}
+
+In this section, we will evolve a ZAMS model to Helium flash. Provided in STARS is a 1 $M_\odot$ ZAMS model file -- modin.bak. At this point, you do not need to worry about the structure of this file (see \refsec{modin}), just know that it contains the structure of the star at 199 different mass coordinates.
+
+We will be evolving a star with $M_\text{ZAMS} = 10 M_\odot$.
+
+\begin{enumerate}
+    \item First, move modin.bak to modin: \mintinline{bash}{cp modin.bak modin}. It is always advised to keep modin.bak as a backup ZAMS model.
+    
+    \item Select your desired ZAMS mass. Edit the file data:
+    
+    \begin{minted}{Bash}
+        cp data.bak data
+        vim data
+    \end{minted}
+    
+    The first 22 lines of data are:
+    
+    \begin{minted}[
+frame=lines,
+framesep=2mm,
+baselinestretch=1.2,
+fontsize=\footnotesize,
+linenos
+]{text}
+ 199  40  10  15  15   3   1   0   0   0   0   1
+   1   5   1   5   0   0   0   0   0   0   0   0
+ 100   1   1   1   0 100   0
+ 1.0E-06 1.0E-02 1.0E-07 0.0E+00 0.5E+00
+  6  7  0  3  0 80  0  0  0 99
+  1  2  4  5  3  9 10 11 12 15  8  7  6  0  0  0  0  0  0  0  0...
+  7  8  9 10 11 12 14  4  2  1  3  5  6  0  0  0  0  0  0  0  0...
+  4  5  6  7  8  9 10  2  3  1  2  3  1  0  0  0  0  0  0  0  0...
+  0  0  0  0  0154  0  0  0 99
+  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 21...
+  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 21...
+  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 21...
+ 17  2  4  5 18  8  9 10 11 12 13 14 24 25 26 30 16 34
+  2  3  4  5  6  8  9 10 17 18 19 20 21 28  7
+  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0
+ 0.80 1.05 9.99 0.00 0.05 0.50 0.15 0.02 0.45 1.0E-04 1.0E+15 3.0E+19
+ 2.00E-02 2.000 0.700 0.173 0.053 0.482 0.099 0.038 0.080 0.072
+ 1.00E+03 0.12E+00 1.00E+03 0.00E-07 0.00E+00 3.00E-01 1.00E-03
+ 1.00E+03 0.00E+00 0.00E+00 1.00E+00 1.00E-04 0.00E+00 0.00E+00
+ 1 1 0.00E+02 1 1.00E+01 0.50 0.00
+ 0 700.0 0   0.0 0.00 0 0 1.00E-02 0.00E+00
+ 0 0.1E+00
+    \end{minted}
+    
+    For now, you do not need to worry about every option. They are explained in \refsec{data}. Just change IML to 9, RML to your desired ZAMS mass (in this instance, $10 M_\odot$). Change the third number on line 18 to \mintinline{text}{1.00E+02} (10 $M_\odot$), and the eighth number on line 2 to \mintinline{text}{9} (RE-ML).
+    
+    \item Run the code: \mintinline{bash}{./run_bs}
+\end{enumerate}
