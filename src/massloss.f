@@ -208,7 +208,7 @@ C Am I missing an MSUN out of all this? I think so...
                ENDIF
                BCPREWR = BC1
 C Note this smooths out the bistability jump... RJS
-CWhen XH(surface)<0.4 and log T > 4.0 the star is in the WNL phase:
+C When XH(surface)<0.4 and log T > 4.0 the star is in the WNL phase:
                BCWNL = -13.6 + 1.63*log10(L(ISTAR)/LSUN)+2.22*log10(XHE(ISTAR))
 C Now has metallicity scaling
                BCWNL = ((ZS/0.02)**0.5d0)*(10.0**BCWNL)*MSUN/CSECYR
@@ -216,8 +216,8 @@ C Now has metallicity scaling
                   BC1 = 1d1*(BCWNL - BCPREWR)*(log10(T(ISTAR)) - 3.9) + BCPREWR
                END IF
                IF (SURFXH.LT.0.4.AND.log10(T(ISTAR)).GT.4.0) BC1 = BCWNL
-CWhen XH(surface)<1e-3 and log T > 4.0 the star is in the WNE,WC or WO
-Cphase:
+C When XH(surface)<1e-3 and log T > 4.0 the star is in the WNE,WC or WO
+C phase:
                BCWC = -8.3 + 0.84*log10(L(ISTAR)/LSUN) + 2.04*log10(XHE(ISTAR)) +
      :              1.04*log10(1d0-XHE(ISTAR))
 C Also now metallicity scaled
@@ -234,13 +234,13 @@ C               IF (COHe.GT.1d0) BC1 = 1.9d-5*MSUN/CSECYR
 C     New Mass loss from Bestenlehner 2020
             IF (IML(ISTAR).EQ.6) THEN
 C     Bremsstrahlung
-               GFF = 1d0 ! Gaunt Factor - outsource this to data file probably
                RHO = M(ISTAR)/MSUN
                RADI = R(ISTAR)/RSUN
                VOL = (4d0 / 3d0 * CPI * RADI ** 3d0)
                RHO = RHO / VOL
                KAP = 3.68D22 * GFF * (1d0 - ZS) * (1d0 + XH(ISTAR))
                KAP = KAP * RHO * T(ISTAR) ** (-3.5d0)
+
 C     KAP is the average electron opacity
                VTH = SQRT(4d0 * BOLTZM * T(ISTAR) / AME)
 

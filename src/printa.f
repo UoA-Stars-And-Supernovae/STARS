@@ -53,7 +53,7 @@ C99002 FORMAT (1X, 1P, 12E13.5, 0P)
      :3,/), 9F5.2, 1P, 3E8.1,
      :/, E9.2, 0P, 9F6.3, /, 1P, 2(7E9.2, /), 0P, I2, 2(I2,1X,E8.2),2(1X,F4.2)
      : ,/, I2,F6.1,I2,F6.1, 1X, F4.2, I2, I2, 2(1X, E8.2),
-     :/,I2,E8.1)
+     :/,I2,E8.1,E8.1)
 99004 FORMAT (1X, 10F7.3)
 99005 FORMAT (1X, 1P, 2E14.6, E17.9, 3E14.6, 0P, 4I6, 1P, 2E11.3)
       IF ( IEND.NE.-1 ) GO TO 30
@@ -95,7 +95,7 @@ C Read in data
      :TRB,
      :IRAM, IRS1, VROT1, IRS2, VROT2, FMAC, FAM,
      :IVMC, TRC1, IVMS, TRC2, MWTS, IAGB, ISGFAC, FACSGMIN, SGTHFAC,
-     :ISTART, HKH
+     :ISTART, HKH, GFF
 
 C Idiot proofing -- otherwise the logic in solver will fail
       FACSGMIN = DMIN1(1d0, FACSGMIN)
@@ -119,7 +119,7 @@ C Adjust parameters if we are doing an evolution run
      :TRB,
      :IRAM, IRS1, VROT1, IRS2, VROT2, FMAC, FAM,
      :IVMC, TRC1, IVMS, TRC2, MWTS, IAGB, ISGFAC, FACSGMIN, SGTHFAC,
-     :ISTART, HKH
+     :ISTART, HKH, GFF
       WRITE (32, 99005)
       WRITE (32, 99005) SM, DTY, AGE, PER, BMS, EC,NH,NP,NMOD,IB,PMH(1),PME(1)
 C Convert RML from eta to coefficient required
