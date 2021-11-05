@@ -34,9 +34,24 @@ $(ODIR)/%.o: %.f
 bs: $(OBJ)
 	$(FC) -o $@ $^ $(FFLAGS)
 
-.PHONY: clean
+.PHONY: clean docs
 
 clean:
 	touch fort.zorkzork
 	rm -f fort.*
 	rm -f $(ODIR)/*.o *~ bs
+
+cleandocs:
+	@cd docs; \
+	rm -f *.pdf *.out *aux *bbl *blg *log *toc; \
+	rm -f *.ptb *.tod *.fls *.fdb_latexmk *.lof; \
+	rm -f *.bcf *.glo *.idx *.ist *.lot *pyg; \
+	rm -f *.run.xml
+
+docs:
+	@cd docs; \
+	pdflatex main.tex; \
+	biber main; \
+	pdflatex main.tex; \
+	pdflatex main.tex; \
+	pdflatex main.tex

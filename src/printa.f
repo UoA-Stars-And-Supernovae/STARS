@@ -12,7 +12,7 @@
       COMMON H(60,MAXMSH), DH(60,MAXMSH), EP(3), NH, JIN, ID(200)
       COMMON /AUXIN / ICL, ION, IAM, IOP, INUC, IBC, ICN, IML(2), ISGTH,
      :     IMO, IDIFF
-      COMMON /SODDS / ALPHA, RML, CMG, CSI, CFE, CT(10), AGE, DT, M1, 
+      COMMON /SODDS / ALPHA, RML, CMG, CSI, CFE, CT(10), AGE, DT, M1,
      :  EC, BM, ANG, CM, MTA, MTB, TM(2), T0, M0, TC(2), OS, AC, RCD,
      :  RMG, RHL, XF, DR, AK1 ,RMT, AK2, IZ(4), IB, ISX(45),
      :  TRB
@@ -22,7 +22,7 @@
       COMMON /NDATA / RATEN(9000)
       COMMON /CNSTS / CPI, PI4, CLN10, CDUM(11), CSECYR, LSUN, MSUN,
      &                RSUN, TSUNYR
-      COMMON /YUK1  / PX(34), WMH, WMHE, VMH, VME, VMC, VMG, BE, VLH, 
+      COMMON /YUK1  / PX(34), WMH, WMHE, VMH, VME, VMC, VMG, BE, VLH,
      :                VLE, VLC, VLN, VLT, MCB(12),WWW(100)
       COMMON /OPDAT / cbase,obase,opT(141),opR(31),fZ
       COMMON /XOPDAT/ opac(4,4,141,31,5)
@@ -44,7 +44,7 @@ C
       COMMON /ANGMOM/ VROT1, VROT2, FMAC, FAM, IRAM, IRS1, IRS2
       COMMON /DIFCOE/ DC(50,4,3), DCD(50,4)
       CBRT(VX) = DEXP(DLOG(VX)/3.0D0)
-      RLOBE(VX) = 0.49D0*VX*VX/(0.6D0*VX*VX+DLOG(1.0D0+VX)) 
+      RLOBE(VX) = 0.49D0*VX*VX/(0.6D0*VX*VX+DLOG(1.0D0+VX))
       DIMENSION WW(16),WX(52),DELDAT(22)
       data COcompos /0.0d0,0.01d0,0.03d0,0.1d0,0.2d0,0.4d0,0.6d0,1.0d0/
 C99002 FORMAT (1X, 1P, 12E13.5, 0P)
@@ -90,7 +90,7 @@ C Read in data
       READ  (1,99003) NH2,IT1,IT2,JIN,JOUT,NCH,JP,IZ,IMODE,
      :ICL,ION,IAM,IOP,IBC,INUC,ICN,IML(1),IML(2),ISGTH,IMO,IDIFF,
      :NT1,NT2,NT3,NT4,NT5,NSV,NMONT,
-     :EP,DT3,DD,ID,ISX,DT1,DT2,CT,ZS,ALPHA,CH,CC,CN,CO, 
+     :EP,DT3,DD,ID,ISX,DT1,DT2,CT,ZS,ALPHA,CH,CC,CN,CO,
      :CNE,CMG,CSI,CFE,RCD,OS,RML,RMG,ECA,XF,DR,RMT,RHL,AC,AK1,AK2,ECT,
      :TRB,
      :IRAM, IRS1, VROT1, IRS2, VROT2, FMAC, FAM,
@@ -114,7 +114,7 @@ C Adjust parameters if we are doing an evolution run
       WRITE (32,99003) NH2,IT1,IT2,JIN,JOUT,NCH,JP,IZ,IMODE,
      :ICL,ION,IAM,IOP,IBC,INUC,ICN,IML(1),IML(2), ISGTH, IMO, IDIFF,
      :NT1,NT2,NT3,NT4,NT5,NSV,NMONT,
-     :EP,DT3,DD,ID,ISX,DT1,DT2,CT,ZS,ALPHA,CH,CC,CN,CO, 
+     :EP,DT3,DD,ID,ISX,DT1,DT2,CT,ZS,ALPHA,CH,CC,CN,CO,
      :CNE,CMG,CSI,CFE,RCD,OS,RML,RMG,ECA,XF,DR,RMT,RHL,AC,AK1,AK2,ECT,
      :TRB,
      :IRAM, IRS1, VROT1, IRS2, VROT2, FMAC, FAM,
@@ -130,6 +130,10 @@ C
       IF (IOP .EQ. 1) CALL OPSPLN
 !extra lines for COopac bit
       write(*,*) 'Selection for opacity is:',IOP
+      write(*,*) 'Selection for massloss is:',IML(1)
+      IF(IML(1).EQ.9) THEN
+        write(*,*) 'Target mass is:', RMG
+      ENDIF
       cbase=ZS*0.173  !CC       - Changed by SMR (4/6/21) to allow for different CO abundances
       obase=ZS*0.482  !CO
       fZ=ZS
@@ -208,7 +212,7 @@ C
             AM(J) = BN(J)
          END DO
       END IF
-C Read the initial model         
+C Read the initial model
       DO  K = 1, NH
          READ (30, 99002) (H(J,K), J=1, JIN)
       END DO
@@ -246,7 +250,7 @@ C Star 2 nucleosynthesis data
             READ(51, 99002, ERR = 12, END = 12) (HNUC(J,K), J=51, 100)
          END DO
       END IF
-C Convert some things to `cgs' units: 10**11 cm, 10**33 gm, 10**33 erg/s 
+C Convert some things to `cgs' units: 10**11 cm, 10**33 gm, 10**33 erg/s
    12 DT = CSECYR*DTY
       TM(1) = MSUN*SM
       TM(2) = MSUN*SM2
@@ -255,8 +259,8 @@ C Convert some things to `cgs' units: 10**11 cm, 10**33 gm, 10**33 erg/s
       RML = RML*MSUN**2/LSUN/RSUN/CSECYR
 C Optionally, re-initialise mass
       IF ( NCH.GE.1 ) THEN
-         H(4,1) = DLOG(TM(1)) 
-         HPR(4,1) = DLOG(TM(1)) 
+         H(4,1) = DLOG(TM(1))
+         HPR(4,1) = DLOG(TM(1))
          IF (IMODE.EQ.2) THEN
             H(19,1) = DLOG(TM(2))
             HPR(19,1) = DLOG(TM(2))
@@ -270,7 +274,7 @@ C Optionally, re-initialise mass
       M0=BM-TM(1)
       ANG = TM(1)*(BM-TM(1))*(3.55223D0*PER/BM)**(1D0/3D0)
  13   CONTINUE
-  102 FORMAT(2(F8.4,1PE16.9,4E10.3,0P7F8.5,F8.3,2F8.4,/),3F8.4,F10.4, 
+  102 FORMAT(2(F8.4,1PE16.9,4E10.3,0P7F8.5,F8.3,2F8.4,/),3F8.4,F10.4,
      :1P2E10.3,0PF10.4,7F8.5,F8.3,2F8.4,/,F8.4,12F8.3,5F8.4,/,3F8.4,I6)
 C REMESH optionally rezones the model, e.g. for different no. of meshpoints
    14 CALL REMESH ( NH2, NCH, CH, CO, CC, CNE )
@@ -304,7 +308,7 @@ C Store certain previous values, for possible emergency restart
       PR(3) = M1
       PR(4) = EC
       PR(5) = BM
-      PR(6) = ANG      
+      PR(6) = ANG
       PR(7) = CM
       PR(8) = MTA
       PR(9) = MTB
@@ -327,7 +331,7 @@ C Store certain previous values, for possible emergency restart
       PR(3) = M1
       PR(4) = EC
       PR(5) = BM
-      PR(6) = ANG      
+      PR(6) = ANG
       PR(7) = CM
       PR(8) = MTA
       PR(9) = MTB
@@ -348,7 +352,7 @@ C `pages' per printed model; also 4-line summary for every NT4'th model
       PPER = PER
       CALL PRINTB ( DTY, PER, NT1, NT2, NT3, NT4, NMONT, NMOD, IEND )
       ANG = ANG/(1.0D0 + RHL*DTY)
-      EC = EC*(1.0D0 + DTY*ECT)/(1.0D0 - DTY*ECA*EC) 
+      EC = EC*(1.0D0 + DTY*ECT)/(1.0D0 - DTY*ECA*EC)
 C     TRB = TRB*(1.0D0 + DTY*ECT)
 C FUDGE TO DEAL WITH KS outside range. THIS ***WILL*** SCREW UP BINARIES!
 C This is no longer used, so I don't care whether it works or not. RJS
@@ -378,7 +382,7 @@ C            DHNUC(J,K) = 0d0
          END DO
       END DO
       write (32,*) "DELTA =",DELTA, " DD = ", DD
-      DTF = DMIN1 (DT2, DD/DELTA)      
+      DTF = DMIN1 (DT2, DD/DELTA)
 C     IF ( IHOLD .LE. 3 ) DTF = 1.0D0
       IF ( IHOLD .LE. 2 ) DTF = 1.0D0
       DTY = DMAX1(DT1,DTF)*DTY
@@ -402,14 +406,14 @@ C      IF (DABS((PER - PPER)/PPER).GT.0.01) DTY = 0.5*DTY
       IF ( IB.EQ.2 ) DTY = DMIN1(DTY,ST(KS+2)-AGE)
       DT=CSECYR*DTY
 C      IF (DT1.EQ.1d0) GO TO 6
-C      IF (IDREDGE.EQ.3) GO TO 6      
+C      IF (IDREDGE.EQ.3) GO TO 6
       IF ( (JP.EQ.1 .AND. DTF.GE.DT1).OR.DTY.LT.6d-5 ) GO TO 6
 C clear DH in some circumstances
       WRITE (32,*) "Clearing DH..."
       DO 7 K = 1, NH
          DO 7 J = 1, 60
     7       DH(J, K) = 0.0D0
-    6 IHOLD = IHOLD + 1 
+    6 IHOLD = IHOLD + 1
 C CNO equilibrium on the main sequence.
 C Does this still work???
       IF (ICN .EQ. 1) DT = MSUN*MSUN*CSECYR*5D0*TKH(ISTAR)/(VM*VM)
@@ -427,7 +431,7 @@ C      END IF
       IF ( MOD(NMOD,NSV).NE.0 .OR. IEND.EQ.-1 ) RETURN
 C End of regular update section. Intermediate or final output section
    31 IF (IEND.EQ.2) GO TO 32
-      SM = DEXP(H(4,1))/MSUN 
+      SM = DEXP(H(4,1))/MSUN
       SM2 = DEXP(H(19,1))/MSUN
       BMS = (SM + SM2) !BM/MSUN
       IF (IMODE.EQ.1) BMS = BM/MSUN
@@ -470,14 +474,14 @@ C write out nucleosynthesis files - star 1 first
          CALL FLUSH(55)
       END IF
       RETURN
-C End of final output section. Start of emergency restart section 
+C End of final output section. Start of emergency restart section
    32 IF ( IHOLD .LE. 0 ) GO TO 34
       AGE = PR(1)
       DT = PR(2)
       M1 = PR(3)
       EC = PR(4)
       BM = PR(5)
-      ANG = PR(6)      
+      ANG = PR(6)
       CM = PR(7)
       MTA = PR(8)
       MTB = PR(9)
@@ -494,7 +498,7 @@ C   11    CT(J+10) = PR(J)
    33 DO 9 K = 1, NH
          DO 9 J = 1, JOUT
             DH(J,K) = DHPR(J,K)
-    9       H(J,K) = HPR(J,K) 
+    9       H(J,K) = HPR(J,K)
             DTOLD = DTOLDP
 C Sort out nucleosynthesis for restart
             DO K = 1, NH

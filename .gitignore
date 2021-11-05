@@ -12,3 +12,12 @@ sprocess
 bs
 
 fort.*
+
+texput.log
+
+*.ipynb
+*.png
+*.zip
+output/
+*.py
+debs.dat

@@ -158,15 +158,16 @@ CFor WC/WO use: 0.6e-7 (M(WR)/M(sun))**2.5 M(sun) yr^-1
 CStars become WC when (C+O)/He > 3e-2
             END IF
             IF (IML(ISTAR).EQ.5) THEN
-C Newerest massive star mass loss rates from JJE
-C Different surface mass bc for *1 or *2 of binary
-c Stuff taken from thesis of L.Dray 2003
+C - so this is the same as IML 5 but changing so that it fixes a few bugs
                COHe=(XC(ISTAR)/3.0+XO(ISTAR)/4.0)/XHE(ISTAR)
                SURFXH=XH(ISTAR)
                SURFXHe=XHE(ISTAR)/4.0
 cc     c     pre-WR: de Jager 1988
                zml1=(log10(T(ISTAR))-4.05d0)/0.75d0
                zml2=(log10(L(ISTAR)/LSUN)-4.6d0)/2.1d0
+               if(zml2.ge.1d0) zml2=1d0 !if more luminous that bounds, set to max
+               if(zml1.ge.1d0) zml1=1d0 !if more hot that bounds, set to max
+               if(zml1.le.-1d0) zml1=-1d0 !if more cool that bounds, set to max
                BC1=0d0
                do n2=0,5
                   do i2=0,n2
@@ -178,11 +179,10 @@ C prevent array out of bounds
                      END IF
                   enddo
                enddo
-               BCPREWR1 = BC1
                BC1=(SQRT(ZS*50d0))*(10d0**BC1)*MSUN/CSECYR
-               if(zml1.ge.1d0.or.zml2.ge.1d0) BC1=0d0 !-5d90
-               if(zml1.le.-1d0.or.zml2.le.-1d0) BC1=0d0 !-5d90
-C No factor of 2 this time!
+               if(zml2.le.-1d0) BC1=0d0 !so when the star becomes too faint no mass loss
+               BCPREWR1 = BC1
+
 C Vink et al. 2001 rates for OB stars - taken from JJE's code
                RVIN=(ZS*50d0)**0.13d0
 C RMVA is for hot side of stability jump  27500 - 50000 K
@@ -193,36 +193,35 @@ C RMVB is for cool side of jump  12500 - 22500 K
                RMVB=-6.688+2.210*LOG10(L(ISTAR)/(LSUN*1d5))-1.339*LOG10(M(ISTAR)/(MSUN*30d0))
      :              -1.601*LOG10(RVIN*1.3/2.0)+1.07*LOG10(T(ISTAR)/2d4)+0.85*LOG10(50d0*ZS)
 C Am I missing an MSUN out of all this? I think so...
-               IF(T(ISTAR).LE.5d4.AND.T(ISTAR).GT.2.75d4) BC1 =(10**RMVA)*MSUN/CSECYR
-               IF(T(ISTAR).LE.2.25d4.AND.T(ISTAR).GE.1.25d4) BC1 =(10**RMVB)*MSUN/CSECYR
+               IF(T(ISTAR).LE.5d4.AND.T(ISTAR).GT.2.75d4) BC1 =(10d0**RMVA)*MSUN/CSECYR
+               IF(T(ISTAR).LE.2.25d4.AND.T(ISTAR).GE.1.25d4) BC1 =(10d0**RMVB)*MSUN/CSECYR
                IF(T(ISTAR).GT.2.25d4.AND.T(ISTAR).LE.2.75d4) THEN
-                  BC1=((T(ISTAR)-2.25d4)*(10**RMVA)+(2.75d4-T(ISTAR))*(10**RMVB))*MSUN/(CSECYR*5d3)
+                  BC1=((T(ISTAR)-2.25d4)*(10d0**RMVA)+(2.75d4-T(ISTAR))*(10d0**RMVB))*MSUN/(CSECYR*5d3)
                ENDIF
-               IF(T(ISTAR).LT.1.25d4.AND.T(ISTAR).GT.1d4) THEN
-                  BC1=((T(ISTAR)-1d4)*(10**RMVB)+(1.25d4-T(ISTAR))*(10**BCPREWR1)
-     :                 *(50d0*ZS)**0.5d0)*MSUN/(CSECYR*2.5d3)
+               IF(T(ISTAR).LT.1.25d4.AND.T(ISTAR).GE.1d4) THEN
+                  BC1=((T(ISTAR)-1d4)*(10d0**RMVB)*MSUN/CSECYR+(1.25d4-T(ISTAR))*BCPREWR1)/2.5d3
                ENDIF
                IF(T(ISTAR).GT.5d4.AND.T(ISTAR).LT.6d4) THEN
-                  BC1=((6d4-T(ISTAR))*(10**RMVA)+(T(ISTAR)-5d4)*(10**BCPREWR1)
-     :                 *(50d0*ZS)**0.5d0)*MSUN/(CSECYR*1d4)
+                  BC1=((6d4-T(ISTAR))*(10d0**RMVA)*MSUN/CSECYR+(T(ISTAR)-5d4)*(BCPREWR1))/1d4
                ENDIF
+
                BCPREWR = BC1
 C Note this smooths out the bistability jump... RJS
-C When XH(surface)<0.4 and log T > 4.0 the star is in the WNL phase:
+CWhen XH(surface)<0.4 and log T > 4.0 the star is in the WNL phase:
                BCWNL = -13.6 + 1.63*log10(L(ISTAR)/LSUN)+2.22*log10(XHE(ISTAR))
 C Now has metallicity scaling
-               BCWNL = ((ZS/0.02)**0.5d0)*(10.0**BCWNL)*MSUN/CSECYR
+               BCWNL = ((ZS*50d0)**0.5d0)*(10.0**BCWNL)*MSUN/CSECYR
                IF (SURFXH.LT.0.4.AND.log10(T(ISTAR)).GT.3.9) THEN
                   BC1 = 1d1*(BCWNL - BCPREWR)*(log10(T(ISTAR)) - 3.9) + BCPREWR
                END IF
-               IF (SURFXH.LT.0.4.AND.log10(T(ISTAR)).GT.4.0) BC1 = BCWNL
-C When XH(surface)<1e-3 and log T > 4.0 the star is in the WNE,WC or WO
-C phase:
+               IF (SURFXH.LT.0.4.AND.log10(T(ISTAR)).GE.4.0) BC1 = BCWNL
+CWhen XH(surface)<1e-3 and log T > 4.0 the star is in the WNE,WC or WO
+Cphase:
                BCWC = -8.3 + 0.84*log10(L(ISTAR)/LSUN) + 2.04*log10(XHE(ISTAR)) +
      :              1.04*log10(1d0-XHE(ISTAR))
 C Also now metallicity scaled
                BCWC = ((ZS/0.02)**0.5d0)*(10.0**BCWC)*MSUN/CSECYR
-               IF (SURFXH.LT.1d-3.AND.log10(T(ISTAR)).GT.4.0) THEN
+               IF (SURFXH.LT.1d-3.AND.log10(T(ISTAR)).GE.4.0) THEN
 C     WC rate
                   IF (COHe.GT.2d-2) THEN
                      BC1 = 1d2*(BCWC-BCWNL)*(COHe - 2d-2) + BCWNL
@@ -231,8 +230,8 @@ C     WC rate
 C               IF (COHe.GT.1d0) BC1 = 1.9d-5*MSUN/CSECYR
                END IF
             END IF
-C     New Mass loss from Bestenlehner 2020
-            IF (IML(ISTAR).EQ.6) THEN
+C     New Mass loss from Bestenlehner 2020 - WIP
+            IF (IML(ISTAR).EQ.7) THEN
 C     Bremsstrahlung
                RHO = M(ISTAR)/MSUN
                RADI = R(ISTAR)/RSUN
@@ -259,7 +258,7 @@ c     New mass loss to get to target mass by JJE - 2/5/2021
             IF (IML(ISTAR).EQ.9) THEN
                BC1 = 0.1d0*(M(ISTAR)/MSUN-RML*2.5d12*CSECYR*RSUN*LSUN/(MSUN**2d0))
      :              *MSUN/CSECYR/TKH(ISTAR)
-C                write(*,*) BC1,M(ISTAR)/MSUN,RML*2.5d12*CSECYR*RSUN*LSUN/(MSUN**2d0) - debug line
+C               write(*,*) BC1,M(ISTAR)/MSUN,RML*2.5d12*CSECYR*RSUN*LSUN/(MSUN**2d0) !- debug line
 !mass loss rate is from target mass - current mass limited to 10% of thermal timesvale
 !note - the funny constants around RML are because the value is modified to code units in printa.f, the simplest way to adjust the code is therefore to undo it here in this line without modifying the rest of the code to not to this when IML=9
             ENDIF
@@ -287,7 +286,7 @@ C Fakewind deals with mass-loss in CE systems - will interfer with normal evolut
       DO ISTAR=1,IMODE
          IF (ISTAR.EQ.1) ISTAROTHER = 2
          IF (ISTAR.EQ.2) ISTAROTHER = 1
-         ML(ISTAR) = MT(ISTAR) - RMG*M(ISTAR) + ML(ISTARCOMMON /CNSTS)
+         ML(ISTAR) = MT(ISTAR) - RMG*M(ISTAR) + ML(ISTAR)
      :        + DMIN1(RMT*(PS(RLF(ISTAR)))**3,MASSLIMIT*MSUN/CSECYR)
          IF (IMODE.EQ.2) THEN
 C Add (1-omega/omega_crit) to reduce accretion rate
