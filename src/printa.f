@@ -48,26 +48,27 @@ C
       DIMENSION WW(16),WX(52),DELDAT(22)
       data COcompos /0.0d0,0.01d0,0.03d0,0.1d0,0.2d0,0.4d0,0.6d0,1.0d0/
 C99002 FORMAT (1X, 1P, 12E13.5, 0P)
-99002 FORMAT (1P, 50E15.8, 0P)
-99003 FORMAT (12I4,/,12I4,/,7I4,/,1P,5E8.1,0P,/,2(10I3,/,3(30I3,/)),3(15I
+C Here we define some data format blocks.
+99002 FORMAT (1P, 50E15.8, 0P)                                                 ! modin file
+99003 FORMAT (12I4,/,12I4,/,7I4,/,1P,5E8.1,0P,/,2(10I3,/,3(30I3,/)),3(15I      ! data file
      :3,/), 9F5.2, 1P, 3E8.1,
      :/, E9.2, 0P, 9F6.3, /, 1P, 2(7E9.2, /), 0P, I2, 2(I2,1X,E8.2),2(1X,F4.2)
      : ,/, I2,F6.1,I2,F6.1, 1X, F4.2, I2, I2, 2(1X, E8.2),
      :/,I2,E8.1,E8.1)
-99004 FORMAT (1X, 10F7.3)
-99005 FORMAT (1X, 1P, 2E14.6, E17.9, 3E14.6, 0P, 4I6, 1P, 2E11.3)
-      IF ( IEND.NE.-1 ) GO TO 30
+99004 FORMAT (1X, 10F7.3)                                                       ! phys02.dat
+99005 FORMAT (1X, 1P, 2E14.6, E17.9, 3E14.6, 0P, 4I6, 1P, 2E11.3)               ! modin (first line only)
+      IF ( IEND.NE.-1 ) GO TO 30                                                ! Go to almost EOF if IEND (passed parameter) is -1
 C Initialize physical constants
       CALL CONSTS
 C Read opacity, nuclear reaction and neutrino loss rate data
-      READ (11,'(I4)') NCSX
-      READ (11,99004) CSX
+      READ (11,'(I4)') NCSX                                                     ! Read in phys02.dat.
+      READ (11,99004) CSX                                                       ! TODO: Understand the format of phys02.dat
       DO 1 N = 1, NCSX
     1    READ (11,99004) ((CS(JR,JT,N),JR=1,90),JT=1,127)
       READ (11,99004) HAT
-      READ (13,99004) RATEN
+      READ (13,99004) RATEN                                                     ! Read in nrate.dat
 C RJS 18/4/08 - read in spline coefficients for diffusion
-99006 FORMAT (E12.5,3(1X,E12.5))
+99006 FORMAT (E12.5,3(1X,E12.5))                                                ! Read in splinecoefficients.dat
       DO K = 1,3
          DO I = 1,50
             READ (14,99006) (DC(I,J,K),J=1,4)
@@ -87,7 +88,7 @@ C      CT(J) = 0.0D0
    21    ST(J) = J
 
 C Read in data
-      READ  (1,99003) NH2,IT1,IT2,JIN,JOUT,NCH,JP,IZ,IMODE,
+      READ  (1,99003) NH2,IT1,IT2,JIN,JOUT,NCH,JP,IZ,IMODE,                     ! Reading in the file "data"
      :ICL,ION,IAM,IOP,IBC,INUC,ICN,IML(1),IML(2),ISGTH,IMO,IDIFF,
      :NT1,NT2,NT3,NT4,NT5,NSV,NMONT,
      :EP,DT3,DD,ID,ISX,DT1,DT2,CT,ZS,ALPHA,CH,CC,CN,CO,
@@ -98,20 +99,20 @@ C Read in data
      :ISTART, HKH, GFF
 
 C Idiot proofing -- otherwise the logic in solver will fail
-      FACSGMIN = DMIN1(1d0, FACSGMIN)
+      FACSGMIN = DMIN1(1d0, FACSGMIN)                                           ! Constrain FACSGMIN (thermohaline mixing reduction factor)
 
 C Read first line of modin
-      READ  (30, 99005) SM, DTY, AGE, PER, BMS, EC,NH,NP,NMOD,IB,PMH(1),PME(1)
+      READ  (30, 99005) SM, DTY, AGE, PER, BMS, EC,NH,NP,NMOD,IB,PMH(1),PME(1)  ! This is the first line of modin
 
 C Adjust parameters if we are doing an evolution run
-      IF (ISTART.EQ.1) THEN
-         write(*,*) "Age, DT, NMOD overriden"
+      IF (ISTART.EQ.1) THEN                                                     ! This is just outputting if we set ISTART.
+         write(*,*) "Age, DT, NMOD overriden"                                   ! Useful debug information a bit
          DTY = 3e7/(SM**2d0) * HKH
          AGE = 0d0
          NMOD = 0
       END IF
 
-      WRITE (32,99003) NH2,IT1,IT2,JIN,JOUT,NCH,JP,IZ,IMODE,
+      WRITE (32,99003) NH2,IT1,IT2,JIN,JOUT,NCH,JP,IZ,IMODE,                    ! Output the data file block to out
      :ICL,ION,IAM,IOP,IBC,INUC,ICN,IML(1),IML(2), ISGTH, IMO, IDIFF,
      :NT1,NT2,NT3,NT4,NT5,NSV,NMONT,
      :EP,DT3,DD,ID,ISX,DT1,DT2,CT,ZS,ALPHA,CH,CC,CN,CO,
@@ -123,7 +124,7 @@ C Adjust parameters if we are doing an evolution run
       WRITE (32, 99005)
       WRITE (32, 99005) SM, DTY, AGE, PER, BMS, EC,NH,NP,NMOD,IB,PMH(1),PME(1)
 C Convert RML from eta to coefficient required
-      RML = 4d-13*RML
+      RML = 4d-13*RML                                                           ! Okay so this line puts us into "Eggleton" units kinda for ML.
 C
 C Create the spline interpolation data.
 C
@@ -134,8 +135,6 @@ C
       IF(IML(1).EQ.9) THEN
         write(*,*) 'Target mass is:', RMG
       ENDIF
-      cbase=ZS*0.173  !CC       - Changed by SMR (4/6/21) to allow for different CO abundances
-      obase=ZS*0.482  !CO
       fZ=ZS
 C READ IN NEW OPACITY DATA and SETUP STUFF - JJ 4/11/02
 C     Read in Opal Data
@@ -162,6 +161,8 @@ C            write (*,*) K,b3
             enddo
          enddo
 C         CLOSE(10)
+      cbase=b2*0.173  !CC       - Changed by SMR (4/6/21) to allow for different CO abundances
+      obase=b2*0.482  !CO
 C     Bit to add in variable molecular bits from old paper in Marigo
 C     Setup composition matrix
          if(IOP.eq.4.or.IOP.eq.6) then
