@@ -20,7 +20,8 @@ rm -f fort.*
 rm -f \
 out modout plot out2 plot2 \
 syntha syntha2 synthb synthb2 synthc synthc2 \
-centre centre2 surface surface2
+centre centre2 surface surface2 \
+sneplot sneplot2
 #cd ..
 #alias rm rm -i
 #rm -f *
@@ -46,7 +47,7 @@ ln -s syntha fort.36  ; ln -s synthb fort.37    ;
 ln -s synthc fort.38  ; ln -s surface fort.39   ;
 ln -s centre fort.40  ; ln -s sprocess fort.41  ;
 ln -s montage fort.42 ; ln -s adata fort.45     ;
-ln -s extra fort.47
+ln -s extra fort.47   ; ln -s sneplot fort.49
 
 # Link output for star 2
 ln -s out2 fort.52    ; ln -s plot2 fort.53     ;
@@ -54,7 +55,7 @@ ln -s modout2 fort.54 ; ln -s nucmodout2 fort.55;
 ln -s syntha2 fort.56 ; ln -s synthb2 fort.57   ;
 ln -s synthc2 fort.58 ; ln -s surface2 fort.59  ;
 ln -s centre2 fort.60 ; ln -s sprocess2 fort.61 ;
-ln -s montage2 fort.62
+ln -s montage2 fort.62; ln -s sneplot2 fort.69
 ln -s extra2 fort.67
 # need to add - sprocess?
 
