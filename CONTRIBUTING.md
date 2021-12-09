@@ -1,9 +1,24 @@
 # Contributing
 
-Please branch off master, which is stable (but slightly bleeding edge).
+Welcome to contributing to the STARS code! Be sure to read this document thoroughly before contributing, as it outlines our policies for contributing to the code base.
 
-Give your branches sensible names, referencing issue tickets if possible.
+## Creating Issues
 
-Raise pull requests.
+Please always create a new GitHub issue for anything wrong with the code. Follow the following template:
 
-Test yo' shit.
+```
+Brief description of issue:
+
+Steps to recreate:
+
+modin / data files I am using:
+
+Expected result:
+
+Actual result:
+```
+
+
+## Workflow
+
+![STARS workflow](STARS - Workflow.png)
