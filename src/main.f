@@ -14,13 +14,15 @@ C
 
 C Read physical data and an initial model
       CALL PRINTA ( -1, NSTEP, ITER1, ITER2, NWRT5 )
-      IF (NSTEP.EQ.0) GO TO 3
+      IF (NSTEP.EQ.0) GO TO 3 ! If the step size is zero - just stop the program now.
       ITER = ITER1
       nter = 0
-      nm = 0
-      npr = nm
-      tcpu = dtime(cpu) ! This is the execution time of the script.
-      tcpu = 0.0
+      nm = 0 ! Current model number
+      npr = nm ! Previous model number
+      tcpu = dtime(cpu) ! This is a sneaky line. dtime returns the time elapsed since this was *last* called.
+                        ! In future, we want it to be "since execution began". So we call it here to update
+                        ! the *next* time it is called - and manually set the execution time to zero below.
+      tcpu = 0.0 ! This is the execution time of the script.
 
 C Begin evolutionary loop of NSTEP time steps.
 C This is effectively the world's most convoluted while loop.
