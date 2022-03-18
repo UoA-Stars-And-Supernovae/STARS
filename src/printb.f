@@ -403,7 +403,7 @@ C Output for use in MONTAGE -- may need smart output control RJS 29/5/08
 C sneplot file here?????? - SMR + JJE
 99019    FORMAT (I6,0P,4E16.9)
          LOGG = LOG10(10*6.67*PX(9)*1.989/(PX(17) * 6.9634)**2) ! Put into SI units. TODO: cgs?
-         WRITE(49+(ISTAR-1), 99019) NMOD, LOGG
+         WRITE(49+20*(ISTAR-1), 99019) NMOD, LOGG
 C End SNEPLOT
          IF (NWRT3.EQ.1) GO TO 3
 C Write further `pages' for each detailed model, if required

@@ -1,14 +1,16 @@
 obj/
+models/
 
-modin
-modout
+modin*
+modout*
 montage
-nucmodin
-nucmodout
-out
+nucmodin*
+nucmodout*
+out*
 data
-plot
-sprocess
+plot*
+sprocess*
+sneplot*
 bs
 
 fort.*
@@ -19,5 +21,6 @@ texput.log
 *.png
 *.zip
 output/
+z014_output/
 *.py
 debs.dat

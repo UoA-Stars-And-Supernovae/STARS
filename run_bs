@@ -1,6 +1,6 @@
 #!/bin/csh
 
-set BSDIR=.
+set BSDIR=/home/sric560/Documents/STARS
 set DATDIR=$BSDIR/dat
 set EXEDIR=$BSDIR
 
