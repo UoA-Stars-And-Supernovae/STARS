@@ -1,5 +1,20 @@
 obj/
 models/
+pre_hf_added_models/
+pseudoev/
+.ipynb_checkpoints/
+python_scripts/
+models-*/
+AGBTEST/
+Max_z020/
+SinTest/
+*.mp4
+*.tar.xz
+
+.log
+
+nohup.out
+test*
 
 modin*
 modout*
@@ -21,6 +36,15 @@ texput.log
 *.png
 *.zip
 output/
+PYR_outputs*/
+evo_grid*/
+*grid/
+*Grid/
+models-*
+nohup.out
+.log
 z014_output/
 *.py
 debs.dat
+nohup.out
+*.py.old

@@ -26,18 +26,18 @@ C from previous iterations (i.e. the nucleosynthesis). This massively slowed the
 C non-nucleosynthesis mode, and no longer seems to be a problem. If you find you need it,
 C add it back in again :)
 C Clear C and S
-C     DO J = 1, 51
-C     DO I = 1,51
-C     DO K = 1,NMESH+1 !MAXMSH+1
-C     C(K,I,J) = 0d0
-C     END DO
-C     END DO
-C     END DO
-C     DO J = 1,151
-C     DO I = 1,50
-C     S(I,J) = 0d0
-C     END DO
-C     END DO
+C        DO J = 1, 51
+C           DO I = 1,51
+C              DO K = 1,NMESH+1 !MAXMSH+1
+C                 C(K,I,J) = 0d0
+C              END DO
+C           END DO
+C        END DO
+C        DO J = 1,151
+C           DO I = 1,50
+C              S(I,J) = 0d0
+C           END DO
+C        END DO
 C Replace loop with written out stuff
       NE1 = IE(1)
       NE2 = IE(2)

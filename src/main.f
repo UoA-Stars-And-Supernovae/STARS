@@ -10,6 +10,7 @@ C
       PARAMETER (MAXMSH = 2000)
       COMMON H(60,MAXMSH),DH(60,MAXMSH),EPS,V(2),NMESH,JIN,ID(100),IE(100)
       COMMON /EVMODE/ IMODE
+
       real dtime,cpu(2),dt,tcpu
 
 C Read physical data and an initial model

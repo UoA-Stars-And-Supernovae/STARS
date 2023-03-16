@@ -11,7 +11,7 @@ FC = gfortran
 #FFLAGS = -ffixed-line-length-none -finit-local-zero -fno-automatic -O2
 #FFLAGS = -extend_source -fast # -fpe3
 #FFLAGS = -extend_source -g
-FFLAGS = -g -ffixed-line-length-none -fno-automatic
+FFLAGS = -g -ffixed-line-length-none -fno-automatic -march=native
 
 #ifort options
 #FFLAGS = -e -fast
@@ -37,7 +37,7 @@ bs: $(OBJ)
 .PHONY: clean docs
 
 clean:
-	touch fort.zorkzork
+	touch fort.tmp
 	rm -f fort.*
 	rm -f $(ODIR)/*.o *~ bs
 

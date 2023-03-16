@@ -13,9 +13,12 @@
       COMMON /DINF  / DW(60)
       COMMON /INFN  / WN(50)
       COMMON /DINFN / DWN(50)
+C      COMMON /CEE   / MHC(2), MENVC(2), DSEP, ICE, ICEP, ALPHACE
       COMMON /OUTF  / YDOT(50), Y(50), SIG, DMT, SGTH, DMU, DSG(50)
       COMMON /DOUTF / YLIN(50, 154)
       COMMON /ABUND / XA(10), WW(14)
+C       COMMON /YUK1  / PX(34), WMH, WMHE, VMH, VME, VMC, VMG, BE, VLH,
+C      :                VLE, VLC, VLN, VLT, MCB(12),WWW(100)
       COMMON /ABUND2/ XA2(50), WW2(50)
       COMMON /TRANS / HT(28,MAXMSH,2)
       COMMON /SURFCO/ SURFCOMPOS(50), ISTAROTHER
@@ -39,7 +42,7 @@
       COMMON /DECAY / RDAL26G,RDNA22,RD26M,RDFe59,RDFe60,RDNi59,RDn,RDC14
       COMMON /NEUTRO/ FRAC(50,MAXMSH)
       COMMON /OP    / ZS, VLEDD, VM, GR, GRAD, ETH, RLF, EGR, R, QQ
-      DIMENSION BARYN(50), IZZ(50)
+      DIMENSION BARYN(50), IZZ(50), M(2), R(2)
       DATA BARYN/1.0, 1.0, 2.0, 3.0, 7.0, 7.0, 11.0, 13.0, 14.0,  15.0,
      : 17.0, 18.0, 19.0, 21.0, 22.0, 22.0, 23.0, 24.0, 25.0, 26.0,
      : 26.0,26.0,27.0,28.0,29.0,30.0,31.0,32.0,33.0,34.0,56.0,57.0,58.0,
@@ -73,6 +76,55 @@ C Check for RLOF/Wind accretion and set BC appropriately
             END IF
 C NB - NO CONDITION FOR COMMON ENVELOPE
          END IF
+
+C          IF (IMODE.EQ.2 .AND. ICEP.GT.0) THEN
+C              R(ISTAR) = DEXP(W(7+15*(ISTAR - 1)))
+C              M(ISTAR) = DEXP(W(4+15*(ISTAR - 1)))
+C              HORB = W(13)
+
+C              SEP = (M(1)+M(2))*(HORB/(M(1)*M(2)))**2.0
+
+C              DSEP = 0d0
+
+C              ICEPR = ICE
+
+C              IF (R(ISTAR).GE.SEP) THEN
+C                   ICE = 1
+C                   IDONOR = ISTAR
+C                   IACC = ISTAROTHER
+C              ELSE IF (R(ISTAROTHER).GE.SEP) THEN
+C                   ICE = 1
+C                   IDONOR = ISTAROTHER
+C                   IACC = ISTAR
+C              ELSE
+C                   ICE = 0
+C                   IF (ICEPR.EQ.1) THEN
+C                         WRITE(32+(ISTAR-1),*) "Common Envelope from star ", IDONOR, " to ", IACC, " finished."
+C                   END IF
+C              END IF
+
+C              IF (ICE.EQ.1) THEN
+C                   IF (ICEPR .EQ. 0) THEN
+C                         WRITE(32+(ISTAR-1),*) "Common Envelope occurring from star ", IDONOR, " to ", IACC
+C                   END IF
+
+C                   IF (CEPR.EQ.0) THEN
+C                         DSEP = 0d0
+C                   ELSE IF (CEPR.EQ.1) THEN
+C                         MCORE = MHC(IACC)
+C                         MENV = MENVC(IDONOR)
+
+C                         LAMBDA = M(IDONOR) * MENV / R(IDONOR)**2d0
+C                         AFIN = M(IDONOR) * MENV / (LAMBDA * R(IDONOR)**2d0)
+C                         AFIN = AFIN + ALPHACE * CG * M(IDONOR) * M(IACC)
+C                         AFIN = AFIN / (2d0*SEP)
+C                         AFIN = AFIN / ALPHACE * 2d0
+C                         AFIN = AFIN / (CG*MCORE*M(IACC))
+
+C                         DSEP = AFIN - SEP
+C                   END IF
+C              END IF
+C          END IF
       END IF
 C Set up composition for reaction calculation
       XA(1) = W(5+15*(ISTAR - 1))

@@ -1,7 +1,7 @@
 **==PRINTA.FOR
       SUBROUTINE PRINTA(IEND, NP, IT1, IT2, NT5)
       IMPLICIT REAL*8(A-H, L, M, O-Z)
-      real*8 MAT(4,141),Xcompos(3,305),COcompos(8)
+      REAL*8 MAT(4,141),Xcompos(3,305),COcompos(8)
       SAVE
       INTEGER MAXMSH
       PARAMETER (MAXMSH = 2000)
@@ -24,6 +24,7 @@
      &                RSUN, TSUNYR
       COMMON /YUK1  / PX(34), WMH, WMHE, VMH, VME, VMC, VMG, BE, VLH,
      :                VLE, VLC, VLN, VLT, MCB(12),WWW(100)
+C      COMMON /CEE   / MHC(2), MENVC(2), DSEP, ICE, ICEP, ALPHACE
       COMMON /OPDAT / cbase,obase,opT(141),opR(31),fZ
       COMMON /XOPDAT/ opac(4,4,141,31,5)
       COMMON /COPDAT/ opacCO(4,4,141,31,305)
@@ -43,6 +44,7 @@ C
      :     VLEC(2), VLCC(2), RLFC(2), TOTMC(2)
       COMMON /ANGMOM/ VROT1, VROT2, FMAC, FAM, IRAM, IRS1, IRS2
       COMMON /DIFCOE/ DC(50,4,3), DCD(50,4)
+
       CBRT(VX) = DEXP(DLOG(VX)/3.0D0)
       RLOBE(VX) = 0.49D0*VX*VX/(0.6D0*VX*VX+DLOG(1.0D0+VX))
       DIMENSION WW(16),WX(52),DELDAT(22)
@@ -54,7 +56,8 @@ C Here we define some data format blocks.
      :3,/), 9F5.2, 1P, 3E8.1,
      :/, E9.2, 0P, 9F6.3, /, 1P, 2(7E9.2, /), 0P, I2, 2(I2,1X,E8.2),2(1X,F4.2)
      : ,/, I2,F6.1,I2,F6.1, 1X, F4.2, I2, I2, 2(1X, E8.2),
-     :/,I2,E8.1,E8.1)
+     :/,I2,E8.1,E8.1, I5,
+     :/,I2,F4.1)
 99004 FORMAT (1X, 10F7.3)                                                       ! phys02.dat
 99005 FORMAT (1X, 1P, 2E14.6, E17.9, 3E14.6, 0P, 4I6, 1P, 2E11.3)               ! modin (first line only)
       IF ( IEND.NE.-1 ) GO TO 30                                                ! Go to almost EOF if IEND (passed parameter) is -1
@@ -96,7 +99,10 @@ C Read in data
      :TRB,
      :IRAM, IRS1, VROT1, IRS2, VROT2, FMAC, FAM,
      :IVMC, TRC1, IVMS, TRC2, MWTS, IAGB, ISGFAC, FACSGMIN, SGTHFAC,
-     :ISTART, HKH, GFF
+     :ISTART, HKH, GFF, NNMOD,
+     :ICEP, ALPHACE
+
+C       WRITE(*,*) ISTART, HKH, GFF, NNMOD, ICEP, ALPHACE
 
 C Idiot proofing -- otherwise the logic in solver will fail
       FACSGMIN = DMIN1(1d0, FACSGMIN)                                           ! Constrain FACSGMIN (thermohaline mixing reduction factor)
@@ -109,8 +115,11 @@ C Adjust parameters if we are doing an evolution run
          write(*,*) "Age, DT, NMOD overriden"                                   ! Useful debug information a bit
          DTY = 3e7/(SM**2d0) * HKH
          AGE = 0d0
-         NMOD = 0
-      END IF
+         NMOD = NNMOD
+         write(*,*) "NMOD has been set to :", NMOD
+       END IF
+
+C        WRITE (*,'(I2,F4.1)') ICEP, ALPHACE
 
       WRITE (32,99003) NH2,IT1,IT2,JIN,JOUT,NCH,JP,IZ,IMODE,                    ! Output the data file block to out
      :ICL,ION,IAM,IOP,IBC,INUC,ICN,IML(1),IML(2), ISGTH, IMO, IDIFF,
@@ -120,7 +129,8 @@ C Adjust parameters if we are doing an evolution run
      :TRB,
      :IRAM, IRS1, VROT1, IRS2, VROT2, FMAC, FAM,
      :IVMC, TRC1, IVMS, TRC2, MWTS, IAGB, ISGFAC, FACSGMIN, SGTHFAC,
-     :ISTART, HKH, GFF
+     :ISTART, HKH, GFF, NNMOD,
+     :ICEP, ALPHACE
       WRITE (32, 99005)
       WRITE (32, 99005) SM, DTY, AGE, PER, BMS, EC,NH,NP,NMOD,IB,PMH(1),PME(1)
 C Convert RML from eta to coefficient required
@@ -130,10 +140,13 @@ C Create the spline interpolation data.
 C
       IF (IOP .EQ. 1) CALL OPSPLN
 !extra lines for COopac bit
+
       write(*,*) 'Selection for opacity is:',IOP
-      write(*,*) 'Selection for massloss is:',IML(1)
+      write(*,*) 'Selection for massloss (*1) is:',IML(1)
+      write(*,*) 'Selection for massloss (*2) is:',IML(2)
+      write(*,*) 'Common Envelope prescription is:',CEPR
       IF(IML(1).EQ.9) THEN
-        write(*,*) 'Target mass is:', RMG
+        write(*,*) 'Target mass is:', RML/4d-13
       ENDIF
       fZ=ZS
 C READ IN NEW OPACITY DATA and SETUP STUFF - JJ 4/11/02
@@ -291,6 +304,7 @@ C Store nucleosynthesis
 C COMPOS puts composition variables to zero if they are very small
       CALL COMPOS
       CALL PRINTB ( DTY, PER, NT1, NT2, NT3, NT4, NMONT, NMOD, IEND )
+
 C
 C If initial timestep is negative calculate DT as a fraction of the
 C Kelvin-Helmholtz timescale and scale mass loss to evolve up the main
@@ -373,7 +387,7 @@ C Don't use L, HORB in delta
     4       H(J, K) = H(J, K) + DH(J, K)
     5       IF (DTY.GT.3D-4) DELTA = DELTA + AC*DABS(DH(8,K)/HPR(8,1))
 C Update nucleosynthesis matrix
-      DO K = 1, NH
+      DO K = 1, NHf
          DO J=1,100
             HNUCPR(J, K) = HNUC(J, K)
             DHNUCPR(J, K) = DHNUC(J, K)
@@ -383,27 +397,31 @@ C            DHNUC(J,K) = 0d0
          END DO
       END DO
       write (32,*) "DELTA =",DELTA, " DD = ", DD
+
       DTF = DMIN1 (DT2, DD/DELTA)
 C     IF ( IHOLD .LE. 3 ) DTF = 1.0D0
       IF ( IHOLD .LE. 2 ) DTF = 1.0D0
       DTY = DMAX1(DT1,DTF)*DTY
+
       DO ISTAR = 1,IMODE
          IF (IAGB.EQ.1) THEN
 C Reduce timestep if He luminosity is increasing too fast -- useful on AGB
             IF ((VLEC(ISTAR) - VLEP(ISTAR))/VLEP(ISTAR).GT.0.05.AND.
-     :           VLEC(ISTAR).GT.1d3) DTY = 0.8*DTY
+     :           VLEC(ISTAR).GT.1d3) THEN
+               DTY = 0.8*DTY
+            END IF
          END IF
 C Extra control mechanisms that can be uncommented as necessary - RJS
-C         IF ((VLHC(ISTAR) - VLHP(ISTAR))/VLHP(ISTAR).GT.0.10) DTY = 0.8*DTY
-C         IF ((VLCC(ISTAR) - VLCP(ISTAR))/VLCP(ISTAR).GT.0.10) DTY = 0.8*DTY
-C         IF (((RLFC(ISTAR)-RLFP(ISTAR))/RLFP(ISTAR)).GT.0.1
-CC     :        .AND.RLFP(ISTAR).GT.-1d-1.AND.RLFP(ISTAR).LT.-1d-3) THEN
-C     :        .AND.RLFP(ISTAR).GT.-1d-1) THEN
-C            DTY = 0.1*DTY
-C            write (32,*) "RLF issues - reducing timestep"
-C         END IF
+        IF ((VLHC(ISTAR) - VLHP(ISTAR))/VLHP(ISTAR).GT.0.10) DTY = 0.8*DTY
+        IF ((VLCC(ISTAR) - VLCP(ISTAR))/VLCP(ISTAR).GT.0.10) DTY = 0.8*DTY
+        IF (((RLFC(ISTAR)-RLFP(ISTAR))/RLFP(ISTAR)).GT.0.1
+C     :        .AND.RLFP(ISTAR).GT.-1d-1.AND.RLFP(ISTAR).LT.-1d-3) THEN
+     :        .AND.RLFP(ISTAR).GT.-1d-1) THEN
+           DTY = 0.1*DTY
+           write (32,*) "RLF issues - reducing timestep"
+        END IF
       END DO
-C      IF (DABS((PER - PPER)/PPER).GT.0.01) DTY = 0.5*DTY
+      IF (DABS((PER - PPER)/PPER).GT.0.01) DTY = 0.5*DTY
       IF ( IB.EQ.2 ) DTY = DMIN1(DTY,ST(KS+2)-AGE)
       DT=CSECYR*DTY
 C      IF (DT1.EQ.1d0) GO TO 6

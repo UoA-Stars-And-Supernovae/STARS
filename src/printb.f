@@ -13,6 +13,7 @@
      :  TRB
 * extra common for mesh-spacing
       COMMON /PMESH / PMH(2), PME(2), IAGB
+C      COMMON /CEE   / MHC(2), MENVC(2), DSEP, ICE, ICEP, ALPHACE
       COMMON /INF   / Q(60)
       COMMON /DINF  / QD(60)
       COMMON /OP    / ZS, LEDD, VM, GR, GRAD, ETH, RLF, EGR, R, QQ
@@ -49,6 +50,7 @@ C Extra common for extra timestep control stuff - P for previous, C for current
       COMMON /DTCONT/ VLHP(2), VLEP(2), VLCP(2), RLFP(2), TOTMP(2), VLHC(2),
      :     VLEC(2), VLCC(2), RLFC(2), TOTMC(2)
       COMMON /WINDS / WINDML(2), FAKEWIND(2), BE2
+      COMMON /ACCR  / WINDACC(2)
       COMMON /TIDES / MENV(2), RENV(2)
       PS(VX) = 0.5D0*(VX+DABS(VX))
       DIMENSION XA(10), TCB(12), RCB(12)
@@ -97,6 +99,7 @@ C Used A&G for H,He,C,N,O,Ne rather than input for convenience
 99004 FORMAT (I13, 1P, 9E13.5, 3(/, 10E13.5))
 99005 FORMAT (/, '  K', 15(6X, A5, 3X),/)
 99006 FORMAT (I4, 1P, 11E14.7)
+
 C Store previous values of extra timestep control variables
       VMHP = VMH
       DO I=1,2
@@ -238,17 +241,25 @@ C            IF (K.GT.KBICZ+1) GOTO 2
                KCB(JC) = -K
                JC=JC + 1
 C locate burning shell boundaries
+C           He core:
  2          IF (XH.GT.XF.AND.SX(10,KK).LT.XF) THEN
                VMH = (PX(9)*(XF-SX(10,KK))+SX(9,KK)*(XH-XF))/(XH-SX(10,KK))
                KMH = K
                PMH(ISTAR) = (PX(2)*(XF-SX(10,KK))+SX(2,KK)*(XH-XF))/(XH-SX(10,KK))
             END IF
+C           CO core:
             IF (XHE.GT.XF.AND.SX(11,KK).LT.XF.AND.K.GT.NMESH/2) THEN
                VME = (PX(9)*(XF-SX(11,KK))+SX(9,KK)*(XHE-XF))/
      &              (XHE-SX(11,KK))
                KME = K
                PME(ISTAR) = (PX(2)*(XF-SX(11,KK))+SX(2,KK)*(XHE-XF))/
      &              (XHE-SX(11,KK))
+            END IF
+C           ONe core:
+            IF (XH.GT.XF.AND.SX(10,KK).LT.XF) THEN
+               VMH = (PX(9)*(XF-SX(10,KK))+SX(9,KK)*(XH-XF))/(XH-SX(10,KK))
+               KMH = K
+               PMH(ISTAR) = (PX(2)*(XF-SX(10,KK))+SX(2,KK)*(XH-XF))/(XH-SX(10,KK))
             END IF
             IF (XC.GT.XF.AND.SX(12,KK).LT.XF) VMC = (PX(9)*
      :           (XF-SX(12,KK))+SX(9,KK)*(XC-XF))/(XC-SX(12,KK))
@@ -401,9 +412,10 @@ C Output for use in MONTAGE -- may need smart output control RJS 29/5/08
             END IF
          END DO
 C sneplot file here?????? - SMR + JJE
-99019    FORMAT (I6,0P,4E16.9)
+99019    FORMAT (I2,0P,100E16.9)
          LOGG = LOG10(10*6.67*PX(9)*1.989/(PX(17) * 6.9634)**2) ! Put into SI units. TODO: cgs?
-         WRITE(49+20*(ISTAR-1), 99019) NMOD, LOGG
+         WRITE(49+20*(ISTAR-1), 99019) NMOD, LOGG, WINDML(1), WINDML(2),
+     :                                 WINDACC(1), WINDACC(2),RLF/CSECYR
 C End SNEPLOT
          IF (NWRT3.EQ.1) GO TO 3
 C Write further `pages' for each detailed model, if required
@@ -435,6 +447,12 @@ C convective mixing timescale needed in FUNCS1
 * Write to the numerical data storage unit for plotting purposes.
 *
 C Separation
+C                                      IS THIS THE MISTAKE!?
+C          IF (ICE.EQ.1 .AND. IMODE.EQ.2) THEN
+C             ! Reduce the orbit due to CEE effects.
+C             ! This change results in SEP = SEP + DSEP
+C             H(13,1) = H(13,1) + SQRT((TM(1)+TM(2))*(TM(1)**2.0*TM(2)**2.0*DSEP+TM(1)*H(13,1)**2.0+TM(2)*H(13,1)**2))-H(13,1)*(TM(1)-TM(2))/(TM(1)+TM(2))
+C          END IF
          IF (IMODE.EQ.2) THEN
             SEP = (TM(1)+TM(2))*(H(13,1)/(TM(1)*TM(2)))**2.0
          ELSE
@@ -450,6 +468,10 @@ C Orbital angular velocity
          OSPIN = Q(14)/VI(ISTAR)
          OCRIT = DSQRT(6.67d-11*PX(9)*2d30/(6.96d8*PX(17))**3.0) !/DSQRT(CG)
          SEP = SEP/RSUN
+C        Store core mass. need to be more intelligent about this - SMR
+C          MHC(ISTAR) = VMH
+C          MENVC(ISTAR) = MENV(ISTAR)/MSUN
+C Write plot/plot2 file
          WRITE (33+20*(ISTAR-1),115) NMOD,AGE,LOG10(PX(17)),LOG10(PX(4)),
      &        LOG10(PX(18)),PX(9),VMH,VME,LOG10(MAX(VLH,1.01D-10)),
      &        LOG10(MAX(VLE,1.01D-10)), LOG10(MAX(VLC,1.01D-10)),
@@ -557,6 +579,7 @@ C If boundary moves in, reduce DD
             KICZ = KCB(3)
             KBICZ = KMX(2)
          END IF
+
          WRITE(32+20*(ISTAR-1),99003) NMOD,PX(9),DTY,TN,PER,VLH,VLT,SX(10,2),SX(11,2),
      :        SX(12,2),SX(13,2),SX(14,2),SX(15,2),SX(16,2),SX(1,2),SDC,STC,
      :        'cntr',VMH,AGE,TKH(ISTAR),RLF,VLE,VLN,XH,XHE,XC,XN,XO,XNE,XHE3,PX(1),

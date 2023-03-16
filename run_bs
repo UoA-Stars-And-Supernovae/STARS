@@ -9,11 +9,16 @@ echo $EXEDIR
 
 # Clean up if previous run was aborted.
 # Touch prevents "no such file" error.
-touch fort.zorkzork
-rm -f fort.*
+#touch fort.zorkzork
+#rm -f fort.*
 # Compile and clean object files.
 #make ; rm -f *.o
 #unalias rm
+#make clean
+#make
+
+#ls -lah src/
+#read -n 1 -s -r -p "Press any key to continue"
 
 # Remove old output files.
 #cd output
@@ -31,7 +36,7 @@ ln -s data fort.1
 # useless debugging in fort.24
 
 # Link physical data files
-ln -s $DATDIR/COtables fort.10
+ln -s COtables fort.10
 ln -s $DATDIR/phys02.dat fort.11
 ln -s $DATDIR/nrate.dat fort.13
 ln -s $DATDIR/splinecoefficients.dat fort.14

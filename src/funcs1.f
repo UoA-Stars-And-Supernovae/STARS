@@ -7,33 +7,33 @@
       COMMON /TRANS / HT(28,MAXMSH,2)
       COMMON /AUXIN / ICL, ION, JW, IOP, INUC, IBC, ICN, IML(2), ISGTH,
      :     IMO, IDIFF
-      COMMON /SODDS / ALPHA, RML, CMG, CSI, CFE, CT(10), AGE, DT, M1, 
-     :  EC, BM, ANG, CM, MTA, MTB, TM(2), T0, M0, TC(2), OS, AC, RCD,  
+      COMMON /SODDS / ALPHA, RML, CMG, CSI, CFE, CT(10), AGE, DT, M1,
+     :  EC, BM, ANG, CM, MTA, MTB, TM(2), T0, M0, TC(2), OS, AC, RCD,
      :  RMG, RHL, XF, DR, AK1 ,RMT, AK2, ITH, IX, IY, IZ, IB, ISX(45),
      :  TRB
       COMMON /ATDATA/ DH2(4), CCHI(26,9), OMG(27), AMASS(10), BN(10), IZZ(10)
 * extra common for mesh-spacing
       COMMON /PMESH / PMH(2), PME(2), IAGB
       COMMON /STAT2 / AP, ARHO, U, P, RHO, FK, T, SF, ST, ZT, GRADA, CP,
-     :                CHI, QP, PR, PG, PF, PT, EN, RPP, R33, R34, RBE, RBP, 
+     :                CHI, QP, PR, PG, PF, PT, EN, RPP, R33, R34, RBE, RBP,
      :                RPC, RPN, RPO, R3A, RAC, RAN, RAO, RANE, RCC, RCO,
      :                ROO, RGNE, RGMG, RCCG, RPNG, EX, ENX, EXX(3), AAWT,
      :                AWT, WR(14)
 C NB - if new variables are added, will need to change the WI(n) numbers in the
 C rest of this subroutine. RJS 5/7/06
-      COMMON /INF   / AF, AT, VX16, AM, VX1, VQK, AR, L, VX4, VX12,  
+      COMMON /INF   / AF, AT, VX16, AM, VX1, VQK, AR, L, VX4, VX12,
      :                VX20, VX14, HORB, HSPIN, VX3, WI(45)
       COMMON /DINF  / DAF, DAT, DX16, DAM, DX1, V1(3), DX4, DX12, DX20,
      :                DX14, DHORB, DHSPIN, DX3, DWI(45)
       COMMON /OUTF  / BC1, BC2, BC3, BCHORB, BCHSPIN, VP, VPK, VR, VRK,
-     :                VT, VTK, VL, LK, 
+     :                VT, VTK, VL, LK,
      :                LQ, GTMA, MT, VM, VMK, QK, SG, WT, X1, X1T, X16,
      :                X16T, X4, X4T, X12, X12T, X20, X20T, X14, X14T,
      :                X24, SGTH, MU, X3, X3T, DLEV, DMIX(6),
      :                D4, D12, D14, D16, D20, D3, WX(103)
       COMMON /ABUND / XH, XHE, XC, XN, XO, XNE, XMG, XSI, XFE, XHE3, XW(14)
       COMMON /OP    / ZS, LEDD, M, DG, GRADT, ETH, RLF, EGR, R, Q
-      COMMON /CNSTS / CPI, PI4, CLN10, CA, CB, CC, CD, CG, CR(2), CEVB, 
+      COMMON /CNSTS / CPI, PI4, CLN10, CA, CB, CC, CD, CG, CR(2), CEVB,
      &                CEN, CPL, CMEVMU, CSECYR, LSUN, MSUN, RSUN, TSUNYR
       COMMON /WT    / PWT,SIG,MK,MT2,LQP,LKP
       COMMON /MIX   / KBICZ,KICZ
@@ -58,7 +58,7 @@ c Check for age of star and also timestep and stop if either too large - JJE - 2
       IF(DT/CSECYR.GE.1d12) THEN
          write(*,*) "DT in years is over 1 Tyrs - stopping",DT/CSECYR
          STOP
-      ENDIF      
+      ENDIF
 C Spin period to equns - this isn't the best way of doing this...
       BCHSPIN = HSPIN
 C Compute binary mass if in binary mode
@@ -114,9 +114,9 @@ C Need to mess about with units to get this right
       OSPIN = OSPIN*SQRT(CG) ! now in s^-1
       GRAV = GRAV - 1d11*2.0/3.0*OSPIN**2.0*R
       IF (1.0D11*CG*M/R2.LT.1d11*2.0/3.0*OSPIN**2.0*R.AND.I.EQ.-1) THEN
-         WRITE (*,*) "break-up velocity reached!"
-         write (*,*) ISTAR, 1.0D11*CG*M/R2, 1d11*2.0/3.0*OSPIN**2.0*R, VI(ISTAR)
-         write (*,*) OSPIN, R, H(14+15*(ISTAR - 1),1) + DH(14+15*(ISTAR - 1),1)
+         WRITE (32+(ISTAR-1),*) "break-up velocity reached!"
+         write (32+(ISTAR-1),*) ISTAR, 1.0D11*CG*M/R2, 1d11*2.0/3.0*OSPIN**2.0*R, VI(ISTAR)
+         write (32+(ISTAR-1),*) OSPIN, R, H(14+15*(ISTAR - 1),1) + DH(14+15*(ISTAR - 1),1)
          STOP
       END IF
       APM = -1.0D11*GRAV/(PI4*R2*P)
@@ -142,7 +142,7 @@ C if GRADR < GRADA, we get WCV = 0 and GRADT = GRADR
       ATM = GRADT*APM
 C Old MSF 2000
       CT1 = 1.0D1**(1.0D1*CT(1)) !!! should change input format !!!
-      VP = CT(4)*AP + CT(5)*LOG((P+CT(9))/(P+CT1)) + 
+      VP = CT(4)*AP + CT(5)*LOG((P+CT(9))/(P+CT1)) +
      &     CT(2)*LOG((P+CT(10))/(P+CT1))
       VPP = CT(4) + P/(P+CT1)*(CT(5)*(CT1-CT(9))/(P+CT(9))
      &     + CT(2)*(CT1-CT(10))/(P+CT(10)))
@@ -154,7 +154,7 @@ C mesh spacing equation, with modified pressure, temperature gradient equations
          CP1 = CT(1)*PME(ISTAR)
          CP2 = CT(10)*PME(ISTAR)
          CP3 = CT(9)*PMH(ISTAR)
-         VP = CT(4)*AP + CT(5)*LOG((P+CP3)/(P+CP1)) + 
+         VP = CT(4)*AP + CT(5)*LOG((P+CP3)/(P+CP1)) +
      &        CT(2)*LOG((P+CP2)/(P+CP1))
          VPP = CT(4) + P/(P+CP1)*(CT(5)*(CP1-CP3)/(P+CP3)
      &        + CT(2)*(CP1-CP2)/(P+CP2))
@@ -173,7 +173,7 @@ C VR and VM must go to zero at centre like r**2, m**(2/3)
       VRR = -CT(3)/(R2+CT(8))
 C Q is the quantity that the meshpoints should be at equal intervals of
       Q = VP + VT + VM + VR
-      QK = VQK 
+      QK = VQK
       QM = VPP*APM + VTT*ATM + VMM + VRR*R2M
       MK = VQK/QM
       VMK = VMM*MK
@@ -190,8 +190,8 @@ C energy equation
 *      IF(K.GT.19*NMESH/20 .AND. DT .LT. 1D-1*CSECYR) ITHC = 0
 *      LK = (EX + EN + EC - ITHC*T*(SF*DAF+ST*DAT)/DT)*MK
 *      LQ = ITHC*CP*T*APM*MK
-*** weight by a function of WT that drops from 1 to 0 for WT between 10^10 
-*** and 10^9 
+*** weight by a function of WT that drops from 1 to 0 for WT between 10^10
+*** and 10^9
       IF (K.GT.39*NMESH/40) THEN
          AWT = 2D-16*R2*CHI*DT/(R2M*MK)**2
          AWT = 2D-15*R2*CHI*DT/(R2M*MK)**2
@@ -225,7 +225,7 @@ C helium equation
      :     + IY*(3.0*R3A + RAC + 1.5*RAN + RAO)
      :     - IZ*(RCC + RGNE)) + DX4/DT)*MK
 *     x4t = (5d-7*(0.76-x1)/csecyr + dx4/dt)*mk
-C carbon equation 
+C carbon equation
       X12 = VX12
       X12T = (12.0*(IX*(RPC - RPN) - IY*(R3A - RAC)
 *     :            + IZ*(2.0*(RCC + RCCG) + RCO)) + DX12/DT)*MK
@@ -252,6 +252,11 @@ C fudged convective diffusion coefficient: OS > 0 gives overshooting
       EG = DG+OS/(2.5D0+B*(2.0D1+1.6D1*B))/(AMAP+1.0D0)
       UG = PS(EG)
       SG = UG*UG*TC(ISTAR)/(QM*QK)
+
+      ! Always mix the outermost layers of the star...
+      IF ( K.LT.15 ) SG = TC(ISTAR)/(QM*QK)
+      IF(K.GT.NMESH-10) SG = TC(ISTAR) / (QM*QK)
+
       SIG = SG
 C modified diffusion coefficient according to MLT
       SGMLT = (WL*1.0D-22*(PI4*RHO*R2)**2)/(3.0*MK)
@@ -264,7 +269,7 @@ C modified diffusion coefficient according to MLT
             SG = SGMLT * AK2*VG/(1.0 - (1.0-AK2)*VG)
          END IF
       END IF
-      IF (KBICZ.GT.600.AND.K.GT.KBICZ.AND.IAGB.EQ.1) SG = 0d0 
+      IF (KBICZ.GT.600.AND.K.GT.KBICZ.AND.IAGB.EQ.1) SG = 0d0
 C Mixing fudge
       SG = FACSG*SG
 C Compute mean molecular weight, inc. for partial ionisation
@@ -294,7 +299,7 @@ C Store mu of each species
          LKP = LKP + MUX*XSPEC(II)/AMASS(II)
 C pretend He3 is like He4...
          IF (II.EQ.2) LKP = LKP + MUX*XSPEC(6)/AMASS(10)
-      END DO      
+      END DO
       LKP = 1/LKP
       MU = LKP
       MUREAL = MU
@@ -360,10 +365,10 @@ C     IF (XHE31.LT.1d-12.AND.K.LT.400) SGTH = 0d0
       END IF
       MT2 = SGTH
 C the outermost 25 meshpoints are always mixed, even if not convective;
-C      IF ( K.LT.5 ) SG = TC(ISTAR)/(QM*QK) 
-      IF ( K.LT.0.03*NMESH ) SG = 1d2*TC(ISTAR)/(QM*QK) 
+C      IF ( K.LT.5 ) SG = TC(ISTAR)/(QM*QK)
+      IF ( K.LT.0.03*NMESH ) SG = 1d2*TC(ISTAR)/(QM*QK)
       IF ( K.GT.NMESH-0.01*NMESH) SG = TC(ISTAR)/(QM*QK)
-      IF ( I.LE.0 ) THEN 
+      IF ( I.LE.0 ) THEN
 C sundry numbers for PRINTB, FUNCS2
          ETH = -T*(SF*DAF+ST*DAT)/DT + CP*T*APM*GTMA*MT
          EGR = 1.0D22*CG*M/R - U
@@ -415,5 +420,5 @@ C surface boundary conditions
          ACCOMPOS(6,I+1,ISTAR) = 0.5*(H(11+15*(ISTAR-1),1) + H(11+15*(ISTAROTHER-1),1)) !X20
          ACCOMPOS(7,I+1,ISTAR) = 0.5*(H(15+15*(ISTAR-1),1) + H(15+15*(ISTAROTHER-1),1))
       END IF
-      RETURN                                
+      RETURN
       END
