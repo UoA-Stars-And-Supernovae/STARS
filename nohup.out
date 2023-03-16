@@ -1,23 +1,0 @@
-[36m[2m[Info][0m This is Takahe v1.0.0alpha
-  0%|          | 0/22 [00:00<?, ?it/s]  0%|          | 0/22 [00:00<?, ?it/s]
-[32m[1m[Status][0m Preparing to run 22 jobs across 9 cores. Assuming one job takes 40 minutes, this'll take me 0w 0d 1h 37m 47s.
-multiprocessing.pool.RemoteTraceback: 
-"""
-Traceback (most recent call last):
-  File "/home/sric560/anaconda3/lib/python3.8/multiprocessing/pool.py", line 125, in worker
-    result = (True, func(*args, **kwds))
-  File "RunCloseContacts.py", line 314, in worker
-    STARS.modout_to_modin(f"{directory}/modout",
-  File "/home/sric560/Documents/kaitiaki/kaitiaki/STARSController.py", line 811, in modout_to_modin
-    with open(modout_location, 'r') as f:
-FileNotFoundError: [Errno 2] No such file or directory: 'CloseContactGrid/grid/SMC_108086/25/7.5/0.4/modout'
-"""
-
-The above exception was the direct cause of the following exception:
-
-Traceback (most recent call last):
-  File "RunCloseContacts.py", line 499, in <module>
-    std_comm.append((out[0], out[1], out[2].get()))
-  File "/home/sric560/anaconda3/lib/python3.8/multiprocessing/pool.py", line 771, in get
-    raise self._value
-FileNotFoundError: [Errno 2] No such file or directory: 'CloseContactGrid/grid/SMC_108086/25/7.5/0.4/modout'
