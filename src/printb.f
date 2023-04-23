@@ -447,7 +447,7 @@ C convective mixing timescale needed in FUNCS1
 * Write to the numerical data storage unit for plotting purposes.
 *
 C Separation
-C                                      IS THIS THE MISTAKE!?
+C                                      IS THIS THE MISTAKE!? also should go above computing period
 C          IF (ICE.EQ.1 .AND. IMODE.EQ.2) THEN
 C             ! Reduce the orbit due to CEE effects.
 C             ! This change results in SEP = SEP + DSEP

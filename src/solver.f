@@ -11,6 +11,7 @@
       COMMON /DTCONT/ VLHP(2), VLEP(2), VLCP(2), RLFP(2), TOTMP(2), VLHC(2),
      :     VLEC(2), VLCC(2), RLFC(2), TOTMC(2)
       COMMON /MIXFUD/ SGTHFAC, FACSGMIN, FACSG, ISGFAC
+      COMMON /MESH  / TRC1,TRC2,DD,DT1,DT2,MWT,MWTS,IVMC,IVMS
       DIMENSION MK(60), ERT(60), IE(100)
       LOGICAL REDUCE
       REDUCE = .FALSE.
@@ -241,8 +242,12 @@ C RJS 10/11/02 - Added lines to print out reason for failure
          END IF
 C NaN trap
          IF (ERR.NE.ERR) THEN
-            WRITE(32,*) "SNAFU, restarting"
-               ERR = 1d1
+            WRITE(32,*) "ERR has become NaN (SNAFU), restarting"
+            IF (DD.GT.0.1) THEN
+               DD = DD / 2.0
+            END IF
+
+            ERR = 1d1
          END IF
          CALL FLUSH (32)
          IF ( IH.GT.0 ) IH = IH - 1
