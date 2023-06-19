@@ -1,3 +1,9 @@
+# Project is unlicensed currently,
+# these files are some sample ones.
+LICENSE
+NOTICE
+# End potential licensing
+
 obj/
 models/
 pre_hf_added_models/
@@ -12,6 +18,10 @@ SinTest/
 *.tar.xz
 
 .log
+elucidation
+*.pkl
+reruns
+
 
 nohup.out
 test*

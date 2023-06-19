@@ -13,7 +13,7 @@
      :  TRB
 * extra common for mesh-spacing
       COMMON /PMESH / PMH(2), PME(2), IAGB
-C      COMMON /CEE   / MHC(2), MENVC(2), DSEP, ICE, ICEP, ALPHACE
+      COMMON /CEE   / MHC(2), MENVC(2), DSEP, ICE, ICEP, ALPHACE
       COMMON /INF   / Q(60)
       COMMON /DINF  / QD(60)
       COMMON /OP    / ZS, LEDD, VM, GR, GRAD, ETH, RLF, EGR, R, QQ
@@ -415,7 +415,7 @@ C sneplot file here?????? - SMR + JJE
 99019    FORMAT (I2,0P,100E16.9)
          LOGG = LOG10(10*6.67*PX(9)*1.989/(PX(17) * 6.9634)**2) ! Put into SI units. TODO: cgs?
          WRITE(49+20*(ISTAR-1), 99019) NMOD, LOGG, WINDML(1), WINDML(2),
-     :                                 WINDACC(1), WINDACC(2),RLF/CSECYR
+     :                                 WINDACC(1), WINDACC(2),RLF/CSECYR, BE
 C End SNEPLOT
          IF (NWRT3.EQ.1) GO TO 3
 C Write further `pages' for each detailed model, if required
@@ -432,6 +432,16 @@ C Have to choose the SX's that are wanted
          END DO
  3       TM(ISTAR) = VM
 C         PER = BM/3.55223D0*(ANG/(TM(1)*(BM-TM(1))))**3
+C        Adjust separation due to common envelope effects (sorted in massloss.f)
+         IF (ICE.EQ.1 .AND. IMODE.EQ.2) THEN
+            ! Reduce the orbit due to CEE effects.
+            ! This change results in SEP = SEP + DSEP
+            H(13,1) = H(13,1) + DSEP/RSUN
+
+            !Originally was H(13,1) = H(13,1) + SQRT((TM(1)+TM(2))*(TM(1)**2.0*TM(2)**2.0*DSEP+TM(1)*H(13,1)**2.0+TM(2)*H(13,1)**2))-H(13,1)*(TM(1)-TM(2))/(TM(1)+TM(2))
+            !No idea why. Neither SMR nor JJE recognise it and it wasn't in the most recent version of bSTARS from the cambridge website
+         END IF
+
          IF (ISTAR.EQ.1) THEN
             PER = BM/3.55223D0*(Q(13)/(TM(1)*(BM-TM(1))))**3
          ELSE
@@ -446,13 +456,6 @@ C convective mixing timescale needed in FUNCS1
 *
 * Write to the numerical data storage unit for plotting purposes.
 *
-C Separation
-C                                      IS THIS THE MISTAKE!? also should go above computing period
-C          IF (ICE.EQ.1 .AND. IMODE.EQ.2) THEN
-C             ! Reduce the orbit due to CEE effects.
-C             ! This change results in SEP = SEP + DSEP
-C             H(13,1) = H(13,1) + SQRT((TM(1)+TM(2))*(TM(1)**2.0*TM(2)**2.0*DSEP+TM(1)*H(13,1)**2.0+TM(2)*H(13,1)**2))-H(13,1)*(TM(1)-TM(2))/(TM(1)+TM(2))
-C          END IF
          IF (IMODE.EQ.2) THEN
             SEP = (TM(1)+TM(2))*(H(13,1)/(TM(1)*TM(2)))**2.0
          ELSE
@@ -469,12 +472,12 @@ C Orbital angular velocity
          OCRIT = DSQRT(6.67d-11*PX(9)*2d30/(6.96d8*PX(17))**3.0) !/DSQRT(CG)
          SEP = SEP/RSUN
 C        Store core mass. need to be more intelligent about this - SMR
-C          MHC(ISTAR) = VMH
-C          MENVC(ISTAR) = MENV(ISTAR)/MSUN
+         MHC(ISTAR) = VMH
+         MENVC(ISTAR) = MENV(ISTAR)/MSUN
 C Write plot/plot2 file
          WRITE (33+20*(ISTAR-1),115) NMOD,AGE,LOG10(PX(17)),LOG10(PX(4)),
      &        LOG10(PX(18)),PX(9),VMH,VME,LOG10(MAX(VLH,1.01D-10)),
-     &        LOG10(MAX(VLE,1.01D-10)), LOG10(MAX(VLC,1.01D-10)),
+     &        LOG10(MAX(VLE,1.01D-10)), LOG10(MAX(VLC,1.01D-10)), ! TEMPORARY WILL GO IN SNEPLOT
      &        MCB,VMX(1),VMX(2),LOG10(FK),DTY,(PX(JJ),JJ=10,14), PX(16),
      &        RLF,Q(14),PER,SEP,BM/MSUN,H(13,1),HSPINTOT,HTOT,
      &        OORB*DSQRT(CG), OSPIN*DSQRT(CG), VI(ISTAR),OCRIT, DMT,MEX,THB,MENV(ISTAR)/MSUN,

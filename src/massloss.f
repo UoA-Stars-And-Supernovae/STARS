@@ -21,11 +21,17 @@ C first
      &                CEN, CPL, CMEVMU, CSECYR, LSUN, MSUN, RSUN, TSUNYR,
      &                STEFBOLTZ
       COMMON /EVMODE/ IMODE
+      COMMON /CEE   / MHC(2), MENVC(2), DSEP, ICE, ICEP, ALPHACE
+      COMMON /MESH  / TRC1,TRC2,DD,DT1,DT2,MWT,MWTS,IVMC,IVMS
       COMMON /INERTI/ VI(2)
       COMMON /ANGMOM/ VROT1, VROT2, FMAC, FAM, IRAM, IRS1, IRS2
       COMMON /WINDS / WINDML(2), FAKEWIND(2), BE
       COMMON /TIDES / MENV(2), RENV(2)
+
       COMMON /ZAMS  / TKH(2)
+      COMMON /STATUS/ IDET, IMERGE
+      COMMON /MISC  / NMOD
+
       DIMENSION T(2), AM(2), M(2), MT(2), AR(2), R(2), DAR(2), L(2), XH(2),
      :     XHE(2), XC(2), XO(2), HSPIN(2), DHSPIN(2), ML(2),
      :     RAT(2), RLF(2), DAM(2), WINDACC(2), MOMINER(2),
@@ -36,7 +42,7 @@ C first
       RLOBE(VX) = 0.49D0*VX*VX/(0.6D0*VX*VX+DLOG(1.0D0+VX))
 C Set important variables into convenient pairs and calculate other
 C necessary quantities
-      DO ISTAR = 1,IMODE!2
+      DO ISTAR = 1,IMODE
          T(ISTAR) = DEXP(VIN(2+15*(ISTAR - 1)))
          AM(ISTAR) = VIN(4+15*(ISTAR - 1))
          DAM(ISTAR) = DVIN(4+15*(ISTAR - 1))
@@ -73,6 +79,14 @@ C FUDGE TO AVOID PRE-MS RLOF
          IF (AGE.LT.1d3) THEN
             RLF(ISTAR) = -1d-1
          END IF
+C FUDGE TO FIX CEE STUFF?!?! -- 15/06/23
+C          IF (R(1)+R(2).GE.SEP) THEN
+C             IML(1) = 3
+C             IML(2) = 3
+C          ELSE
+C             IML(1) = 5
+C             IML(2) = 5
+C          END IF
 C Save RLF data for use in funcs2
          HT(24, 1, ISTAR) = RLF(ISTAR)
 C Different surface mass bc for *1 or *2 of binary
@@ -89,7 +103,7 @@ C Convert Reimers to Blocker mass loss - need to sort out how to do M_ZAMS = 1.5
             END IF
             IF (IML(ISTAR).EQ.3) THEN
                PERIOD = -2.07 + 1.94*DLOG10(1.4577*R(ISTAR)) - 0.9*DLOG10(M(ISTAR)/2.0)
-               PERIOD = 10**PERIOD
+               PEROID = 10**PERIOD
                BC1 = 10**(-11.4 + 0.0123*PERIOD)
                BC1 = MSUN/CSECYR * BC1
                WIND = BC1
@@ -158,7 +172,7 @@ CFor WC/WO use: 0.6e-7 (M(WR)/M(sun))**2.5 M(sun) yr^-1
 CStars become WC when (C+O)/He > 3e-2
             END IF
             IF (IML(ISTAR).EQ.5) THEN
-C - so this is the same as IML 5 but changing so that it fixes a few bugs
+C - so this is the same as IML 4 but changing so that it fixes a few bugs
                COHe=(XC(ISTAR)/3.0+XO(ISTAR)/4.0)/XHE(ISTAR)
                SURFXH=XH(ISTAR)
                SURFXHe=XHE(ISTAR)/4.0
@@ -267,14 +281,83 @@ C Enhance wind mass loss by 1/(1-Omega/Omega_crit)
             OSPIN(ISTAR) = HSPIN(ISTAR)/VI(ISTAR)*SQRT(CG)
             OCRIT = DSQRT(6.67d-11*(M(ISTAR)*1d30)/((1d9*R(ISTAR))**3.0))
             OSC(ISTAR) = OSPIN(ISTAR)/OCRIT
-            BC1 = BC1/DMAX1(1d-2,(1-OSC(ISTAR)/0.8))
+            ! BC1 = BC1/DMAX1(1d-2,(1-OSC(ISTAR)/0.8))
+            BC1 = BC1/(1-OSC(ISTAR)/0.8) ! Changed after conversation with M. Briel on 14/06/23 -- otherwise when it gets weird when the radius of the primary gets close to the separation -- hypothesized this was due to tidal effects but it wasn't.
             WINDML(ISTAR) = BC1
          END IF
          ML(ISTAR) = BC1
       END DO
+
+      IF      (RLF(1).GT.0 .AND. RLF(2).GT.0) THEN
+         IDET = 2 ! Contact binary system
+      ELSE IF (RLF(1).GT.0 .AND. RLF(2).LE.0) THEN
+         IDET = 1 ! Semidetatched binary, *1 filling RL, *2 not
+      ELSE IF (RLF(1).LE.0 .AND. RLF(2).GT.0) THEN
+         IDET = 1 ! Semidetatched binary, *2 filling RL, *1 not
+      ELSE IF (RLF(1).LE.0 .AND. RLF(2).LE.0) THEN
+         IDET = 0 ! Detatched binary, no stars filling RLs
+      END IF
+
 C Now decide on what the BC really is - needs to be outside the loop to know about
 C both Roche Lobes
-C Messed up Common Envelope stuff
+C     --------------------------- Evaluate CE --------------------------
+      IF (IMODE.EQ.2 .AND. ICEP.GT.0) THEN
+11157    FORMAT (A, I1, A, I1, A)
+         DO ISTAR=1,IMODE
+             IF (ISTAR.EQ.1) THEN
+                  ISTAROTHER = 2
+             ELSE
+                  ISTAROTHER = 1
+             ENDIF
+C              R(ISTAR) = DEXP(W(7+15*(ISTAR - 1)))
+C              R(ISTAROTHER) = DEXP(W(7+15*(ISTAROTHER - 1)))
+C              M(ISTAR) = DEXP(W(4+15*(ISTAR - 1)))
+C              HORB = W(13)
+C              SEP = (M(1)+M(2))*(HORB/(M(1)*M(2)))**2.0
+             DSEP = 0d0
+             ICEPR = ICE
+             IF (R(ISTAR).GE.SEP) THEN
+                  ICE = 1
+                  IDONOR = ISTAR
+                  IACC = ISTAROTHER
+             ELSE IF (R(ISTAROTHER).GE.SEP) THEN
+                  ICE = 1
+                  IDONOR = ISTAROTHER
+                  IACC = ISTAR
+             ELSE
+                  ICE = 0
+                  IF (ICEPR.EQ.1) THEN
+                        WRITE(*,11157) " Common Envelope from star ", IDONOR, " to ", IACC, " ENDING."
+                        DT1 = DT1 * 100
+C                         DD = DD * 10
+                  END IF
+             END IF
+
+             IF (ICE.EQ.1) THEN
+                  IF (IDET .EQ. 2) THEN
+                     ! Contact binary during CEE -- merger likely -- kill it!
+                     IMERGE = 1
+                     CALL PRINTA(0, NMOD, IT1, IT2, 0) ! Force a modout write - for both?
+                     WRITE(*,*) "System merger -- terminating! Modout saved"
+                     STOP ! as a proxy for doing a merger
+                  END IF
+                  IF (ICEPR .EQ. 0) THEN
+
+                        WRITE(*,11157) " Common Envelope from star ", IDONOR, " to ", IACC, " STARTING."
+                        DT1 = DT1 / 100
+C                         DD = DD / 10
+                  END IF
+                  IF (ICEP.EQ.0) THEN
+                        DSEP = 0d0
+                  ELSE IF (ICEP.EQ.1) THEN
+                     DSEP = 1 / (ALPHACE) * SEP**2d0 / R(IACC)/RSUN * (M(IACC)+M(IDONOR))/M(IDONOR)
+                     DSEP = DSEP * ML(IACC)/CSECYR * DT / M(IACC)
+                  END IF
+             END IF
+          END DO
+      END IF
+C     -------------------------- CEE Finished --------------------------
+
       FAKEWIND(1) = 0d0
       FAKEWIND(2) = 0d0
       MASSLIMIT = 1d-2 !2.5d-4
@@ -286,7 +369,7 @@ C Fakewind deals with mass-loss in CE systems - will interfer with normal evolut
       DO ISTAR=1,IMODE
          IF (ISTAR.EQ.1) ISTAROTHER = 2
          IF (ISTAR.EQ.2) ISTAROTHER = 1
-         ML(ISTAR) = MT(ISTAR) - RMG*M(ISTAR) + ML(ISTAR)
+         ML(ISTAR) = ML(ISTAR) - RMG*M(ISTAR) + MT(ISTAR)
      :        + DMIN1(RMT*(PS(RLF(ISTAR)))**3,MASSLIMIT*MSUN/CSECYR)
          IF (IMODE.EQ.2) THEN
 C Add (1-omega/omega_crit) to reduce accretion rate
@@ -338,13 +421,13 @@ C is needed - only if sum of one of them is -ve. Only do this if there's no RLOF
          HT(23,1,2) = 0d0
       END IF
 C Fudge CE stuff
-C      IF(RLF(1).GT.0d0) THEN
-C         ML(1) = 1d-2*MSUN/CSECYR + ML(1)
-C         WINDML(1) = 1d-2*MSUN/CSECYR
-C         IF (M(2)/MSUN.LT.17) THEN
-C            ML(2) = -5d-3*MSUN/CSECYR + ML(2)
-C         END IF
-C      END IF
+C       IF(RLF(1).GT.0d0) THEN
+C          ML(1) = 1d-2*MSUN/CSECYR + ML(1)
+C          WINDML(1) = 1d-2*MSUN/CSECYR
+C          IF (M(2)/MSUN.LT.17) THEN
+C             ML(2) = -5d-3*MSUN/CSECYR + ML(2)
+C          END IF
+C       END IF
       ML1 = ML(1)
       ML2 = ML(2)
 C Tidal friction stuff. From Hut (1981), using Zahn (1977) for frictional timescale

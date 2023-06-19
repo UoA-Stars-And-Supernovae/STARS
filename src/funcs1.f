@@ -48,7 +48,7 @@ C rest of this subroutine. RJS 5/7/06
       DIMENSION XSPEC(6), DDMIX(10), MUXX(6)
       CBRT(VX) = DEXP(DLOG(VX)/3.0D0)
       PS(VX) = 0.5D0*(VX+DABS(VX))
-      RLOBE(VX) = 0.49D0*VX*VX/(0.6D0*VX*VX+DLOG(1.0D0+VX))
+      RLOBE(VX) = 0.49D0*VX*VX/(0.6D0*VX*VX+DLOG(1.0D0+VX)) ! VX = q^1/3
       M = DEXP(AM)
 c Check for age of star and also timestep and stop if either too large - JJE - 2/5/2021
       IF(AGE.GE.1d15) THEN

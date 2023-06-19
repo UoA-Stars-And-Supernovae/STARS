@@ -24,7 +24,7 @@
      &                RSUN, TSUNYR
       COMMON /YUK1  / PX(34), WMH, WMHE, VMH, VME, VMC, VMG, BE, VLH,
      :                VLE, VLC, VLN, VLT, MCB(12),WWW(100)
-C      COMMON /CEE   / MHC(2), MENVC(2), DSEP, ICE, ICEP, ALPHACE
+      COMMON /CEE   / MHC(2), MENVC(2), DSEP, ICE, ICEP, ALPHACE
       COMMON /OPDAT / cbase,obase,opT(141),opR(31),fZ
       COMMON /XOPDAT/ opac(4,4,141,31,5)
       COMMON /COPDAT/ opacCO(4,4,141,31,305)
@@ -44,6 +44,7 @@ C
      :     VLEC(2), VLCC(2), RLFC(2), TOTMC(2)
       COMMON /ANGMOM/ VROT1, VROT2, FMAC, FAM, IRAM, IRS1, IRS2
       COMMON /DIFCOE/ DC(50,4,3), DCD(50,4)
+      COMMON /MISC  / NMOD
 
       CBRT(VX) = DEXP(DLOG(VX)/3.0D0)
       RLOBE(VX) = 0.49D0*VX*VX/(0.6D0*VX*VX+DLOG(1.0D0+VX))
@@ -110,13 +111,15 @@ C Idiot proofing -- otherwise the logic in solver will fail
 C Read first line of modin
       READ  (30, 99005) SM, DTY, AGE, PER, BMS, EC,NH,NP,NMOD,IB,PMH(1),PME(1)  ! This is the first line of modin
 
+26400 FORMAT(A, I2)
+
 C Adjust parameters if we are doing an evolution run
       IF (ISTART.EQ.1) THEN                                                     ! This is just outputting if we set ISTART.
          write(*,*) "Age, DT, NMOD overriden"                                   ! Useful debug information a bit
          DTY = 3e7/(SM**2d0) * HKH
          AGE = 0d0
          NMOD = NNMOD
-         write(*,*) "NMOD has been set to :", NMOD
+         write(*,26400) "NMOD has been set to: ", NMOD
        END IF
 
 C        WRITE (*,'(I2,F4.1)') ICEP, ALPHACE
@@ -141,10 +144,10 @@ C
       IF (IOP .EQ. 1) CALL OPSPLN
 !extra lines for COopac bit
 
-      write(*,*) 'Selection for opacity is:',IOP
-      write(*,*) 'Selection for massloss (*1) is:',IML(1)
-      write(*,*) 'Selection for massloss (*2) is:',IML(2)
-      write(*,*) 'Common Envelope prescription is:',CEPR
+      write(*,26400) 'Selection for opacity is: ',IOP
+      write(*,26400) 'Selection for massloss (*1) is: ',IML(1)
+      write(*,26400) 'Selection for massloss (*2) is: ',IML(2)
+      write(*,26400) 'Common Envelope prescription is: ',ICEP
       IF(IML(1).EQ.9) THEN
         write(*,*) 'Target mass is:', RML/4d-13
       ENDIF

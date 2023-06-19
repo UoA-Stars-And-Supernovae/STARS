@@ -77,54 +77,7 @@ C Check for RLOF/Wind accretion and set BC appropriately
 C NB - NO CONDITION FOR COMMON ENVELOPE
          END IF
 
-C          IF (IMODE.EQ.2 .AND. ICEP.GT.0) THEN
-C              R(ISTAR) = DEXP(W(7+15*(ISTAR - 1)))
-C              M(ISTAR) = DEXP(W(4+15*(ISTAR - 1)))
-C              HORB = W(13)
-
-C              SEP = (M(1)+M(2))*(HORB/(M(1)*M(2)))**2.0
-
-C              DSEP = 0d0
-
-C              ICEPR = ICE
-
-C              IF (R(ISTAR).GE.SEP) THEN
-C                   ICE = 1
-C                   IDONOR = ISTAR
-C                   IACC = ISTAROTHER
-C              ELSE IF (R(ISTAROTHER).GE.SEP) THEN
-C                   ICE = 1
-C                   IDONOR = ISTAROTHER
-C                   IACC = ISTAR
-C              ELSE
-C                   ICE = 0
-C                   IF (ICEPR.EQ.1) THEN
-C                         WRITE(32+(ISTAR-1),*) "Common Envelope from star ", IDONOR, " to ", IACC, " finished."
-C                   END IF
-C              END IF
-
-C              IF (ICE.EQ.1) THEN
-C                   IF (ICEPR .EQ. 0) THEN
-C                         WRITE(32+(ISTAR-1),*) "Common Envelope occurring from star ", IDONOR, " to ", IACC
-C                   END IF
-
-C                   IF (CEPR.EQ.0) THEN
-C                         DSEP = 0d0
-C                   ELSE IF (CEPR.EQ.1) THEN
-C                         MCORE = MHC(IACC)
-C                         MENV = MENVC(IDONOR)
-
-C                         LAMBDA = M(IDONOR) * MENV / R(IDONOR)**2d0
-C                         AFIN = M(IDONOR) * MENV / (LAMBDA * R(IDONOR)**2d0)
-C                         AFIN = AFIN + ALPHACE * CG * M(IDONOR) * M(IACC)
-C                         AFIN = AFIN / (2d0*SEP)
-C                         AFIN = AFIN / ALPHACE * 2d0
-C                         AFIN = AFIN / (CG*MCORE*M(IACC))
-
-C                         DSEP = AFIN - SEP
-C                   END IF
-C              END IF
-C          END IF
+         ! OLD new CEE prescription was here
       END IF
 C Set up composition for reaction calculation
       XA(1) = W(5+15*(ISTAR - 1))
