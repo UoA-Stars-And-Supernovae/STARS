@@ -4,28 +4,30 @@ LICENSE
 NOTICE
 # End potential licensing
 
-obj/
-models/
-pre_hf_added_models/
-pseudoev/
+# Common child directories
 .ipynb_checkpoints/
-python_scripts/
-models-*/
-AGBTEST/
-Max_z020/
-SinTest/
+projects/
+*Grid/
+models/
+
+# Build Directory
+obj/*
+
+# Common files
+nohup.out
 *.mp4
 *.tar.xz
+*.ipynb
+*.png
+!AotearoaSTARS.png
+*.zip
+*.py
+*.py.old
+*.grid
+.*
+!/.gitignore
 
-.log
-elucidation
-*.pkl
-reruns
-
-
-nohup.out
-test*
-
+# STARS outputs and inputs
 modin*
 modout*
 montage
@@ -38,28 +40,7 @@ sprocess*
 sneplot*
 bs
 
+# STARS temporary files
 fort.*
-
-texput.log
-
-*.ipynb
-*.png
-*.zip
-output/
-PYR_outputs*/
-evo_grid*/
-*grid/
-*Grid/
-models-*
-nohup.out
-.log
-z014_output/
-*.py
-debs.dat
-nohup.out
-*.py.old
-*.grid
-.*
-!/.gitignore
 
 __pycache__/

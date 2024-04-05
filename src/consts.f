@@ -1,5 +1,7 @@
       SUBROUTINE CONSTS
       IMPLICIT REAL*8 (A-H,L,M,O-Z)
+      INTEGER MAXMSH
+      PARAMETER (MAXMSH = 2000)
       COMMON /CNSTS / CPI, PI4, CLN10, CA, CB, CL, CD, CG, CR, CT, CEVB, 
      &     CEN, CPL, CMEVMU, CSECYR, LSUN, MSUN, RSUN, TSUNYR,
      &     STEFBOLTZ
@@ -7,6 +9,8 @@
       COMMON /NCDATA/ QRT(20), QNT(20), CZA(92), CZB(92), CZC(92),
      &     CZD(92), VZ(10)
       COMMON /MASLOS/ AIJ(6,5),baseN
+      COMMON /KOLBML/ GAMMA1(2,MAXMSH), PRESKR(2,MAXMSH), CHEMMU, AMU,
+     &     BOLTZ, RHOKR(2,MAXMSH)
       DIMENSION Z1(92),Z2(92)
 * original values for constants
       DATA CPI, PI4, CLN10/3.1416D0, 12.5664D0, 2.3026D0/
@@ -29,6 +33,7 @@
       EVOLT = 1.60217733D-12
       CSECYR = 3.155692597D7
       CG = 6.672D-8
+      BOLTZ = BOLTZM
 * derived physical constants
       CA = BOLTZM/(CL*PLANCK)
       CA = 8*CPI**5*BOLTZM*CA**3/15

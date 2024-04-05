@@ -1,24 +1,36 @@
-# Contributing
+Contributing to Aotearoa STARS
+==============================
 
-Welcome to contributing to the STARS code! Be sure to read this document thoroughly before contributing, as it outlines our policies for contributing to the code base.
+Welcome to Aotearoa STARS!
 
-## Creating Issues
+Before Contributing
+-------------------
 
-Please always create a new GitHub issue for anything wrong with the code. Follow the following template:
+1. Discuss your changes either via email or GitHub issues (preferred).
+2. Build consensus that this change will be good and acceptable.
+3. Scope your changes -- identify what and where will be changed.
+4. Branch your changes -- we tag versions associated with individual BPASS releases, and individual projects. It is therefore of paramount importance that you appropriately branch and prep your changes.
+5. Write meaningful commit messages. "Fix bugs" is bad. "Fix the CEE prescription" or "Fix #163" is better.
 
-```
-Brief description of issue:
+Getting ready to pull request
+-----------------------------
 
-Steps to recreate:
+0. Test your code against an observation.
+1. Write a *comprehensive* PR. Describe what you've changed and why.
+2. Request review by someone with write access, for both code compliance and correctness.
+3. When ready, you will be asked if your PR is ready for merge, and then we will merge.
 
-modin / data files I am using:
+Programming: The Zen of Aotearoa STARS
+--------------------------------------
 
-Expected result:
+IMPLICIT is the work of the devil. All programs should use IMPLICIT NONE.
 
-Actual result:
-```
+We are no longer in the days where variable names were six characters.
+Use full words where possible, or known abbreviations where needed.
+    - DoCEE is acceptable.
+    - DoCommonEnvelopeEvolution is bad.
+    - DoComEnvEvo is worst.
 
+Spaces v. Tabs. Use 4 spaces. Bind TAB to input 4 spaces if you need to.
 
-## Workflow
-
-![STARS workflow](STARS - Workflow.png)
+Whitespace. One-third whitespace, one-third code, one-third comments.

@@ -1,9 +1,14 @@
-# Cambridge STARS Code
+![ASTARS Logo](AotearoaSTARS.png)
 
-This is the main repository for the *Cambridge STARS Code* that is in use by Jan Eldridge's Research Group, "Stars 'n' Supernovae".
+Aotearoa STARS
+==============
 
-It is based off code originally written by Peter Eggleton, [original code here](https://people.ast.cam.ac.uk/~stars/#download).
+Welcome to Aotearoa STARS!
 
-## Documentation
+This is the main repository for the *Aotearoa STARS Code* that is in use by Jan Eldridge's Research Group, "Stars 'n' Supernovae".
 
-I'm slowly cobbling together an operation manual [here](https://www.overleaf.com/read/qgtbhrgpwhqn) (email me if you want to collab on it :))
+It is a fork of the Cambridge STARS code originally written by Peter Eggleton, [original code here](https://people.ast.cam.ac.uk/~stars/#download).
+
+# Documentation
+
+I'm slowly cobbling together an operation manual [here](https://www.overleaf.com/read/qgtbhrgpwhqn) (email me if you want to collaborate on it :))

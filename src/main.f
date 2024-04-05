@@ -10,6 +10,7 @@ C
       PARAMETER (MAXMSH = 2000)
       COMMON H(60,MAXMSH),DH(60,MAXMSH),EPS,V(2),NMESH,JIN,ID(100),IE(100)
       COMMON /EVMODE/ IMODE
+      COMMON /STATUS/ IDET, IMERGE, IDOKR
 
       real dtime,cpu(2),dt,tcpu
 
@@ -19,6 +20,7 @@ C Read physical data and an initial model
       ITER = ITER1
       nter = 0
       nm = 0 ! Current model number
+      IDOKR = 0
       npr = nm ! Previous model number
       tcpu = dtime(cpu) ! This is a sneaky line. dtime returns the time elapsed since this was *last* called.
                         ! In future, we want it to be "since execution began". So we call it here to update

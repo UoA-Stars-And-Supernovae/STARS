@@ -11,7 +11,7 @@ FC = gfortran
 #FFLAGS = -ffixed-line-length-none -finit-local-zero -fno-automatic -O2
 #FFLAGS = -extend_source -fast # -fpe3
 #FFLAGS = -extend_source -g
-FFLAGS = -g -ffixed-line-length-none -fno-automatic -march=native
+FFLAGS = -g -fdump-core -ffixed-line-length-none -fno-automatic -march=native
 
 #ifort options
 #FFLAGS = -e -fast
@@ -36,24 +36,7 @@ $(ODIR)/%.o: %.f
 bs: $(OBJ)
 	$(FC) -o $@ $^ $(FFLAGS)
 
-.PHONY: clean docs
-
 clean:
 	touch fort.tmp
 	rm -f fort.*
 	rm -f $(ODIR)/*.o *~ bs
-
-cleandocs:
-	@cd docs; \
-	rm -f *.pdf *.out *aux *bbl *blg *log *toc; \
-	rm -f *.ptb *.tod *.fls *.fdb_latexmk *.lof; \
-	rm -f *.bcf *.glo *.idx *.ist *.lot *pyg; \
-	rm -f *.run.xml
-
-docs:
-	@cd docs; \
-	pdflatex main.tex; \
-	biber main; \
-	pdflatex main.tex; \
-	pdflatex main.tex; \
-	pdflatex main.tex

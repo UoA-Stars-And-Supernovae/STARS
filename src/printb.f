@@ -38,7 +38,7 @@ c     :                RW(16)
 *
 * Extra COMMON for main-sequence evolution.
 *
-      COMMON /ZAMS  / TKH(2)
+      COMMON /ZAMS  / TKH(2), MZAMS(2)
       COMMON /MESH  / TRC1,TRC2,DD,DT1,DT2,MWT,MWTS,IVMC,IVMS
       COMMON /MIX   / KBICZ,KICZ
       COMMON /DHBLOC/ IDREDGE
@@ -52,6 +52,7 @@ C Extra common for extra timestep control stuff - P for previous, C for current
       COMMON /WINDS / WINDML(2), FAKEWIND(2), BE2
       COMMON /ACCR  / WINDACC(2)
       COMMON /TIDES / MENV(2), RENV(2)
+      COMMON /JJTIME/ RLFcheck1,RLFcheck2 !!!JJE's new timestep check - 11/12/2023
       PS(VX) = 0.5D0*(VX+DABS(VX))
       DIMENSION XA(10), TCB(12), RCB(12)
       DIMENSION SX(45,MAXMSH+1)
@@ -412,7 +413,7 @@ C Output for use in MONTAGE -- may need smart output control RJS 29/5/08
             END IF
          END DO
 C sneplot file here?????? - SMR + JJE
-99019    FORMAT (I2,0P,100E16.9)
+99019    FORMAT (I6,0P,100E16.9)
          LOGG = LOG10(10*6.67*PX(9)*1.989/(PX(17) * 6.9634)**2) ! Put into SI units. TODO: cgs?
          WRITE(49+20*(ISTAR-1), 99019) NMOD, LOGG, WINDML(1), WINDML(2),
      :                                 WINDACC(1), WINDACC(2),RLF/CSECYR, BE
@@ -436,10 +437,9 @@ C        Adjust separation due to common envelope effects (sorted in massloss.f)
          IF (ICE.EQ.1 .AND. IMODE.EQ.2) THEN
             ! Reduce the orbit due to CEE effects.
             ! This change results in SEP = SEP + DSEP
-            H(13,1) = H(13,1) + DSEP/RSUN
-
-            !Originally was H(13,1) = H(13,1) + SQRT((TM(1)+TM(2))*(TM(1)**2.0*TM(2)**2.0*DSEP+TM(1)*H(13,1)**2.0+TM(2)*H(13,1)**2))-H(13,1)*(TM(1)-TM(2))/(TM(1)+TM(2))
-            !No idea why. Neither SMR nor JJE recognise it and it wasn't in the most recent version of bSTARS from the cambridge website
+            DELTA_H = (TM(1)*TM(2)*SQRT(CG*(TM(1)+TM(2))*((TM(1)+TM(2))*(H(13,1)/(CG*TM(1)*TM(2))+0d0)**2.0+DSEP)))/DT**2d0
+            write(*,*) "Incrementing angular momentum by", -DELTA_H/1e-3, ", current value is", H(13,1)
+            H(13,1) = H(13,1)-DELTA_H/1e-3! (SQRT((TM(1)+TM(2))*(TM(1)**2.0*TM(2)**2.0*DSEP/RSUN+TM(1)*H(13,1)**2.0+TM(2)*H(13,1)**2))-H(13,1)*(TM(1)-TM(2))/(TM(1)+TM(2)))/1e6 ! todo justfy why
          END IF
 
          IF (ISTAR.EQ.1) THEN
@@ -484,6 +484,8 @@ C Write plot/plot2 file
      &        RENV(ISTAR)/RSUN, DLOG10(SX(3,2)), DLOG10(SX(4,2))
 C There are 99 things in the format statement and 74 have been used.
  115     FORMAT (I6,1P,E16.9,0P,24F10.5,1P,3E13.6,18(1X,E12.5),0P,52F9.5)
+         IF(ISTAR.EQ.1) RLFcheck1=RLF !!!JJE's new timestep check - 11/12/2023
+    !     IF(ISTAR.EQ.2) RLFcheck2=RLF !!!JJE's new timestep check - 11/12/2023
          CALL FLUSH(33+20*(ISTAR-1))
 C Write output for nucleosynthesis stuff
          write (41+20*(ISTAR - 1),116) NMOD,AGE,VMH,VME,VMH - VME,PX(9),XASH,(TCB(I)/1d8,

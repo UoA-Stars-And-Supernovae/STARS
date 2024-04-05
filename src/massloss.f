@@ -324,6 +324,10 @@ C              SEP = (M(1)+M(2))*(HORB/(M(1)*M(2)))**2.0
                   ICE = 1
                   IDONOR = ISTAROTHER
                   IACC = ISTAR
+             ELSE IF (IDET.EQ.2 .AND. ((R(ISTAR)+R(ISTAROTHER)).GT.SEP)) THEN
+                  ICE = 1
+                  IDONOR = ISTAR
+                  IACC = ISTAROTHER
              ELSE
                   ICE = 0
                   IF (ICEPR.EQ.1) THEN
@@ -334,13 +338,13 @@ C                         DD = DD * 10
              END IF
 
              IF (ICE.EQ.1) THEN
-                  IF (IDET .EQ. 2) THEN
-                     ! Contact binary during CEE -- merger likely -- kill it!
-                     IMERGE = 1
-                     CALL PRINTA(0, NMOD, IT1, IT2, 0) ! Force a modout write - for both?
-                     WRITE(*,*) "System merger -- terminating! Modout saved"
-                     STOP ! as a proxy for doing a merger
-                  END IF
+C                   IF (IDET .EQ. 2) THEN
+C                      ! Contact binary during CEE -- merger likely -- kill it!
+C                      IMERGE = 1
+C                      CALL PRINTA(0, NMOD, IT1, IT2, 0) ! Force a modout write - for both?
+C                      WRITE(*,*) "System merger -- terminating! Modout saved"
+C                      STOP ! as a proxy for doing a merger
+C                   END IF
                   IF (ICEPR .EQ. 0) THEN
 
                         WRITE(*,11157) " Common Envelope from star ", IDONOR, " to ", IACC, " STARTING."
@@ -377,6 +381,12 @@ C Add (1-omega/omega_crit) to reduce accretion rate
      :           ,MASSLIMIT*MSUN/CSECYR),ACCLIMIT(ISTAR)*MSUN/CSECYR)
          END IF
       END DO
+
+      IF(IDET.EQ.2) THEN
+         DT2 = 1.01
+         DT1 = 0.10
+      END IF
+
       FAKEWIND(1) = DMAX1(0d0,DMIN1(RMT*(PS(RLF(1)))**3,MASSLIMIT*MSUN/CSECYR) -
 C     :     DMIN1(FMAC*RMT*(PS(RLF(1)))**3.0,ACCLIMIT(1)*MSUN/CSECYR))
      :     DMIN1(FMAC*RMT*(PS(RLF(1)))**3.0,ACCLIMIT(2)*MSUN/CSECYR))

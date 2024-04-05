@@ -37,14 +37,16 @@ C      data pmh, pme /1.0e17, 7.5e19/
 C
 C Extra COMMON for main-sequence evolution.
 C
-      COMMON /ZAMS  / TKH(2)
+      COMMON /ZAMS  / TKH(2), MZAMS(2)
       COMMON /MESH  / TRC1,TRC2,DD,DT1,DT2,MWT,MWTS,IVMC,IVMS
       COMMON /DHBLOC/ IDREDGE
       COMMON /DTCONT/ VLHP(2), VLEP(2), VLCP(2), RLFP(2), TOTMP(2), VLHC(2),
      :     VLEC(2), VLCC(2), RLFC(2), TOTMC(2)
       COMMON /ANGMOM/ VROT1, VROT2, FMAC, FAM, IRAM, IRS1, IRS2
       COMMON /DIFCOE/ DC(50,4,3), DCD(50,4)
+      COMMON /STATUS/ IDET, IMERGE
       COMMON /MISC  / NMOD
+      COMMON /JJTIME/ RLFcheck1,RLFcheck2 !!!JJE's new timestep check - 11/12/2023
 
       CBRT(VX) = DEXP(DLOG(VX)/3.0D0)
       RLOBE(VX) = 0.49D0*VX*VX/(0.6D0*VX*VX+DLOG(1.0D0+VX))
@@ -271,8 +273,15 @@ C Convert some things to `cgs' units: 10**11 cm, 10**33 gm, 10**33 erg/s
    12 DT = CSECYR*DTY
       TM(1) = MSUN*SM
       TM(2) = MSUN*SM2
+
+      MZAMS(1) = TM(1)
+      MZAMS(2) = TM(2)
+
       RMG = RMG/CSECYR
-      RMT = MSUN*RMT/CSECYR
+      RMT = MSUN*(RMT*TM(1)**2)/CSECYR
+C       WF = DSQRT(1.0D0+DEXP(H(1,1)))
+C       PSI = 2.0D0*(WF-DLOG(WF+1.0D0))+H(1,1)
+C       RMT = MSUN*(10**(PSI+10)*TM(1)**2)/CSECYR
       RML = RML*MSUN**2/LSUN/RSUN/CSECYR
 C Optionally, re-initialise mass
       IF ( NCH.GE.1 ) THEN
@@ -402,10 +411,40 @@ C            DHNUC(J,K) = 0d0
       write (32,*) "DELTA =",DELTA, " DD = ", DD
 
       DTF = DMIN1 (DT2, DD/DELTA)
+
+      DTF1=DTF
+      DTF2=DTF
+c      IF(RLFcheck1.GE.-1d-2) THEN   !!!Jan's magical new timestep control for RLOF - 11/12/2023
+c         DTF1 = DMAX1(ABS(RLFcheck1)*1d2 * DD/DELTA,0.05*DD/DELTA)
+c         IF(RLFcheck1.GE.2.5d-4) DTF1= 0.5*DD/DELTA
+c         DTF1 = DMIN1(1.01,DTF1)
+c      ENDIF
+c      IF(RLF.GE.-1d-2) THEN    !!!Jan's magical new timestep control for RLOF - 11/12/2023
+c         DTF2 = DMAX1(ABS(RLF)*1d2 * DD/DELTA,0.05*DD/DELTA)
+c         IF(RLF.GE.2.5d-4) DTF2=0.5*DD/DELTA
+c         DTF2 = DMIN1(1.01, DTF2)
+c      ENDIF
+      IF(RLFcheck1.GE.-1d-2) THEN   !!!Jan's magical new timestep control for RLOF - 11/12/2023
+         DTF1 = DMAX1(ABS(RLFcheck1)*1d2 * DD/DELTA,0.05*DD/DELTA)
+         IF(RLFcheck1.GE.5d-4) DTF1=DMIN1(ABS(RLFcheck1)*1d2 *(RLFcheck1*2d3)**3d0* DD/DELTA ,0.5*DD/DELTA)
+         DTF1 = DMIN1(1.01,DTF1)
+      ENDIF
+      IF(RLF.GE.-1d-2) THEN    !!!Jan's magical new timestep control for RLOF - 11/12/2023
+         DTF2 = DMAX1(ABS(RLF)*1d2 * DD/DELTA,0.05*DD/DELTA)
+         IF(RLF.GE.5d-4) DTF2=DMIN1(ABS(RLF)*1d2 *(RLF*2d3)**3d0 * DD/DELTA, 0.5*DD/DELTA)
+         DTF2 = DMIN1(1.01, DTF2)
+      ENDIF
+      DTF=DMIN1(DTF1,DTF2)
+   !   DTF=DMAX1(0.1,DTF)
+!!!1.05, 0.1, 5d-4
+
+
+      
 C     IF ( IHOLD .LE. 3 ) DTF = 1.0D0
       IF ( IHOLD .LE. 2 ) DTF = 1.0D0
       DTY = DMAX1(DT1,DTF)*DTY
 
+   
       DO ISTAR = 1,IMODE
          IF (IAGB.EQ.1) THEN
 C Reduce timestep if He luminosity is increasing too fast -- useful on AGB
@@ -417,12 +456,27 @@ C Reduce timestep if He luminosity is increasing too fast -- useful on AGB
 C Extra control mechanisms that can be uncommented as necessary - RJS
         IF ((VLHC(ISTAR) - VLHP(ISTAR))/VLHP(ISTAR).GT.0.10) DTY = 0.8*DTY
         IF ((VLCC(ISTAR) - VLCP(ISTAR))/VLCP(ISTAR).GT.0.10) DTY = 0.8*DTY
-        IF (((RLFC(ISTAR)-RLFP(ISTAR))/RLFP(ISTAR)).GT.0.1
-C     :        .AND.RLFP(ISTAR).GT.-1d-1.AND.RLFP(ISTAR).LT.-1d-3) THEN
-     :        .AND.RLFP(ISTAR).GT.-1d-1) THEN
-           DTY = 0.1*DTY
-           write (32,*) "RLF issues - reducing timestep"
-        END IF
+c        IF (((RLFC(ISTAR)-RLFP(ISTAR))/RLFP(ISTAR)).GT.0.1
+c     :        .AND.RLFP(ISTAR).GT.-1d-1) THEN
+cC    :        .AND.RLFP(ISTAR).GT.-1d-1.AND.RLFP(ISTAR).LT.-1d-3) THEN
+cC      :        .AND.RLFP(ISTAR).GT.0d0) THEN
+c         ! Failing this just disable the check or make it .GT.0 I guess?c
+c
+c           FUDGEFAC = 0.1c
+c
+c           write (32,*) "RLF issues - reducing timestep"
+c           write (*,*)  "RLF issues - reducing timestep"
+c           write (*,*)  "           - Star", ISTAR
+c           write (*,*)  "           - IDET", IDET
+c           write (*,*)  "           - Model Number", NMOD
+c           write (*,*)  "           - Old timestep", DTY
+c           write (*,*)  "           - RLFC", RLFC(ISTAR)
+c           write (*,*)  "           - RLFP", RLFP(ISTAR)
+c           write (*,*)  "           - change:", (RLFC(ISTAR)-RLFP(ISTAR))/RLFP(ISTAR)
+c           write (*,*)  "           - FUDGEFAC:", FUDGEFACc
+c
+c           DTY = FUDGEFAC * DTY
+c        END IF
       END DO
       IF (DABS((PER - PPER)/PPER).GT.0.01) DTY = 0.5*DTY
       IF ( IB.EQ.2 ) DTY = DMIN1(DTY,ST(KS+2)-AGE)

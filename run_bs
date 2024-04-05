@@ -1,5 +1,7 @@
 #!/bin/csh
 
+# make clean && make # Debugging
+
 set BSDIR=/home/sric560/Documents/STARS
 set DATDIR=$BSDIR/dat
 set EXEDIR=$BSDIR
@@ -41,6 +43,10 @@ ln -s $DATDIR/phys02.dat fort.11
 ln -s $DATDIR/nrate.dat fort.13
 ln -s $DATDIR/splinecoefficients.dat fort.14
 
+ln -s massloss fort.100
+ln -s massloss2 fort.101
+ln -s fakewind fort.102
+
 # Link input for star 1 and 2
 ln -s modin fort.30   ; ln -s nucmodin fort.31   ;
 ln -s modin2 fort.50  ; ln -s nucmodin2 fort.51  ;
@@ -70,3 +76,5 @@ $EXEDIR/bs
 #mv fort.99 vini
 rm -f fort.*
 #alias rm rm -i
+
+# mv plot plot.secondary

@@ -45,6 +45,7 @@ C rest of this subroutine. RJS 5/7/06
       COMMON /MIXFUD/ SGTHFAC, FACSGMIN, FACSG, ISGFAC
       COMMON /IONISE/ MSTORE(8,5), MSTORE2(5)
       COMMON /DIFFUS/ D(10), A12(10)
+      COMMON /JJEFIX/ PMHfixed(2)
       DIMENSION XSPEC(6), DDMIX(10), MUXX(6)
       CBRT(VX) = DEXP(DLOG(VX)/3.0D0)
       PS(VX) = 0.5D0*(VX+DABS(VX))
@@ -141,11 +142,36 @@ C if GRADR < GRADA, we get WCV = 0 and GRADT = GRADR
       GTMA = GRADT - GRADA
       ATM = GRADT*APM
 C Old MSF 2000
+      IOLD = 0
+      IF (IOLD.EQ.1 .OR. IMODE.EQ.1) THEN
       CT1 = 1.0D1**(1.0D1*CT(1)) !!! should change input format !!!
-      VP = CT(4)*AP + CT(5)*LOG((P+CT(9))/(P+CT1)) +
-     &     CT(2)*LOG((P+CT(10))/(P+CT1))
-      VPP = CT(4) + P/(P+CT1)*(CT(5)*(CT1-CT(9))/(P+CT(9))
-     &     + CT(2)*(CT1-CT(10))/(P+CT(10)))
+            VP = CT(4)*AP + CT(5)*LOG((P+CT(9))/(P+CT1)) +
+     &            CT(2)*LOG((P+CT(10))/(P+CT1))
+            VPP = CT(4) + P/(P+CT1)*(CT(5)*(CT1-CT(9))/(P+CT(9))
+     &            + CT(2)*(CT1-CT(10))/(P+CT(10)))
+      ELSE
+            CP1 = 3.0*PME(ISTAR)
+            CP2 = 0.3*PME(ISTAR)
+            CP3 = 0.1*PMH(ISTAR)
+
+            if(SURFXH.lt.0.15d0) THEN
+                  CP3=0.1* PMHfixed(ISTAR)
+            else
+                  PMHfixed(ISTAR)=PMH(ISTAR)
+                  !this is a JJ fix to avoid problems when removing hydrogen envelope
+            endif
+
+            CT(5) = 0.15
+            CT(2) = 0.0
+
+            VP = CT(4)*AP + CT(5)*LOG(P+CP3) +   CT(2)*LOG(P+CP1)
+     &                  + CT(2)*LOG(P+CP2)
+
+            VPP = CT(4) + CT(5)*P/(P+CP3) + CT(2)*P/(P+CP2)
+     &                  + CT(2)*P/(P+CP1)
+
+
+      END IF
       CT10 = 2.0D4              !!! fixed, should change input format !!!
       VT = CT(7)*DLOG(T/(T+CT10))
       VTT = CT(7)*CT10/(T+CT10)

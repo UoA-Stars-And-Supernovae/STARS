@@ -60,13 +60,27 @@ C Attempt at variable composition accretion - only if in binary mode
             IF (ISTAR.EQ.1) IOTHER = 2
             IF (ISTAR.EQ.2) IOTHER = 1
             IF ((HT(24,1,IOTHER).GT.0d0.OR.HT(23,1,ISTAR).LT.0d0).AND.IMODE.EQ.2) THEN
-               EQU(7) = ACCOMPOS(1,IVAR+1,IOTHER) - X1(2)
-               EQU(8) = ACCOMPOS(5,IVAR+1,IOTHER) - X16(2)
-               EQU(9) = ACCOMPOS(2,IVAR+1,IOTHER) - X4(2)
-               EQU(10) = ACCOMPOS(3,IVAR+1,IOTHER) - X12(2)
-               EQU(11) = ACCOMPOS(6,IVAR+1,IOTHER) - X20(2)
-               EQU(12) = ACCOMPOS(4,IVAR+1,IOTHER) - X14(2)
-               EQU(14) = ACCOMPOS(7,IVAR+1,IOTHER) - X3(2)
+C              If both stars are filling their roche lobes, set the abundance of the accreted material
+C              to the average of the two stars
+               IF (HT(24,1,IOTHER).GT.0d0.AND.HT(24,1,ISTAR).GT.0d0) THEN
+                   EQU(7) = 0.5*(ACCOMPOS(1,IVAR+1,IOTHER)+ X1(3)) - X1(2)
+                   EQU(8) = 0.5*(ACCOMPOS(5,IVAR+1,IOTHER) + X16(3)) - X16(2)
+                   EQU(9) = 0.5*(ACCOMPOS(2,IVAR+1,IOTHER) + X4(3)) - X4(2)
+                   EQU(10) = 0.5*(ACCOMPOS(3,IVAR+1,IOTHER) + X12(3)) - X12(2)
+                   EQU(11) = 0.5*(ACCOMPOS(6,IVAR+1,IOTHER) + X20(3)) - X20(2)
+                   EQU(12) = 0.5*(ACCOMPOS(4,IVAR+1,IOTHER) + X14(3)) - X14(2)
+                   EQU(14) = 0.5*(ACCOMPOS(7,IVAR+1,IOTHER) + X3(3)) - X3(2)
+                ! SMR + JJE 21 November 2023
+C               Otherwise, to the abundance of the accreted material
+                ELSE
+                   EQU(7) = ACCOMPOS(1,IVAR+1,IOTHER) - X1(2)
+                   EQU(8) = ACCOMPOS(5,IVAR+1,IOTHER) - X16(2)
+                   EQU(9) = ACCOMPOS(2,IVAR+1,IOTHER) - X4(2)
+                   EQU(10) = ACCOMPOS(3,IVAR+1,IOTHER) - X12(2)
+                   EQU(11) = ACCOMPOS(6,IVAR+1,IOTHER) - X20(2)
+                   EQU(12) = ACCOMPOS(4,IVAR+1,IOTHER) - X14(2)
+                   EQU(14) = ACCOMPOS(7,IVAR+1,IOTHER) - X3(2)
+                END IF
 C The following lines are a more accurate but less stable implementation of the
 C next to surface boundary condition -- should be used if you want to do thermohaline mixing
 C                SG2 = -(PS(MT(2))+1d-5) !1d-5
