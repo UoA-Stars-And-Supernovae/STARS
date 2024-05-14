@@ -18,6 +18,7 @@
      :  TRB
       COMMON /STAT1 / CSX(10), CS(90, 127, 10), HAT(23320), NCSX
       COMMON /OP    / ZS, LEDD, VM, GR, GRAD, ETH, RLF, EGR, R, QQ
+      COMMON /INF   / VIN(60)
       COMMON /ATDATA/ DH2(4), CHI(26,9), OMG(27), AM(10), BN(10), JZ(10)
       COMMON /NDATA / RATEN(9000)
       COMMON /CNSTS / CPI, PI4, CLN10, CDUM(11), CSECYR, LSUN, MSUN,
@@ -25,6 +26,7 @@
       COMMON /YUK1  / PX(34), WMH, WMHE, VMH, VME, VMC, VMG, BE, VLH,
      :                VLE, VLC, VLN, VLT, MCB(12),WWW(100)
       COMMON /CEE   / MHC(2), MENVC(2), DSEP, ICE, ICEP, ALPHACE
+      COMMON /VARACC/ IVARACC
       COMMON /OPDAT / cbase,obase,opT(141),opR(31),fZ
       COMMON /XOPDAT/ opac(4,4,141,31,5)
       COMMON /COPDAT/ opacCO(4,4,141,31,305)
@@ -50,7 +52,7 @@ C
 
       CBRT(VX) = DEXP(DLOG(VX)/3.0D0)
       RLOBE(VX) = 0.49D0*VX*VX/(0.6D0*VX*VX+DLOG(1.0D0+VX))
-      DIMENSION WW(16),WX(52),DELDAT(22)
+      DIMENSION WW(16),WX(52),DELDAT(22), XH(2), CNTRXH(2)
       data COcompos /0.0d0,0.01d0,0.03d0,0.1d0,0.2d0,0.4d0,0.6d0,1.0d0/
 C99002 FORMAT (1X, 1P, 12E13.5, 0P)
 C Here we define some data format blocks.
@@ -60,7 +62,8 @@ C Here we define some data format blocks.
      :/, E9.2, 0P, 9F6.3, /, 1P, 2(7E9.2, /), 0P, I2, 2(I2,1X,E8.2),2(1X,F4.2)
      : ,/, I2,F6.1,I2,F6.1, 1X, F4.2, I2, I2, 2(1X, E8.2),
      :/,I2,E8.1,E8.1, I5,
-     :/,I2,F4.1)
+     :/,I2,F4.1,
+     :/,I2)
 99004 FORMAT (1X, 10F7.3)                                                       ! phys02.dat
 99005 FORMAT (1X, 1P, 2E14.6, E17.9, 3E14.6, 0P, 4I6, 1P, 2E11.3)               ! modin (first line only)
       IF ( IEND.NE.-1 ) GO TO 30                                                ! Go to almost EOF if IEND (passed parameter) is -1
@@ -103,7 +106,8 @@ C Read in data
      :IRAM, IRS1, VROT1, IRS2, VROT2, FMAC, FAM,
      :IVMC, TRC1, IVMS, TRC2, MWTS, IAGB, ISGFAC, FACSGMIN, SGTHFAC,
      :ISTART, HKH, GFF, NNMOD,
-     :ICEP, ALPHACE
+     :ICEP, ALPHACE,
+     :IVARACC
 
 C       WRITE(*,*) ISTART, HKH, GFF, NNMOD, ICEP, ALPHACE
 
@@ -135,7 +139,8 @@ C        WRITE (*,'(I2,F4.1)') ICEP, ALPHACE
      :IRAM, IRS1, VROT1, IRS2, VROT2, FMAC, FAM,
      :IVMC, TRC1, IVMS, TRC2, MWTS, IAGB, ISGFAC, FACSGMIN, SGTHFAC,
      :ISTART, HKH, GFF, NNMOD,
-     :ICEP, ALPHACE
+     :ICEP, ALPHACE,
+     :IVARACC
       WRITE (32, 99005)
       WRITE (32, 99005) SM, DTY, AGE, PER, BMS, EC,NH,NP,NMOD,IB,PMH(1),PME(1)
 C Convert RML from eta to coefficient required
@@ -414,6 +419,10 @@ C            DHNUC(J,K) = 0d0
 
       DTF1=DTF
       DTF2=DTF
+      DO ISTAR=1,IMODE
+         XH(ISTAR) = VIN(5+15*(ISTAR - 1))
+         CNTRXH(ISTAR) = H(5+15*(ISTAR - 1), NMESH)
+      END DO
 c      IF(RLFcheck1.GE.-1d-2) THEN   !!!Jan's magical new timestep control for RLOF - 11/12/2023
 c         DTF1 = DMAX1(ABS(RLFcheck1)*1d2 * DD/DELTA,0.05*DD/DELTA)
 c         IF(RLFcheck1.GE.2.5d-4) DTF1= 0.5*DD/DELTA
