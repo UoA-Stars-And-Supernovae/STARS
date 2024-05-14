@@ -19,6 +19,7 @@ C VAR(3),(2),(1) are values of VAR at current, previous and anteprevious meshpts
       COMMON /ACCRET/ ACCOMPOS(7,31, 2)
       COMMON /TRANS / HT(26,NMAXMSH,2)
       COMMON /EVMODE/ IMODE
+      COMMON /VARACC/ IVARACC
       PS(VX) = 0.5D0*(VX+DABS(VX))
 C 30/5/03 RJS Smooth viscous mesh
       WTM = 0.5 + 0.5*tanh((K - TRC1)/1.5)
@@ -59,10 +60,10 @@ C next-to-surface boundary conditions for second-order equations
 C Attempt at variable composition accretion - only if in binary mode
             IF (ISTAR.EQ.1) IOTHER = 2
             IF (ISTAR.EQ.2) IOTHER = 1
-            IF ((HT(24,1,IOTHER).GT.0d0.OR.HT(23,1,ISTAR).LT.0d0).AND.IMODE.EQ.2) THEN
+            IF ((HT(24,1,IOTHER).GT.0d0.OR.HT(23,1,ISTAR).LT.0d0).AND.IMODE.EQ.2 .AND. IVARACC.EQ.1) THEN
 C              If both stars are filling their roche lobes, set the abundance of the accreted material
 C              to the average of the two stars
-               IF (HT(24,1,IOTHER).GT.0d0.AND.HT(24,1,ISTAR).GT.0d0) THEN
+C                IF (HT(24,1,IOTHER).GT.0d0.AND.HT(24,1,ISTAR).GT.0d0.AND.IVARACC.EQ.1) THEN
                    EQU(7) = 0.5*(ACCOMPOS(1,IVAR+1,IOTHER)+ X1(3)) - X1(2)
                    EQU(8) = 0.5*(ACCOMPOS(5,IVAR+1,IOTHER) + X16(3)) - X16(2)
                    EQU(9) = 0.5*(ACCOMPOS(2,IVAR+1,IOTHER) + X4(3)) - X4(2)
@@ -71,16 +72,24 @@ C              to the average of the two stars
                    EQU(12) = 0.5*(ACCOMPOS(4,IVAR+1,IOTHER) + X14(3)) - X14(2)
                    EQU(14) = 0.5*(ACCOMPOS(7,IVAR+1,IOTHER) + X3(3)) - X3(2)
                 ! SMR + JJE 21 November 2023
-C               Otherwise, to the abundance of the accreted material
-                ELSE
-                   EQU(7) = ACCOMPOS(1,IVAR+1,IOTHER) - X1(2)
-                   EQU(8) = ACCOMPOS(5,IVAR+1,IOTHER) - X16(2)
-                   EQU(9) = ACCOMPOS(2,IVAR+1,IOTHER) - X4(2)
-                   EQU(10) = ACCOMPOS(3,IVAR+1,IOTHER) - X12(2)
-                   EQU(11) = ACCOMPOS(6,IVAR+1,IOTHER) - X20(2)
-                   EQU(12) = ACCOMPOS(4,IVAR+1,IOTHER) - X14(2)
-                   EQU(14) = ACCOMPOS(7,IVAR+1,IOTHER) - X3(2)
-                END IF
+C C               Otherwise, to the abundance of the accreted material
+C                 ELSE
+C C                    EQU(7) = ACCOMPOS(1,IVAR+1,IOTHER) - X1(2)
+C C                    EQU(8) = ACCOMPOS(5,IVAR+1,IOTHER) - X16(2)
+C C                    EQU(9) = ACCOMPOS(2,IVAR+1,IOTHER) - X4(2)
+C C                    EQU(10) = ACCOMPOS(3,IVAR+1,IOTHER) - X12(2)
+C C                    EQU(11) = ACCOMPOS(6,IVAR+1,IOTHER) - X20(2)
+C C                    EQU(12) = ACCOMPOS(4,IVAR+1,IOTHER) - X14(2)
+C C                    EQU(14) = ACCOMPOS(7,IVAR+1,IOTHER) - X3(2)
+
+C                    EQU(7) = (X1(3) - X1(2))
+C                    EQU(8) = X16(3) - X16(2)
+C                    EQU(9) = X4(3) - X4(2)
+C                    EQU(10) = X12(3) - X12(2)
+C                    EQU(11) = X20(3) - X20(2)
+C                    EQU(12) = X14(3) - X14(2)
+C                    EQU(14) = X3(3) - X3(2)
+C                END IF
 C The following lines are a more accurate but less stable implementation of the
 C next to surface boundary condition -- should be used if you want to do thermohaline mixing
 C                SG2 = -(PS(MT(2))+1d-5) !1d-5
