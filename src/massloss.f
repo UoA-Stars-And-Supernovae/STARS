@@ -36,7 +36,7 @@ C first
      :     XHE(2), XC(2), XO(2), HSPIN(2), DHSPIN(2), ML(2),
      :     RAT(2), RLF(2), DAM(2), WINDACC(2), MOMINER(2),
      :     BCHSPIN(2), DMOMINER(2), HSPINDT(2), R2O(2), TF(2), HTF(2), HSTF(2),
-     :     OSPIN(2), ACCLIMIT(2), OSC(2)
+     :     OSPIN(2), ACCLIMIT(2), OSC(2), CNTRXH(2)
       CBRT(VX) = DEXP(DLOG(VX)/3.0D0)
       PS(VX) = 0.5D0*(VX+DABS(VX))
       RLOBE(VX) = 0.49D0*VX*VX/(0.6D0*VX*VX+DLOG(1.0D0+VX))
@@ -53,6 +53,7 @@ C necessary quantities
          DAR(ISTAR) = DVIN(7+15*(ISTAR - 1))
          L(ISTAR) = VIN(8+15*(ISTAR - 1))
          XH(ISTAR) = VIN(5+15*(ISTAR - 1))
+         CNTRXH(ISTAR) = H(5+15*(ISTAR - 1), NMESH)
          XHE(ISTAR) = VIN(9+15*(ISTAR - 1))
          XC(ISTAR) = VIN(10+15*(ISTAR - 1))
          XO(ISTAR) = VIN(3+15*(ISTAR - 1))
@@ -244,30 +245,156 @@ C     WC rate
 C               IF (COHe.GT.1d0) BC1 = 1.9d-5*MSUN/CSECYR
                END IF
             END IF
-C     New Mass loss from Bestenlehner 2020 - WIP
-            IF (IML(ISTAR).EQ.7) THEN
-C     Bremsstrahlung
-               RHO = M(ISTAR)/MSUN
-               RADI = R(ISTAR)/RSUN
-               VOL = (4d0 / 3d0 * CPI * RADI ** 3d0)
-               RHO = RHO / VOL
-               KAP = 3.68D22 * GFF * (1d0 - ZS) * (1d0 + XH(ISTAR))
-               KAP = KAP * RHO * T(ISTAR) ** (-3.5d0)
+            IF (IML(ISTAR).EQ.6) THEN
+C - slow WR ML rates (should be a parameter in data?)
+               COHe=(XC(ISTAR)/3.0+XO(ISTAR)/4.0)/XHE(ISTAR)
+               SURFXH=XH(ISTAR)
+               SURFXHe=XHE(ISTAR)/4.0
+cc     c     pre-WR: de Jager 1988
+               zml1=(log10(T(ISTAR))-4.05d0)/0.75d0
+               zml2=(log10(L(ISTAR)/LSUN)-4.6d0)/2.1d0
+               if(zml2.ge.1d0) zml2=1d0 !if more luminous that bounds, set to max
+               if(zml1.ge.1d0) zml1=1d0 !if more hot that bounds, set to max
+               if(zml1.le.-1d0) zml1=-1d0 !if more cool that bounds, set to max
+               BC1=0d0
+               do n2=0,5
+                  do i2=0,n2
+                     j2=n2-i2
+C prevent array out of bounds
+                     IF (J2+1.LE.5) THEN
+                        BC1=BC1-AIJ(i2+1,j2+1)*dcos(i2*dacos(zml1))
+     :                       *dcos(j2*dacos(zml2))
+                     END IF
+                  enddo
+               enddo
+               BC1=(SQRT(ZS*50d0))*(10d0**BC1)*MSUN/CSECYR
+               if(zml2.le.-1d0) BC1=0d0 !so when the star becomes too faint no mass loss
+               BCPREWR1 = BC1
 
-C     KAP is the average electron opacity
-               VTH = SQRT(4d0 * BOLTZM * T(ISTAR) / AME)
-
-C     VTH is the thermal velocity
-               CFAC = -2d0 / CG**1.5d0
-               CFAC = CFAC * (3 * CL / (CPI * STEFBOLTZ)) ** 0.5d0
-               CFAC = CFAC * CR(1)**2D0 * (-2.01824D0)
-
-C     ok now compute the mass loss
-               BC1 = CFAC * 4*CPI*CG / (KAP * VTH)
-               BC1 = BC1 * (2d0*XH(ISTAR)+0.75d0*XHE(ISTAR)+0.5*ZS) ** 2d0
-               BC1 = BC1 * 0.0032421531d0 * (L(ISTAR) / LEDD) ** (27d0/14d0)
-               BC1 = BC1 / (1-L(ISTAR)/LEDD)**(1d0/9d0)
+C Vink et al. 2001 rates for OB stars - taken from JJE's code
+               RVIN=(ZS*50d0)**0.13d0
+C RMVA is for hot side of stability jump  27500 - 50000 K
+               RMVA=-6.697+2.194*LOG10(L(ISTAR)/(LSUN*1d5))-1.313*LOG10(M(ISTAR)/(MSUN*30d0))
+     :  -1.226*LOG10(RVIN*2.6/2.0)+0.933*LOG10(T(ISTAR)/4d4)-10.92*(LOG10(T(ISTAR)/4d4))**2
+     :  +0.85*LOG10(50d0*ZS)
+C RMVB is for cool side of jump  12500 - 22500 K
+               RMVB=-6.688+2.210*LOG10(L(ISTAR)/(LSUN*1d5))-1.339*LOG10(M(ISTAR)/(MSUN*30d0))
+     :              -1.601*LOG10(RVIN*1.3/2.0)+1.07*LOG10(T(ISTAR)/2d4)+0.85*LOG10(50d0*ZS)
+C Am I missing an MSUN out of all this? I think so...
+               IF(T(ISTAR).LE.5d4.AND.T(ISTAR).GT.2.75d4) BC1 =(10d0**RMVA)*MSUN/CSECYR
+               IF(T(ISTAR).LE.2.25d4.AND.T(ISTAR).GE.1.25d4) BC1 =(10d0**RMVB)*MSUN/CSECYR
+               IF(T(ISTAR).GT.2.25d4.AND.T(ISTAR).LE.2.75d4) THEN
+                  BC1=((T(ISTAR)-2.25d4)*(10d0**RMVA)+(2.75d4-T(ISTAR))*(10d0**RMVB))*MSUN/(CSECYR*5d3)
+               ENDIF
+               IF(T(ISTAR).LT.1.25d4.AND.T(ISTAR).GE.1d4) THEN
+                  BC1=((T(ISTAR)-1d4)*(10d0**RMVB)*MSUN/CSECYR+(1.25d4-T(ISTAR))*BCPREWR1)/2.5d3
+               ENDIF
+               IF(T(ISTAR).GT.5d4.AND.T(ISTAR).LT.6d4) THEN
+                  BC1=((6d4-T(ISTAR))*(10d0**RMVA)*MSUN/CSECYR+(T(ISTAR)-5d4)*(BCPREWR1))/1d4
+               ENDIF
+               IF(ISTAR.eq.1) THEN
+                  BCPREWR = BC1
+C     Note this smooths out the bistability jump... RJS
+C     When XH(surface)<0.4 and log T > 4.0 the star is in the WNL phase:
+                  BCWNL = -13.6 + 1.63*log10(L(ISTAR)/LSUN)+2.22*log10(XHE(ISTAR))
+C     Now has metallicity scaling
+                  BCWNL = ((ZS*50d0)**0.5d0)*(10.0**BCWNL)*MSUN/CSECYR
+                  IF(SURFXH.LE.0.42.AND.SURFXH.GT.0.40) THEN
+                     BCWNL=(BCWNL-BCPREWR)*(0.42-SURFXH)*5d1 + BCPREWR
+                  ENDIF
+                  !!!^^^^^^^Jan new bit to account for composition turning on
+                  IF (SURFXH.LE.0.42.AND.log10(T(ISTAR)).GT.3.9) THEN
+                     BC1 = 1d1*(BCWNL - BCPREWR)*(log10(T(ISTAR)) - 3.9) + BCPREWR
+                  END IF
+                  IF (SURFXH.LE.0.42.AND.log10(T(ISTAR)).GE.4.0) BC1 = BCWNL
+C     When XH(surface)<1e-3 and log T > 4.0 the star is in the WNE,WC or WO
+C     phase:
+                  BCWC = -8.3 + 0.84*log10(L(ISTAR)/LSUN) + 2.04*log10(XHE(ISTAR)) +
+     :                 1.04*log10(1d0-XHE(ISTAR))
+C     Also now metallicity scaled
+                  BCWC = ((ZS/0.02)**0.5d0)*(10.0**BCWC)*MSUN/CSECYR
+                  IF (SURFXH.LT.1d-3.AND.log10(T(ISTAR)).GE.4.0) THEN
+C     WC rate
+                     IF (COHe.GT.2d-2) THEN
+                        BC1 = 1d2*(BCWC-BCWNL)*(COHe - 2d-2) + BCWNL
+                     END IF
+                     IF (COHe.GT.3d-2) BC1 = BCWC
+C     IF (COHe.GT.1d0) BC1 = 1.9d-5*MSUN/CSECYR
+                  END IF
+               ENDIF
             END IF
+            IF (IML(ISTAR).EQ.7) THEN
+C - so this is the same as IML 4 but changing so that it fixes a few bugs
+               COHe=(XC(ISTAR)/3.0+XO(ISTAR)/4.0)/XHE(ISTAR)
+               SURFXH=XH(ISTAR)
+               SURFXHe=XHE(ISTAR)/4.0
+cc     c     pre-WR: de Jager 1988
+               zml1=(log10(T(ISTAR))-4.05d0)/0.75d0
+               zml2=(log10(L(ISTAR)/LSUN)-4.6d0)/2.1d0
+               if(zml2.ge.1d0) zml2=1d0 !if more luminous that bounds, set to max
+               if(zml1.ge.1d0) zml1=1d0 !if more hot that bounds, set to max
+               if(zml1.le.-1d0) zml1=-1d0 !if more cool that bounds, set to max
+               BC1=0d0
+               do n2=0,5
+                  do i2=0,n2
+                     j2=n2-i2
+C prevent array out of bounds
+                     IF (J2+1.LE.5) THEN
+                        BC1=BC1-AIJ(i2+1,j2+1)*dcos(i2*dacos(zml1))
+     :                       *dcos(j2*dacos(zml2))
+                     END IF
+                  enddo
+               enddo
+               BC1=(SQRT(ZS*50d0))*(10d0**BC1)*MSUN/CSECYR
+               if(zml2.le.-1d0) BC1=0d0 !so when the star becomes too faint no mass loss
+               BCPREWR1 = BC1
+
+C Vink et al. 2001 rates for OB stars - taken from JJE's code
+               RVIN=(ZS*50d0)**0.13d0
+C RMVA is for hot side of stability jump  27500 - 50000 K
+               RMVA=-6.697+2.194*LOG10(L(ISTAR)/(LSUN*1d5))-1.313*LOG10(M(ISTAR)/(MSUN*30d0))
+     :  -1.226*LOG10(RVIN*2.6/2.0)+0.933*LOG10(T(ISTAR)/4d4)-10.92*(LOG10(T(ISTAR)/4d4))**2
+     :  +0.85*LOG10(50d0*ZS)
+C RMVB is for cool side of jump  12500 - 22500 K
+               RMVB=-6.688+2.210*LOG10(L(ISTAR)/(LSUN*1d5))-1.339*LOG10(M(ISTAR)/(MSUN*30d0))
+     :              -1.601*LOG10(RVIN*1.3/2.0)+1.07*LOG10(T(ISTAR)/2d4)+0.85*LOG10(50d0*ZS)
+C Am I missing an MSUN out of all this? I think so...
+               IF(T(ISTAR).LE.5d4.AND.T(ISTAR).GT.2.75d4) BC1 =(10d0**RMVA)*MSUN/CSECYR
+               IF(T(ISTAR).LE.2.25d4.AND.T(ISTAR).GE.1.25d4) BC1 =(10d0**RMVB)*MSUN/CSECYR
+               IF(T(ISTAR).GT.2.25d4.AND.T(ISTAR).LE.2.75d4) THEN
+                  BC1=((T(ISTAR)-2.25d4)*(10d0**RMVA)+(2.75d4-T(ISTAR))*(10d0**RMVB))*MSUN/(CSECYR*5d3)
+               ENDIF
+               IF(T(ISTAR).LT.1.25d4.AND.T(ISTAR).GE.1d4) THEN
+                  BC1=((T(ISTAR)-1d4)*(10d0**RMVB)*MSUN/CSECYR+(1.25d4-T(ISTAR))*BCPREWR1)/2.5d3
+               ENDIF
+               IF(T(ISTAR).GT.5d4.AND.T(ISTAR).LT.6d4) THEN
+                  BC1=((6d4-T(ISTAR))*(10d0**RMVA)*MSUN/CSECYR+(T(ISTAR)-5d4)*(BCPREWR1))/1d4
+               ENDIF
+            END IF
+C C     New Mass loss from Bestenlehner 2020 - WIP
+C             IF (IML(ISTAR).EQ.7) THEN
+C C     Bremsstrahlung
+C                RHO = M(ISTAR)/MSUN
+C                RADI = R(ISTAR)/RSUN
+C                VOL = (4d0 / 3d0 * CPI * RADI ** 3d0)
+C                RHO = RHO / VOL
+C                KAP = 3.68D22 * GFF * (1d0 - ZS) * (1d0 + XH(ISTAR))
+C                KAP = KAP * RHO * T(ISTAR) ** (-3.5d0)
+
+C C     KAP is the average electron opacity
+C                VTH = SQRT(4d0 * BOLTZM * T(ISTAR) / AME)
+
+C C     VTH is the thermal velocity
+C                CFAC = -2d0 / CG**1.5d0
+C                CFAC = CFAC * (3 * CL / (CPI * STEFBOLTZ)) ** 0.5d0
+C                CFAC = CFAC * CR(1)**2D0 * (-2.01824D0)
+
+C C     ok now compute the mass loss
+C                BC1 = CFAC * 4*CPI*CG / (KAP * VTH)
+C                BC1 = BC1 * (2d0*XH(ISTAR)+0.75d0*XHE(ISTAR)+0.5*ZS) ** 2d0
+C                BC1 = BC1 * 0.0032421531d0 * (L(ISTAR) / LEDD) ** (27d0/14d0)
+C                BC1 = BC1 / (1-L(ISTAR)/LEDD)**(1d0/9d0)
+C             END IF
 c     New mass loss to get to target mass by JJE - 2/5/2021
             IF (IML(ISTAR).EQ.9) THEN
                BC1 = 0.1d0*(M(ISTAR)/MSUN-RML*2.5d12*CSECYR*RSUN*LSUN/(MSUN**2d0))
