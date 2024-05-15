@@ -7,21 +7,23 @@
       COMMON /NUCMAT/ HNUC(100,MAXMSH), DHNUC(100,MAXMSH)
       DIMENSION JX(15)
       DATA JX/3, 5, 9, 10, 11, 12, 15, 14, 15, 16, 17, 18, 19, 20 ,21/
-      DO 1 I = 1, 7
+      DO I = 1, 7
          J = JX(I)
-         DO 1 K = 1, NMESH
+         DO K = 1, NMESH
             IF ( H(J,K) + DH(J,K).GT.1.0D-12 ) GO TO 1 
             H(J, K) = 0.0D0
             DH(J, K) = 0.0D0
-    1 CONTINUE
+         END DO
+    1 END DO
 C Composition check for star 2 data
-      DO 2 I = 1, 7
+      DO I = 1, 7
          J = JX(I)+ 15
-         DO 2 K = 1, NMESH
+         DO K = 1, NMESH
             IF ( H(J,K) + DH(J,K).GT.1.0D-12 ) GO TO 2 
             H(J, K) = 0.0D0
             DH(J, K) = 0.0D0
-    2 CONTINUE
+         END DO
+    2 END DO
       DO K = 1,NMESH
          IF (H(15,K)+DH(15,K).LT.1d-12) THEN
             H(15,K) = 0d0

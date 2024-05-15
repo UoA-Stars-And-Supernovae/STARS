@@ -72,8 +72,9 @@ C Initialize physical constants
 C Read opacity, nuclear reaction and neutrino loss rate data
       READ (11,'(I4)') NCSX                                                     ! Read in phys02.dat.
       READ (11,99004) CSX                                                       ! TODO: Understand the format of phys02.dat
-      DO 1 N = 1, NCSX
-    1    READ (11,99004) ((CS(JR,JT,N),JR=1,90),JT=1,127)
+      DO N = 1, NCSX
+         READ (11,99004) ((CS(JR,JT,N),JR=1,90),JT=1,127)
+      END DO
       READ (11,99004) HAT
       READ (13,99004) RATEN                                                     ! Read in nrate.dat
 C RJS 18/4/08 - read in spline coefficients for diffusion
@@ -87,14 +88,17 @@ C d-coefficients
       DO I = 1,50
          READ (14,99006) (DCD(I,J),J=1,4)
       END DO
-      DO 2 J = 1, 60
+      DO J = 1, 60
 C      CT(J) = 0.0D0
-         DO 2 K = 1,MAXMSH
+         DO K = 1,MAXMSH
             H(J, K) = 0.0D0
-    2       DH(J, K) = 0.0D0
-      DO 21 J=1,9999
+            DH(J, K) = 0.0D0
+         END DO
+      END DO
+      DO J=1,9999
          MS(J) = 0.0D0
-   21    ST(J) = J
+         ST(J) = J
+      END DO
 
 C Read in data
       READ  (1,99003) NH2,IT1,IT2,JIN,JOUT,NCH,JP,IZ,IMODE,                     ! Reading in the file "data"
@@ -392,17 +396,19 @@ C This is no longer used, so I don't care whether it works or not. RJS
       IF ( AGE.GT.ST(KS+1) ) KS = KS+1
       IF ( IB.EQ.2 .AND. (ST(KS+2).EQ.0.0D0.OR.RLF.GT.0.0D0) ) STOP
       DELTA = 0.0D0
-      DO 5 K = 1, NH
-         DO 4 J = 1, 30 !60
+      DO K = 1, NH
+         DO J = 1, 30 !60
 C Don't use L, HORB in delta
             IF (J.NE.8.AND.J.NE.23.AND.J.NE.13.AND.J.NE.28.AND.J.NE.14.AND.J.NE.29) then
                DELTA = DELTA + DABS(DH(J,K))
-            end if
+            END IF
             HPPR(J,K) = HPR(J,K)
             HPR(J, K) = H(J, K)
             DHPR(J,K) = DH(J,K)
-    4       H(J, K) = H(J, K) + DH(J, K)
-    5       IF (DTY.GT.3D-4) DELTA = DELTA + AC*DABS(DH(8,K)/HPR(8,1))
+            H(J, K) = H(J, K) + DH(J, K)
+         END DO
+         IF (DTY.GT.3D-4) DELTA = DELTA + AC*DABS(DH(8,K)/HPR(8,1))
+      END DO
 C Update nucleosynthesis matrix
       DO K = 1, NHf
          DO J=1,100
@@ -413,7 +419,7 @@ C Blank DHNUC each time
 C            DHNUC(J,K) = 0d0
          END DO
       END DO
-      write (32,*) "DELTA =",DELTA, " DD = ", DD
+      WRITE(32,*) "DELTA =",DELTA, " DD = ", DD
 
       DTF = DMIN1 (DT2, DD/DELTA)
 
@@ -495,9 +501,11 @@ C      IF (IDREDGE.EQ.3) GO TO 6
       IF ( (JP.EQ.1 .AND. DTF.GE.DT1).OR.DTY.LT.6d-5 ) GO TO 6
 C clear DH in some circumstances
       WRITE (32,*) "Clearing DH..."
-      DO 7 K = 1, NH
-         DO 7 J = 1, 60
-    7       DH(J, K) = 0.0D0
+      DO K = 1, NH
+         DO J = 1, 60
+            DH(J, K) = 0.0D0
+         END DO
+      END DO
     6 IHOLD = IHOLD + 1
 C CNO equilibrium on the main sequence.
 C Does this still work???
@@ -580,18 +588,20 @@ C   11    CT(J+10) = PR(J)
       NMOD = NPR
    34 DT=0.8*DT
       IF ( DT .LT. 0.01*PR(2) ) STOP
-   33 DO 9 K = 1, NH
-         DO 9 J = 1, JOUT
+   33 DO K = 1, NH
+         DO J = 1, JOUT
             DH(J,K) = DHPR(J,K)
-    9       H(J,K) = HPR(J,K)
-            DTOLD = DTOLDP
+            H(J,K) = HPR(J,K)
+         END DO
+      END DO
+      DTOLD = DTOLDP
 C Sort out nucleosynthesis for restart
-            DO K = 1, NH
-               DO J = 1,100
-                  DHNUC(J, K) = DHNUCPR(J, K)
-                  HNUC(J, K) = HNUCPR(J, K)
-               END DO
-            END DO
+      DO K = 1, NH
+         DO J = 1,100
+            DHNUC(J, K) = DHNUCPR(J, K)
+            HNUC(J, K) = HNUCPR(J, K)
+         END DO
+      END DO
       IHOLD = 0
       RETURN
       END
