@@ -10,14 +10,19 @@
          END DO
          WRITE(24, 99001) K
       END IF
+
       DO I = 1, NE
          WRITE(24, 99001) K, (S(I,J), J=N2, N5)
       END DO
+
       WRITE(24, 99001) K
+
       DO I = 1, NE
          WRITE(24, 99001) K, (S(I,J), J=N6, N12)
       END DO
+
       WRITE(24, 99001) K
+
 99001 FORMAT (I5, 1P, 11E11.3)
       RETURN
       END

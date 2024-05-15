@@ -18,7 +18,7 @@
      &                CEN, CPL, CMEVMU, CSECYR, CLSUN, CMSUN, RSUN, TSUNYR
       COMMON /INERTI/ VI(2)
       COMMON /ANGMOM/ VROT1, VROT2, FMAC, FAM, IRAM, IRS1, IRS2
-      write (32,*) "Remeshing model"
+      WRITE(32,*) "Remeshing model"
 C RJS 22/11/07 - Save NMESH, we need it for the second remesh pass
       NMESHORIG = NMESH
       DO ISTAR = 1,IMODE!2
@@ -155,13 +155,13 @@ C Orbital stuff doesn't work properly - copy surface point to all others
          END DO
 C Reset orbital AM using period in modin
          IF (IRAM.EQ.1.AND.ISTAR.EQ.1) THEN
-            write (32,*) "Resetting orbital AM"
+            WRITE(32,*) "Resetting orbital AM"
             DO K=1,NMESH
                H(13,K) = ANG
             END DO
          END IF
          IF (IRS1.EQ.1.AND.ISTAR.EQ.1) THEN
-            write (32,*) "Resetting *1 spin"
+            WRITE(32,*) "Resetting *1 spin"
             VROT = VROT1*1d3
             OMEGA = VROT/(1d9*DEXP(H(7,1)))
 C Convert omega to code units
@@ -171,7 +171,7 @@ C Convert omega to code units
             END DO
          END IF
          IF (IRS2.EQ.1.AND.ISTAR.EQ.2) THEN
-            write (32,*) "Resetting *2 spin"
+            WRITE(32,*) "Resetting *2 spin"
             VROT = VROT2*1d3
             OMEGA = VROT/(1d9*DEXP(H(22,1)))
             OMEGA = OMEGA/DSQRT(CG)

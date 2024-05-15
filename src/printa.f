@@ -121,16 +121,16 @@ C Read first line of modin
 
 C Adjust parameters if we are doing an evolution run
       IF (ISTART.EQ.1) THEN                                                     ! This is just outputting if we set ISTART.
-         write(*,*) "Age, DT, NMOD overriden"                                   ! Useful debug information a bit
+         WRITE(*,*) "Age, DT, NMOD overriden"                                   ! Useful debug information a bit
          DTY = 3e7/(SM**2d0) * HKH
          AGE = 0d0
          NMOD = NNMOD
-         write(*,26400) "NMOD has been set to: ", NMOD
+         WRITE(*,26400) "NMOD has been set to: ", NMOD
        END IF
 
 C        WRITE (*,'(I2,F4.1)') ICEP, ALPHACE
 
-      WRITE (32,99003) NH2,IT1,IT2,JIN,JOUT,NCH,JP,IZ,IMODE,                    ! Output the data file block to out
+      WRITE(32,99003) NH2,IT1,IT2,JIN,JOUT,NCH,JP,IZ,IMODE,                    ! Output the data file block to out
      :ICL,ION,IAM,IOP,IBC,INUC,ICN,IML(1),IML(2), ISGTH, IMO, IDIFF,
      :NT1,NT2,NT3,NT4,NT5,NSV,NMONT,
      :EP,DT3,DD,ID,ISX,DT1,DT2,CT,ZS,ALPHA,CH,CC,CN,CO,
@@ -141,8 +141,8 @@ C        WRITE (*,'(I2,F4.1)') ICEP, ALPHACE
      :ISTART, HKH, GFF, NNMOD,
      :ICEP, ALPHACE,
      :IVARACC
-      WRITE (32, 99005)
-      WRITE (32, 99005) SM, DTY, AGE, PER, BMS, EC,NH,NP,NMOD,IB,PMH(1),PME(1)
+      WRITE(32, 99005)
+      WRITE(32, 99005) SM, DTY, AGE, PER, BMS, EC,NH,NP,NMOD,IB,PMH(1),PME(1)
 C Convert RML from eta to coefficient required
       RML = 4d-13*RML                                                           ! Okay so this line puts us into "Eggleton" units kinda for ML.
 C
@@ -151,12 +151,12 @@ C
       IF (IOP .EQ. 1) CALL OPSPLN
 !extra lines for COopac bit
 
-      write(*,26400) 'Selection for opacity is: ',IOP
-      write(*,26400) 'Selection for massloss (*1) is: ',IML(1)
-      write(*,26400) 'Selection for massloss (*2) is: ',IML(2)
-      write(*,26400) 'Common Envelope prescription is: ',ICEP
+      WRITE(*,26400) 'Selection for opacity is: ',IOP
+      WRITE(*,26400) 'Selection for massloss (*1) is: ',IML(1)
+      WRITE(*,26400) 'Selection for massloss (*2) is: ',IML(2)
+      WRITE(*,26400) 'Common Envelope prescription is: ',ICEP
       IF(IML(1).EQ.9) THEN
-        write(*,*) 'Target mass is:', RML/4d-13
+        WRITE(*,*) 'Target mass is:', RML/4d-13
       ENDIF
       fZ=ZS
 C READ IN NEW OPACITY DATA and SETUP STUFF - JJ 4/11/02
@@ -166,7 +166,7 @@ C     Setup format statements
 99043 FORMAT (5F7.3)
 99045 FORMAT (3F7.3)
       if(IOP.ge.2) then
-         write(*,*) 'Reading in base tables and setting up splines'
+         WRITE(*,*) 'Reading in base tables and setting up splines'
          do I=1,141
             opT(I)=3d0+0.05d0*(I-1)
          enddo
@@ -174,13 +174,13 @@ C     Setup format statements
             opR(J)=-8d0+0.5d0*(J-1)
          enddo
 C     Load in CO tables and setup splines
-         write(*,*) 'Reading in Variable tables and setting up splines'
+         WRITE(*,*) 'Reading in Variable tables and setting up splines'
 C         OPEN(10,FILE='COtables',STATUS='unknown',ACCESS='SEQUENTIAL')
          do K=1,305
-            read(10,99045) b3,b1,b2
+            READ(10,99045) b3,b1,b2
 C            write (*,*) K,b3
             do I=1,141
-               read (10,99042) temp,(opacCO(1,1,I,J,K),J=1,31)
+               READ(10,99042) temp,(opacCO(1,1,I,J,K),J=1,31)
             enddo
          enddo
 C         CLOSE(10)
@@ -189,7 +189,7 @@ C         CLOSE(10)
 C     Bit to add in variable molecular bits from old paper in Marigo
 C     Setup composition matrix
          if(IOP.eq.4.or.IOP.eq.6) then
-            write(*,*) "Not Available"
+            WRITE(*,*) "Not Available"
          endif
 C     Setup CO spline tables
          do K=1,305
@@ -238,11 +238,11 @@ C
       END IF
 C Read the initial model
       DO  K = 1, NH
-         READ (30, 99002) (H(J,K), J=1, JIN)
+         READ(30, 99002) (H(J,K), J=1, JIN)
       END DO
 C If available, read initial (last converged) changes
       DO K = 1, NH
-         READ (30, 99002, END = 61, ERR = 61) (DH(J,K), J=1, JIN)
+         READ(30, 99002, END = 61, ERR = 61) (DH(J,K), J=1, JIN)
          DO 15 J = 1,JIN
             DHPR(J,K) = DH(J,K)
    15    CONTINUE
@@ -250,9 +250,9 @@ C If available, read initial (last converged) changes
  61   CONTINUE
 C Read in first line of star 2 - most of this gets ignored
       IF (IMODE.EQ.2) THEN
-         READ (50, 99005) SM2, DTY2, AGE2, PER2, BMS2, EC2,NNH2,NP2,NMOD2,IB2,PMH(2),PME(2)
+         READ(50, 99005) SM2, DTY2, AGE2, PER2, BMS2, EC2,NNH2,NP2,NMOD2,IB2,PMH(2),PME(2)
          DO K = 1, NH
-            READ (50, 99002) (H(J,K), J=16, JIN+15)
+            READ(50, 99002) (H(J,K), J=16, JIN+15)
          END DO
       END IF
 C Attempt to read in nucleosynthesis input - but don't worry if it doesn't exist.
@@ -263,13 +263,13 @@ C Attempt to read in nucleosynthesis input - but don't worry if it doesn't exist
          END DO
       END DO
 C Star 1 nucleosynthesis data
-      READ (31, 99005, ERR = 12, END = 12)
+      READ(31, 99005, ERR = 12, END = 12)
       DO K = 1, NH
          READ(31, 99002, ERR = 12, END = 12) (HNUC(J,K), J=1, 50)
       END DO
       IF (IMODE.EQ.2) THEN
 C Star 2 nucleosynthesis data
-         READ (51, 99005, ERR = 12, END = 12)
+         READ(51, 99005, ERR = 12, END = 12)
          DO K = 1, NH
             READ(51, 99002, ERR = 12, END = 12) (HNUC(J,K), J=51, 100)
          END DO

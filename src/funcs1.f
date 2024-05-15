@@ -53,11 +53,11 @@ C rest of this subroutine. RJS 5/7/06
       M = DEXP(AM)
 c Check for age of star and also timestep and stop if either too large - JJE - 2/5/2021
       IF(AGE.GE.1d15) THEN
-         write(*,*) "Age of star beyond 1000 TYrs - Stopping - ",AGE
+         WRITE(*,*) "Age of star beyond 1000 TYrs - Stopping - ", AGE
          STOP
       ENDIF
       IF(DT/CSECYR.GE.1d12) THEN
-         write(*,*) "DT in years is over 1 Tyrs - stopping",DT/CSECYR
+         WRITE(*,*) "DT in years is over 1 Tyrs - stopping", DT/CSECYR
          STOP
       ENDIF
 C Spin period to equns - this isn't the best way of doing this...
@@ -115,9 +115,9 @@ C Need to mess about with units to get this right
       OSPIN = OSPIN*SQRT(CG) ! now in s^-1
       GRAV = GRAV - 1d11*2.0/3.0*OSPIN**2.0*R
       IF (1.0D11*CG*M/R2.LT.1d11*2.0/3.0*OSPIN**2.0*R.AND.I.EQ.-1) THEN
-         WRITE (32+(ISTAR-1),*) "break-up velocity reached!"
-         write (32+(ISTAR-1),*) ISTAR, 1.0D11*CG*M/R2, 1d11*2.0/3.0*OSPIN**2.0*R, VI(ISTAR)
-         write (32+(ISTAR-1),*) OSPIN, R, H(14+15*(ISTAR - 1),1) + DH(14+15*(ISTAR - 1),1)
+         WRITE(32+(ISTAR-1),*) "break-up velocity reached!"
+         WRITE(32+(ISTAR-1),*) ISTAR, 1.0D11*CG*M/R2, 1d11*2.0/3.0*OSPIN**2.0*R, VI(ISTAR)
+         WRITE(32+(ISTAR-1),*) OSPIN, R, H(14+15*(ISTAR - 1),1) + DH(14+15*(ISTAR - 1),1)
          STOP
       END IF
       APM = -1.0D11*GRAV/(PI4*R2*P)
@@ -254,7 +254,7 @@ C helium equation
 C carbon equation
       X12 = VX12
       X12T = (12.0*(IX*(RPC - RPN) - IY*(R3A - RAC)
-*     :            + IZ*(2.0*(RCC + RCCG) + RCO)) + DX12/DT)*MK
+C     :            + IZ*(2.0*(RCC + RCCG) + RCO)) + DX12/DT)*MK
      :            + IZ*2.0*RCC) + DX12/DT)*MK
 C nitrogen equation
       X14 = VX14

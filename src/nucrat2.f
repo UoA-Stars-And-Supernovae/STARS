@@ -355,7 +355,7 @@ C (n,g) reactions
 C Check for negative rates
       DO I=1,45
          IF (NRATE(I).LT.0d0) THEN
-            write (32,*) "-ve rate in ",I
+            WRITE(32,*) "-ve rate in ",I
             NRATE(I) = 0d0
          END IF
       END DO

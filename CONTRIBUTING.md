@@ -34,3 +34,7 @@ Use full words where possible, or known abbreviations where needed.
 Spaces v. Tabs. Use 4 spaces. Bind TAB to input 4 spaces if you need to.
 
 Whitespace. One-third whitespace, one-third code, one-third comments.
+
+Consistency is king. Follow the same essence of style as the current code.
+Break consistency at your own peril.
+Fortran declarations (e.g., WRITE, READ etc) should be in UPPERCASE, with no space between it and parentheses.

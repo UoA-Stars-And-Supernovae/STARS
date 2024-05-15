@@ -157,14 +157,16 @@ C     EXX(J) = 0.0D0
                VLT = 0d0
                NPRINT = 0
 C     Decide whether to print the interior or not
-               IF ( MOD(NMOD,NWRT1).EQ.0 ) NPRINT = 1
-               IF ( NPRINT.EQ.1 ) WRITE(32+20*(ISTAR-1), 99001) (AX(ISX(J)), J=1,15)
-               IF (NPRINT.EQ.1.AND.IW(102).NE.0) WRITE (36+20*(ISTAR-1),*) NMOD
-               IF (NPRINT.EQ.1.AND.IW(102).NE.0) WRITE (37+20*(ISTAR-1),*) NMOD
-               IF (NPRINT.EQ.1.AND.IW(102).NE.0) WRITE (38+20*(ISTAR-1),*) NMOD
-      IF ( NPRINT.EQ.1.AND.IW(102).NE.0 ) WRITE(36+20*(ISTAR-1), 99001) (BX(J), J=1,16)
-      IF ( NPRINT.EQ.1.AND.IW(102).NE.0 ) WRITE(37+20*(ISTAR-1), 99001) (CX(J), J=1,16)
-      IF ( NPRINT.EQ.1.AND.IW(102).NE.0 ) WRITE(38+20*(ISTAR-1), 99001) (DX(J), J=1,17)
+               IF (MOD(NMOD,NWRT1).EQ.0) NPRINT = 1
+               IF (NPRINT.EQ.1) THEN
+                   WRITE(32+20*(ISTAR-1), 99001) (AX(ISX(J)), J=1,15)
+               END IF
+               IF (NPRINT.EQ.1.AND.IW(102).NE.0) WRITE(36+20*(ISTAR-1),*) NMOD
+               IF (NPRINT.EQ.1.AND.IW(102).NE.0) WRITE(37+20*(ISTAR-1),*) NMOD
+               IF (NPRINT.EQ.1.AND.IW(102).NE.0) WRITE(38+20*(ISTAR-1),*) NMOD
+      IF (NPRINT.EQ.1.AND.IW(102).NE.0) WRITE(36+20*(ISTAR-1), 99001) (BX(J), J=1,16)
+      IF (NPRINT.EQ.1.AND.IW(102).NE.0) WRITE(37+20*(ISTAR-1), 99001) (CX(J), J=1,16)
+      IF (NPRINT.EQ.1.AND.IW(102).NE.0) WRITE(38+20*(ISTAR-1), 99001) (DX(J), J=1,17)
          DO KK = 1, NMESH
             K = NMESH + 1 - KK
             DO J = 1, 20
@@ -404,9 +406,9 @@ C Output for use in MONTAGE -- may need smart output control RJS 29/5/08
 99008             FORMAT (1P,12(1X,E14.7))
 99018             FORMAT (I4, 1X, I6, 1X, 1P, E20.13, 2(1X,E12.5))
                   IF (K.EQ.NMESH) THEN
-                     WRITE (42+20*(ISTAR-1),99018) NMESH, NMOD, AGE*CSECYR, VLH, VLE
+                     WRITE(42+20*(ISTAR-1),99018) NMESH, NMOD, AGE*CSECYR, VLH, VLE
                   END IF
-                  WRITE (42+20*(ISTAR-1),99008) DLOG10(PX(4)), DLOG10(PX(3)), DLOG10(WL),
+                  WRITE(42+20*(ISTAR-1),99008) DLOG10(PX(4)), DLOG10(PX(3)), DLOG10(WL),
      :                   DLOG10(DMAX1(WCV,1d-30)), DLOG10(PX(17)*RSUN*1d11), PX(9),
      :                   PX(10), PX(16), PX(11), PX(12), PX(13), PX(14)
                END IF
@@ -438,7 +440,7 @@ C        Adjust separation due to common envelope effects (sorted in massloss.f)
             ! Reduce the orbit due to CEE effects.
             ! This change results in SEP = SEP + DSEP
             DELTA_H = (TM(1)*TM(2)*SQRT(CG*(TM(1)+TM(2))*((TM(1)+TM(2))*(H(13,1)/(CG*TM(1)*TM(2))+0d0)**2.0+DSEP)))/DT**2d0
-            write(*,*) "Incrementing angular momentum by", -DELTA_H/1e-3, ", current value is", H(13,1)
+            WRITE(*,*) "Incrementing angular momentum by", -DELTA_H/1e-3, ", current value is", H(13,1)
             H(13,1) = H(13,1)-DELTA_H/1e-3! (SQRT((TM(1)+TM(2))*(TM(1)**2.0*TM(2)**2.0*DSEP/RSUN+TM(1)*H(13,1)**2.0+TM(2)*H(13,1)**2))-H(13,1)*(TM(1)-TM(2))/(TM(1)+TM(2)))/1e6 ! todo justfy why
          END IF
 
@@ -475,7 +477,7 @@ C        Store core mass. need to be more intelligent about this - SMR
          MHC(ISTAR) = VMH
          MENVC(ISTAR) = MENV(ISTAR)/MSUN
 C Write plot/plot2 file
-         WRITE (33+20*(ISTAR-1),115) NMOD,AGE,LOG10(PX(17)),LOG10(PX(4)),
+         WRITE(33+20*(ISTAR-1),115) NMOD,AGE,LOG10(PX(17)),LOG10(PX(4)),
      &        LOG10(PX(18)),PX(9),VMH,VME,LOG10(MAX(VLH,1.01D-10)),
      &        LOG10(MAX(VLE,1.01D-10)), LOG10(MAX(VLC,1.01D-10)), ! TEMPORARY WILL GO IN SNEPLOT
      &        MCB,VMX(1),VMX(2),LOG10(FK),DTY,(PX(JJ),JJ=10,14), PX(16),
@@ -488,18 +490,18 @@ C There are 99 things in the format statement and 74 have been used.
     !     IF(ISTAR.EQ.2) RLFcheck2=RLF !!!JJE's new timestep check - 11/12/2023
          CALL FLUSH(33+20*(ISTAR-1))
 C Write output for nucleosynthesis stuff
-         write (41+20*(ISTAR - 1),116) NMOD,AGE,VMH,VME,VMH - VME,PX(9),XASH,(TCB(I)/1d8,
+         WRITE(41+20*(ISTAR - 1),116) NMOD,AGE,VMH,VME,VMH - VME,PX(9),XASH,(TCB(I)/1d8,
      :        I=1,12),RCB,
      :        TBCE,THMID,THBASE,TINTMID,TINTBASE,PERIOD,DABS(DMT)
  116     format (I6,1P,E16.9,0P,17(1X,E13.6),1P,19(1X,E13.6),15I5)
          CALL FLUSH(41+20*(ISTAR - 1))
          IF (IW(102).NE.0) THEN
 C Write surface/centre abundances, yields -- but only if using NS code!
-            write (39+20*(ISTAR - 1),117) NMOD,AGE,(HNUC(I+50*(ISTAR-1),1),I=1,50),
+            WRITE(39+20*(ISTAR - 1),117) NMOD,AGE,(HNUC(I+50*(ISTAR-1),1),I=1,50),
      :           WINDML(ISTAR)/MSUN*CSECYR, FAKEWIND(ISTAR)/MSUN*CSECYR, DTY
  117        format (I6,1P,E16.9,54(1X,E13.6))
             CALL FLUSH(39+20*(ISTAR - 1))
-            write (40+20*(ISTAR - 1),117) NMOD,AGE,(HNUC(I+50*(ISTAR-1),NMESH),I=1,50)
+            WRITE(40+20*(ISTAR - 1),117) NMOD,AGE,(HNUC(I+50*(ISTAR-1),NMESH),I=1,50)
      :           , H(5+15*(ISTAR - 1),NMESH)
             call flush(40+20*(ISTAR - 1))
          END IF
@@ -507,11 +509,11 @@ C Write surface/centre abundances, yields -- but only if using NS code!
 * Write detailed model data for plotting purposes. -- Note new unit number needed! RJS
 *
 C      NWRT5 = 21
-C      IF (IEND.LT.0) WRITE (11,'(2I6)') NMESH, NWRT5
+C      IF (IEND.LT.0) WRITE(11,'(2I6)') NMESH, NWRT5
 C      IF (NPRINT.EQ.1) THEN
-C         WRITE (11,10001) NMOD, AGE
+C         WRITE(11,10001) NMOD, AGE
 C         DO KK = 1, NMESH
-C            WRITE (11,10002) (SX(IPX(J),KK+1), J=1, NWRT5)
+C            WRITE(11,10002) (SX(IPX(J),KK+1), J=1, NWRT5)
 C         END DO
 C      END IF
 10001    FORMAT (I6,1P,E17.9,0P)

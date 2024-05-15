@@ -91,8 +91,11 @@ C DETERMINE 'TYPICAL' VALUES FOR EACH  VARIABLE
          END DO
       ELSE
          ISTAR = NOC - 1
-         IF (ISTAR.EQ.1) write (32,*) "Star 1 nucleosynthesis"
-         IF (ISTAR.EQ.2) write (32,*) "Star 2 nucleosynthesis"
+         IF (ISTAR.EQ.1) THEN ! Can be done cleaner...
+            WRITE(32,*) "Star 1 nucleosynthesis"
+         ELSEIF (ISTAR.EQ.2) THEN
+            WRITE(32,*) "Star 2 nucleosynthesis"
+         END IF
 C Scale minor elements relative to most abundant
          DO J = 1,NV
             IF (J.LE.30) THEN
@@ -280,7 +283,7 @@ C APPLY CORRECTIONS, SCALED DOWN IF TOO LARGE
          IF (ERR.LT.EPS.AND.FACSG.NE.1d0) THEN
             FACSG = 10.0*FACSG
             FACSG = DMIN1(1d0,FACSG)
-            write(32,*) "Boosting mixing", FACSG
+            WRITE(32,*) "Boosting mixing", FACSG
             ERR = 1d-3
 C Yes, I know I shouldn't do this, but haven't worked out another way yet
             GOTO 600

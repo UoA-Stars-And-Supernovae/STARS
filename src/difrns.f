@@ -113,7 +113,9 @@ C will need to ammend if new things are passed to equns
                FN1(5) = BC4
                FN1(5+51) = BC5
             END IF
-            IF ( KH.GE.1 ) WRITE(24, 99001) VAR, FN1
+            IF ( KH.GE.1 ) THEN
+               WRITE(24, 99001) VAR, FN1
+            END IF
 99001       FORMAT (/, 20(/,1P8E16.8))
             DO I = 1, NF
                FN2(3, I) = FN1(I)
@@ -143,7 +145,9 @@ C Store variations to be restored later
 C               IF (K.EQ.199) write (*,*) L, M, ID(L)
                   CALL FUNCS1(M, K, K1, K2, 2)
 C               IF (K.EQ.199) write (*,*) L, M, ID(L)
-                  IF ( KH.GE.1 ) WRITE(24, 99001) VAR, FN1
+                  IF ( KH.GE.1 ) THEN
+                     WRITE(24, 99001) VAR, FN1
+                  END IF
                   DO I = 1, 51  !NF
                      DFN2(3, L, I+51) = FN1(I)
                   END DO
@@ -165,7 +169,9 @@ C will need to ammend if new things are passed to equns
                   FN1(5) = BC4
                   DFN2(3, L, 5+51) = BC5
                END IF
-               IF ( KH.GE.1 ) WRITE(24, 99001) VAR, FN1
+               IF ( KH.GE.1 ) THEN
+                  WRITE(24, 99001) VAR, FN1
+               END IF
                DO I = 1, 51     !NF
                   DFN2(3, L, I) = FN1(I)
                END DO

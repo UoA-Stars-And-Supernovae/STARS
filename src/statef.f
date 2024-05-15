@@ -375,9 +375,9 @@ C about right though and that's the important one
          END IF
       ELSE
 !! DO MY NEW OPACITY STUFF - JJ 5/11/02
-         fT=log10(exp(TL))
+         fT=LOG10(EXP(TL))
 C RJS - note fR is now log rho/(T6^3) not log rho as it was above
-         fR=log10(RHO)-3d0*(fT-6d0)
+         fR=LOG10(RHO)-3d0*(fT-6d0)
          fX = NA(1)*AM(1)/AVM
          fY = NA(2)*AM(2)/AVM
          if(IOP.eq.2) then

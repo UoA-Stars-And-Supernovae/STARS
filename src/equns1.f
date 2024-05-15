@@ -22,11 +22,11 @@ C VAR(3),(2),(1) are values of VAR at current, previous and anteprevious meshpts
       COMMON /VARACC/ IVARACC
       PS(VX) = 0.5D0*(VX+DABS(VX))
 C 30/5/03 RJS Smooth viscous mesh
-      WTM = 0.5 + 0.5*tanh((K - TRC1)/1.5)
+      WTM = 0.5 + 0.5*TANH((K - TRC1)/1.5)
       WTM = MWT*WTM
 C Surface mesh viscosity
       IF (IVMS.EQ.1) THEN
-         WTM = WTM + MWTS*(0.5 - 0.5*tanh((K - TRC2)/1.5))
+         WTM = WTM + MWTS*(0.5 - 0.5*TANH((K - TRC2)/1.5))
       END IF
       IF (WTM.GT.1.0) WTM = 1.0
       IF (WTM.LT.0.0) WTM = 0.0

@@ -18,7 +18,7 @@
      &   (FR.LT.FRM(1)).OR.(FR.GE.FRM(MR))) THEN
          FKL = FKLO
          FKH = FKHO
-         WRITE (6,100) TF,FR,FKL,FKH
+         WRITE(6,100) TF,FR,FKL,FKH
       ELSE
          FKLO = FKL
          FKHO = FKH

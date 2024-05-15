@@ -157,11 +157,11 @@ C can't diffuse through H if we don't have any...
             IF (XA2(41).LT.0.1) D(II) = 0d0
             IF (XA2(41).LT.0.1) A12(II) = 0d0
             IF (D(II).NE.D(II)) THEN
-               WRITE (*,*) "NaN in element", II
+               WRITE(*,*) "NaN in element", II
                STOP
             END IF
             IF (A12(II).NE.A12(II)) THEN
-               WRITE (*,*) "NaN in element, A12 ", II, K
+               WRITE(*,*) "NaN in element, A12 ", II, K
                STOP
             END IF
 C Assuming all species full ionized -- not this is not consistent with the

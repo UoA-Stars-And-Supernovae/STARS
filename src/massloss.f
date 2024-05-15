@@ -131,8 +131,8 @@ c      endif
 
 c*****NL***************************************
 cc     c     pre-WR: de Jager 1998
-               zml1=(log10(T(ISTAR))-4.05d0)/0.75d0
-               zml2=(log10(L(ISTAR)/LSUN)-4.6d0)/2.1d0
+               zml1=(LOG10(T(ISTAR))-4.05d0)/0.75d0
+               zml2=(LOG10(L(ISTAR)/LSUN)-4.6d0)/2.1d0
                BC1=0d0
                do n2=0,5
                   do i2=0,n2
@@ -154,18 +154,18 @@ c     !!!!WOLF RAYET MASS-LOSS!!!!!
 CWhen XH(surface)<0.4 and log T > 4.0 the star is in the WNL phase:
 CUse a constant rate of: 8e-5 M(sun) yr^-1
                BCWNL = 8d-5*MSUN/CSECYR
-               IF (SURFXH.LT.0.4.AND.log10(T(ISTAR)).GT.3.9) THEN
-                  BC1 = 1d1*(BCWNL - BCPREWR)*(log10(T(ISTAR)) - 3.9) + BCPREWR
+               IF (SURFXH.LT.0.4.AND.LOG10(T(ISTAR)).GT.3.9) THEN
+                  BC1 = 1d1*(BCWNL - BCPREWR)*(LOG10(T(ISTAR)) - 3.9) + BCPREWR
                END IF
-               IF (SURFXH.LT.0.4.AND.log10(T(ISTAR)).GT.4.0) BC1 = 8d-5*MSUN/CSECYR
+               IF (SURFXH.LT.0.4.AND.LOG10(T(ISTAR)).GT.4.0) BC1 = 8d-5*MSUN/CSECYR
                BCWC = 1d-7*(M(ISTAR)/MSUN)**2.5*MSUN/CSECYR
-               IF (SURFXH.LT.3d-3.AND.log10(T(ISTAR)).GT.4.0) THEN
+               IF (SURFXH.LT.3d-3.AND.LOG10(T(ISTAR)).GT.4.0) THEN
                   BC1 = 5d2*(BCWNL - BCWC)*(SURFXH - 1d-3) + BCWC
                END IF
 CWhen XH(surface)<1e-3 and log T > 4.0 the star is in the WNE,WC or WO
 Cphase:
 CFor WNE use: 1.0e-7 (M(WR)/M(sun))**2.5 M(sun) yr^-1
-               IF (SURFXH.LT.1d-3.AND.log10(T(ISTAR)).GT.4.0) THEN
+               IF (SURFXH.LT.1d-3.AND.LOG10(T(ISTAR)).GT.4.0) THEN
                   BC1 = 1d-7*(M(ISTAR)/MSUN)**2.5*MSUN/CSECYR
                   IF (COHe.GT.3d-2) BC1 = 0.6d-7*(M(ISTAR)/MSUN)**2.5*MSUN/CSECYR
                END IF
@@ -178,8 +178,8 @@ C - so this is the same as IML 4 but changing so that it fixes a few bugs
                SURFXH=XH(ISTAR)
                SURFXHe=XHE(ISTAR)/4.0
 cc     c     pre-WR: de Jager 1988
-               zml1=(log10(T(ISTAR))-4.05d0)/0.75d0
-               zml2=(log10(L(ISTAR)/LSUN)-4.6d0)/2.1d0
+               zml1=(LOG10(T(ISTAR))-4.05d0)/0.75d0
+               zml2=(LOG10(L(ISTAR)/LSUN)-4.6d0)/2.1d0
                if(zml2.ge.1d0) zml2=1d0 !if more luminous that bounds, set to max
                if(zml1.ge.1d0) zml1=1d0 !if more hot that bounds, set to max
                if(zml1.le.-1d0) zml1=-1d0 !if more cool that bounds, set to max
@@ -223,20 +223,20 @@ C Am I missing an MSUN out of all this? I think so...
                BCPREWR = BC1
 C Note this smooths out the bistability jump... RJS
 CWhen XH(surface)<0.4 and log T > 4.0 the star is in the WNL phase:
-               BCWNL = -13.6 + 1.63*log10(L(ISTAR)/LSUN)+2.22*log10(XHE(ISTAR))
+               BCWNL = -13.6 + 1.63*LOG10(L(ISTAR)/LSUN)+2.22*LOG10(XHE(ISTAR))
 C Now has metallicity scaling
                BCWNL = ((ZS*50d0)**0.5d0)*(10.0**BCWNL)*MSUN/CSECYR
-               IF (SURFXH.LT.0.4.AND.log10(T(ISTAR)).GT.3.9) THEN
-                  BC1 = 1d1*(BCWNL - BCPREWR)*(log10(T(ISTAR)) - 3.9) + BCPREWR
+               IF (SURFXH.LT.0.4.AND.LOG10(T(ISTAR)).GT.3.9) THEN
+                  BC1 = 1d1*(BCWNL - BCPREWR)*(LOG10(T(ISTAR)) - 3.9) + BCPREWR
                END IF
-               IF (SURFXH.LT.0.4.AND.log10(T(ISTAR)).GE.4.0) BC1 = BCWNL
+               IF (SURFXH.LT.0.4.AND.LOG10(T(ISTAR)).GE.4.0) BC1 = BCWNL
 CWhen XH(surface)<1e-3 and log T > 4.0 the star is in the WNE,WC or WO
 Cphase:
-               BCWC = -8.3 + 0.84*log10(L(ISTAR)/LSUN) + 2.04*log10(XHE(ISTAR)) +
-     :              1.04*log10(1d0-XHE(ISTAR))
+               BCWC = -8.3 + 0.84*LOG10(L(ISTAR)/LSUN) + 2.04*LOG10(XHE(ISTAR)) +
+     :              1.04*LOG10(1d0-XHE(ISTAR))
 C Also now metallicity scaled
                BCWC = ((ZS/0.02)**0.5d0)*(10.0**BCWC)*MSUN/CSECYR
-               IF (SURFXH.LT.1d-3.AND.log10(T(ISTAR)).GE.4.0) THEN
+               IF (SURFXH.LT.1d-3.AND.LOG10(T(ISTAR)).GE.4.0) THEN
 C     WC rate
                   IF (COHe.GT.2d-2) THEN
                      BC1 = 1d2*(BCWC-BCWNL)*(COHe - 2d-2) + BCWNL
@@ -251,8 +251,8 @@ C - slow WR ML rates (should be a parameter in data?)
                SURFXH=XH(ISTAR)
                SURFXHe=XHE(ISTAR)/4.0
 cc     c     pre-WR: de Jager 1988
-               zml1=(log10(T(ISTAR))-4.05d0)/0.75d0
-               zml2=(log10(L(ISTAR)/LSUN)-4.6d0)/2.1d0
+               zml1=(LOG10(T(ISTAR))-4.05d0)/0.75d0
+               zml2=(LOG10(L(ISTAR)/LSUN)-4.6d0)/2.1d0
                if(zml2.ge.1d0) zml2=1d0 !if more luminous that bounds, set to max
                if(zml1.ge.1d0) zml1=1d0 !if more hot that bounds, set to max
                if(zml1.le.-1d0) zml1=-1d0 !if more cool that bounds, set to max
@@ -296,24 +296,24 @@ C Am I missing an MSUN out of all this? I think so...
                   BCPREWR = BC1
 C     Note this smooths out the bistability jump... RJS
 C     When XH(surface)<0.4 and log T > 4.0 the star is in the WNL phase:
-                  BCWNL = -13.6 + 1.63*log10(L(ISTAR)/LSUN)+2.22*log10(XHE(ISTAR))
+                  BCWNL = -13.6 + 1.63*LOG10(L(ISTAR)/LSUN)+2.22*LOG10(XHE(ISTAR))
 C     Now has metallicity scaling
                   BCWNL = ((ZS*50d0)**0.5d0)*(10.0**BCWNL)*MSUN/CSECYR
                   IF(SURFXH.LE.0.42.AND.SURFXH.GT.0.40) THEN
                      BCWNL=(BCWNL-BCPREWR)*(0.42-SURFXH)*5d1 + BCPREWR
                   ENDIF
                   !!!^^^^^^^Jan new bit to account for composition turning on
-                  IF (SURFXH.LE.0.42.AND.log10(T(ISTAR)).GT.3.9) THEN
-                     BC1 = 1d1*(BCWNL - BCPREWR)*(log10(T(ISTAR)) - 3.9) + BCPREWR
+                  IF (SURFXH.LE.0.42.AND.LOG10(T(ISTAR)).GT.3.9) THEN
+                     BC1 = 1d1*(BCWNL - BCPREWR)*(LOG10(T(ISTAR)) - 3.9) + BCPREWR
                   END IF
-                  IF (SURFXH.LE.0.42.AND.log10(T(ISTAR)).GE.4.0) BC1 = BCWNL
+                  IF (SURFXH.LE.0.42.AND.LOG10(T(ISTAR)).GE.4.0) BC1 = BCWNL
 C     When XH(surface)<1e-3 and log T > 4.0 the star is in the WNE,WC or WO
 C     phase:
-                  BCWC = -8.3 + 0.84*log10(L(ISTAR)/LSUN) + 2.04*log10(XHE(ISTAR)) +
-     :                 1.04*log10(1d0-XHE(ISTAR))
+                  BCWC = -8.3 + 0.84*LOG10(L(ISTAR)/LSUN) + 2.04*LOG10(XHE(ISTAR)) +
+     :                 1.04*LOG10(1d0-XHE(ISTAR))
 C     Also now metallicity scaled
                   BCWC = ((ZS/0.02)**0.5d0)*(10.0**BCWC)*MSUN/CSECYR
-                  IF (SURFXH.LT.1d-3.AND.log10(T(ISTAR)).GE.4.0) THEN
+                  IF (SURFXH.LT.1d-3.AND.LOG10(T(ISTAR)).GE.4.0) THEN
 C     WC rate
                      IF (COHe.GT.2d-2) THEN
                         BC1 = 1d2*(BCWC-BCWNL)*(COHe - 2d-2) + BCWNL
@@ -329,8 +329,8 @@ C - so this is the same as IML 4 but changing so that it fixes a few bugs
                SURFXH=XH(ISTAR)
                SURFXHe=XHE(ISTAR)/4.0
 cc     c     pre-WR: de Jager 1988
-               zml1=(log10(T(ISTAR))-4.05d0)/0.75d0
-               zml2=(log10(L(ISTAR)/LSUN)-4.6d0)/2.1d0
+               zml1=(LOG10(T(ISTAR))-4.05d0)/0.75d0
+               zml2=(LOG10(L(ISTAR)/LSUN)-4.6d0)/2.1d0
                if(zml2.ge.1d0) zml2=1d0 !if more luminous that bounds, set to max
                if(zml1.ge.1d0) zml1=1d0 !if more hot that bounds, set to max
                if(zml1.le.-1d0) zml1=-1d0 !if more cool that bounds, set to max

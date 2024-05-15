@@ -91,8 +91,12 @@ C What does D do? It is set to zero in each loop, but doesn't seem to be used.
             C(K, LM(J), L-N12+N14) = S(J, L)
          END DO
       END DO
-      IF ( KH.EQ.0 ) RETURN
+      IF ( KH.EQ.0 ) THEN
+         RETURN
+      END IF
+
       WRITE(24, 99001) K, KM, LM, NM
+
 99001 FORMAT (32I3)
       M = J6 - N12 + N14
       DO J = 1, NE

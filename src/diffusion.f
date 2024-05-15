@@ -127,14 +127,16 @@ C         if (I.EQ.2) write (*,*) Q1t, Q1, Qt
 C delta fudge to stop getting silly values
          delta = dmin1(delta, 0.1d0)
 C         if (I.EQ.2) write (*,*) S1, St, delta
-         IF (delta.gt.1d0) write (*,*) "delta problems!", delta, I
+         IF (delta.gt.1d0) THEN
+            WRITE(*,*) "delta problems!", delta, I
+         END IF
          IF (delta.gt.1d0.AND.I.EQ.2) THEN
-            write (*,*) A, B, T, RHO, X(1), X(2)
-            write (*,*) ((x1**2d0)*Q1 + (xt**2d0)*Qt + x1*xt*Q1t)
-            write (*,*) 5d0*C**2d0*((m1**2d0)*P1*(x1**2d0) + (mt**2d0)*Pt*(xt**2d0)
+            WRITE(*,*) A, B, T, RHO, X(1), X(2)
+            WRITE(*,*) ((x1**2d0)*Q1 + (xt**2d0)*Qt + x1*xt*Q1t)
+            WRITE(*,*) 5d0*C**2d0*((m1**2d0)*P1*(x1**2d0) + (mt**2d0)*Pt*(xt**2d0)
      :        + P1t*x1*xt)
-            write (*,*) C, m1, mt, x1, xt, P1, Pt, P1t, Q1, Qt, Q1t
-            stop
+            WRITE(*,*) C, m1, mt, x1, xt, P1, Pt, P1t, Q1, Qt, Q1t
+            STOP
          END IF
          D(I) = 3d0*CKBA*T/(16d0*dnsum*msum*m1*mt*PHI1t1(1))
 C second approx to diffusion coeff.

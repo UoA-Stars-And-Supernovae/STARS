@@ -16,15 +16,15 @@
      &   (fR.LT.FRM(1)).OR.(fR.GE.FRM(MR))) THEN
          FKL = FKLO
          FKH = FKHO
-         WRITE (6,100) fT,fR,FKL,FKH
+         WRITE(6,100) fT,fR,FKL,FKH
       ELSE
          FKLO = FKL
          FKHO = FKH
 *
 * Find interval in which target point lies.
 *
-         I=int((fT-TFM(1))*20.0)+1
-         J=int((fR-FRM(1))*2.0)+1
+         I=INT((fT-TFM(1))*20.0)+1
+         J=INT((fR-FRM(1))*2.0)+1
 !         I = 1 + (MT-1)*(TF-TFM(1))/(TFM(MT)-TFM(1))
 !         J = 1 + (MR-1)*(FR-FRM(1))/(FRM(MR)-FRM(1))
 C RJS 29/9/05 - Fudge to stop going out of array
