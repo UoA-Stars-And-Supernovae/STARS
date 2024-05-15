@@ -1,23 +1,27 @@
-#!/bin/csh
+#!/bin/bash
 
 # make clean && make # Debugging
 
-set BSDIR=/home/sric560/Documents/STARS
-set DATDIR=$BSDIR/dat
-set EXEDIR=$BSDIR
+BSDIR="/home/sric560/Documents/STARS"
+DATDIR="$BSDIR/dat"
+EXEDIR="$BSDIR"
 
-echo $DATDIR
-echo $EXEDIR
+echo "$DATDIR"
+echo "$EXEDIR"
 
 # Clean up if previous run was aborted.
 # Touch prevents "no such file" error.
-#touch fort.zorkzork
-#rm -f fort.*
-# Compile and clean object files.
-#make ; rm -f *.o
-#unalias rm
-#make clean
-#make
+touch fort.zorkzork
+rm -f fort.*
+
+if [ ! -f $EXEDIR/bs ]; then
+    echo "bs executable does not exist. Compiling..."
+    CURRENT_DIR=$(pwd)
+    cd "$BSDIR"
+    make clean
+    make
+    cd "$CURRENT_DIR"
+fi
 
 #ls -lah src/
 #read -n 1 -s -r -p "Press any key to continue"
@@ -76,5 +80,4 @@ $EXEDIR/bs
 #mv fort.99 vini
 rm -f fort.*
 #alias rm rm -i
-
-# mv plot plot.secondary
+echo "Complete."
