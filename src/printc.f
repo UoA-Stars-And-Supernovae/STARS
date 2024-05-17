@@ -1,6 +1,10 @@
 **==PRINTC.FOR
       SUBROUTINE PRINTC(K)
-      IMPLICIT REAL*8(A-H, O-Z)
+      IMPLICIT NONE
+      REAL*8 ER, D, SOLV, S, C
+      INTEGER N6, N12, J, JW, I, IW, K, KH
+      INTEGER N14, N2, MM, I5, N5, N10, NE, MAXMSH
+
       PARAMETER (MAXMSH = 2000)
       COMMON /SOLV  / C(MAXMSH+1,51,51),S(50,151),ER(60),D,KH,NE,N2,
      :                N5, N6, N10, N12, N14, MM, IW(101), JW(4)

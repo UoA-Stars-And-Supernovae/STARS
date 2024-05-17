@@ -1,6 +1,9 @@
 **==STATEL.FOR
       SUBROUTINE STATEL(LL, FL, TL, ISTAR)
-      IMPLICIT REAL*8(A-H, O-Z)
+      IMPLICIT NONE
+      REAL*8 TL, STAT2, VF, GT, FL, SF
+      INTEGER I, LL, IL, L, J, ISTAR, NE
+
       COMMON /STAT2 / VF(60)
       DIMENSION IL(24), SF(60,2)
       DATA IL/2, 0, 2, 2, 2, 1, 2, 1, 1, 1, 2, 2, 2, 

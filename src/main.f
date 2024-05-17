@@ -7,7 +7,14 @@ C     .----)   |      |  |     /  _____  \  |  |\  \----.----)   |
 C     |_______/       |__|    /__/     \__\ | _| `._____|_______/
 C
 
-      IMPLICIT REAL*8 (A-H,O-Z)
+      IMPLICIT NONE
+      REAL*8 GT, V, STATUS, F10, EVMODE, ERR, DT
+      REAL*4 CPU
+      REAL*8 EPS, H, EQ, TCPU, DH
+      INTEGER IDOKR, JIN, I6, ITER, NTER, NPR, I3, NMESH
+      INTEGER IE, I7, NSTEP, IMERGE, NWRT4, ID, NM, KTER
+      INTEGER IMODE, NWRT5, ITER2, IDET, LT, ITER1, NE, MAXMSH
+
       SAVE
       PARAMETER (MAXMSH = 2000)
 
@@ -15,7 +22,8 @@ C
       COMMON /EVMODE/ IMODE
       COMMON /STATUS/ IDET, IMERGE, IDOKR
 
-      REAL dtime,cpu(2),dt,tcpu
+C       REAL dtime,cpu(2),dt,tcpu
+      DIMENSION CPU(2)
 
 C Read physical data and an initial model
       CALL PRINTA ( -1, NSTEP, ITER1, ITER2, NWRT5 )

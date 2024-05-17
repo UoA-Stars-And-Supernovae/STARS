@@ -1,6 +1,11 @@
 **==XOPAC.FOR
       SUBROUTINE Xopacty (JX,fT,fR,FKL,FKH)
-      IMPLICIT REAL*8 (A-H,N-Z)
+      IMPLICIT NONE
+      REAL*8 FKLO, OPDAT, GT, FKL, DR, FKHO, COPDAT, F
+      REAL*8 DT, GE, FZ, FR, FKH, TFM, FT
+      REAL*8 OBASE, FRM, CBASE
+      INTEGER MT, INT, J, I, MR, LT, JX
+
       PARAMETER (MT = 141,MR = 31)
       COMMON /OPDAT / cbase,obase,TFM(141),FRM(31),fZ
       COMMON /COPDAT/ F(4,4,141,31,305)

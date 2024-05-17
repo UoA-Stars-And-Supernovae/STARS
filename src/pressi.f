@@ -3,7 +3,23 @@
      :                  DPF, DS, DST, DSF, DU)
 * Computes effects on the EOS of a free energy contribution 
 * delta(F) = -k*T*N_e*G(XI,TI), where XI = n_e*m_u and TI = 1eV/(k*T).
-      IMPLICIT REAL*8(A-H, L-Z)
+      IMPLICIT NONE
+      REAL*8 CDUM, EEG, CNSTS, XFFT, THX, XFTT, ABUND, SQRT
+      REAL*8 THFT, STATFD, VX, DGDG, DPF, WF, BEGG, CA1
+      REAL*8 F, DC, DD1, GAMY, ZI, DST, AVM, GAMXY
+      REAL*8 EE, CF2, DD2, THF, DSF, XFT, NA, BB
+      REAL*8 CEN, ABS, BEG, DGDXY, CEVB, DGDGG, CP1, CP4
+      REAL*8 THXX, DP, DLOG, AX, THT, THYY, BXX, GAMXX
+      REAL*8 EEX, BYY, DVF, GAMX, THC, DU, DS, XFFF
+      REAL*8 BX, THFF, GI, NE, XT, WX, CA2, EXP
+      REAL*8 AA, TI, LOG, BXY, TH, CX, FX, DGDYY
+      REAL*8 FF, CP3, CA3, CF1, CBRT, GEG, BY, GAMYY
+      REAL*8 XA, XFF, CXX, DVT, DGDXX, XF, DGDY, EQ
+      REAL*8 CDUM2, CP2, BE, DGDX, CC, NZZ, YI, XTTT
+      REAL*8 XTT, DD, DPT, GAM, AXX, FF1, THY, CPL
+      REAL*8 GE, FF2, XI, THXY, THTT, FD, DEXP, NI
+      INTEGER ICL
+
       COMMON /STATFD/ FD(9), XTT, XFT, XFF, XTTT, XFTT, XFFT, XFFF
       COMMON /ABUND / XA(10), NA(10), NE, NI, NZZ, AVM
       COMMON /CNSTS / CDUM(10), CEVB, CEN, CPL, CDUM2(6)

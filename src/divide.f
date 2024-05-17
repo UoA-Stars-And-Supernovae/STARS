@@ -1,6 +1,14 @@
 **==DIVIDE.FOR
       SUBROUTINE DIVIDE(J1, J2, J3, J4, J6, K)
-      IMPLICIT REAL*8(A-H, O-Z)
+      IMPLICIT NONE
+      REAL*8 ER, GT, DLOG, VX, DABS, D, SOLV, VM
+      REAL*8 GE, VT, S, EQ, VS, C
+      INTEGER LL, N6, M, J1, N12, J, J2, JW
+      INTEGER I, L, IW, LA, KM, IM, K, KH
+      INTEGER LM, NM, N14, N2, JC, MM, LE, ML
+      INTEGER JM, N5, LT, J4, N10, J6, NE, J3
+      INTEGER MAXMSH
+
       PARAMETER (MAXMSH = 2000)
       COMMON /SOLV  / C(MAXMSH+1,51,51),S(50,151),ER(60),D,KH,NE,N2,N5, 
      :                N6, N10, N12, N14, MM, IW(101), JW(4)

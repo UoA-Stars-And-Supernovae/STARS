@@ -5,7 +5,10 @@
 * Forsythe, Malcolm, Moler, Computer Methods for Mathematical
 * Computations, Prentice-Hall, 1977, p.76
 *
-      IMPLICIT REAL*8 (A-H,O-Z)
+      IMPLICIT NONE
+      REAL*8 F, X, T
+      INTEGER I, N, IB
+
       DIMENSION X(*),F(4,*)
 *
       F(2,N) = 0D0
