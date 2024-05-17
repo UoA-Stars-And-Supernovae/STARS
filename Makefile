@@ -26,6 +26,7 @@ _OBJ = main.o compos.o difrns.o divide.o elimn8.o equns1.o equns2.o \
 funcs1.o funcs2.o nucrat.o nucrat2.o pressi.o printa.o printb.o printc.o \
 remesh.o neutron.o xopac.o massloss.o diffusion.o diffusion2.o \
 solver.o statef.o statel.o fdirac.o consts.o opacty.o opspln.o spline.o
+
 OBJ = $(patsubst %,$(ODIR)/%,$(_OBJ))
 
 VPATH = $(SDIR)

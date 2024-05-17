@@ -31,9 +31,12 @@ Use full words where possible, or known abbreviations where needed.
     - DoCommonEnvelopeEvolution is bad.
     - DoComEnvEvo is worst.
 
-Spaces v. Tabs. Use 4 spaces. Bind TAB to input 4 spaces if you need to.
+Spaces v. Tabs. Use 6 spaces. Bind TAB to input 6 spaces if you need to.
 
 Whitespace. One-third whitespace, one-third code, one-third comments.
+
+Read [GOTO Considered Harmful](https://homepages.cwi.nl/~storm/teaching/reader/Dijkstra68.pdf).
+Don't use GOTO unless *absolutely* necessary, and even then, think twice before use.
 
 Consistency is king. Follow the same essence of style as the current code.
 Break consistency at your own peril.
