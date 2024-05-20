@@ -258,7 +258,7 @@ C     Construct splines in T direciton
                               MAT(1,I)=opacCO(1,1,I,J,K)
                         END DO
 
-                        CALL spline(141,opT,MAT)
+                        CALL SPLINE(141,opT,MAT)
 
                         DO I=1,140
                               opacCO(2,1,I,J,K)=MAT(2,I)
@@ -278,7 +278,7 @@ C     Construct splines in R direction
                               MAT(2,31)=0d0
                               MAT(3,31)=0d0
 
-                              CALL spline(31,opR,MAT)
+                              CALL SPLINE(31,opR,MAT)
 
                               DO J=1,30
                                  opacCO(IC,2,I,J,K)=MAT(2,J)
@@ -470,7 +470,7 @@ C `pages' per printed model; also 4-line summary for every NT4'th model
       NMOD = NMOD + 1
       PPER = PER
 
-      CALL PRINTB ( DTY, PER, NT1, NT2, NT3, NT4, NMONT, NMOD, IEND )
+      CALL PRINTB(DTY, PER, NT1, NT2, NT3, NT4, NMONT, NMOD, IEND)
 
       ANG = ANG/(1.0D0 + RHL*DTY)
       EC = EC*(1.0D0 + DTY*ECT)/(1.0D0 - DTY*ECA*EC)

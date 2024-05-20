@@ -16,7 +16,9 @@
       DIMENSION KM(51), LM(51), NM(51)
       JC = 1
       IF ( J1.GT.J3 .OR. J2.GT.J4 .OR. J6.GT.N12 ) RETURN
-      IF ( KH.GE.1 ) CALL PRINTC(K)
+      IF ( KH.GE.1 ) THEN
+         CALL PRINTC(K)
+      END IF
       DO J = J1, J3
          NM(J) = 1
          KM(J) = 5

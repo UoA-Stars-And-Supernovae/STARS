@@ -69,7 +69,7 @@ C Sort out remaining protons - RJS 27/8/04
 C Call to statel to get electron density & no. abundances.
          AF = H(1+15*(ISTAR-1),K) + DH(1+15*(ISTAR-1),K)
          AT = H(2+15*(ISTAR-1),K) + DH(2+15*(ISTAR-1),K)
-         CALL STATEL (0, AF, AT, ISTAR)
+         CALL STATEL(0, AF, AT, ISTAR)
 C Blank any -ve abundances. There shouldn't be any anyway...
 C RJS 19/1/04
          XA(1) = H(5+15*(ISTAR-1),K) + DH(5+15*(ISTAR-1),K)

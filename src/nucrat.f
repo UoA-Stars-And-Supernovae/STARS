@@ -32,10 +32,10 @@ C     energy and neutrino release
       COMMON /CNSTS / CPI, PI4, CLN10, CDUM(9), CPL, CMEVMU, CDUM2(5)
       COMMON /NCDATA/ QRT(20), QNT(20), CZA(91), CZB(91), CZC(91),
      &                CZD(91), VZ(10)
-      dimension czw(20)
+      DIMENSION czw(20)
       CBRT(VX) = DEXP(DLOG(VX)/3.0D0)
       DATA CSA, CSB, CSC, CSD, CXD /0.624, 0.316, 0.460, 0.38, 0.86/
-      data czw /2,8,8,0,8,12,14,16,16,24,28,32,40,72,96,128,0,0,0,0/
+      DATA czw /2,8,8,0,8,12,14,16,16,24,28,32,40,72,96,128,0,0,0,0/
 * RHB is 'baryon density': 1 amu * number of baryons per cm3
       RHB = RHO/AVM
 * Electron screening theory from Graboske, DeWitt, Grossman & Cooper (1973),

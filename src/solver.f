@@ -271,7 +271,7 @@ C NaN trap
 
             ERR = 1d1
          END IF
-         CALL FLUSH (32)
+         CALL FLUSH(32)
          IF ( IH.GT.0 ) IH = IH - 1
          IE(9) = IH
 C APPLY CORRECTIONS, SCALED DOWN IF TOO LARGE
@@ -308,7 +308,9 @@ C Yes, I know I shouldn't do this, but haven't worked out another way yet
             GOTO 600
          END IF
 C Sort out neutrons once convergence ok
-         IF (ERR.LT.EPS.AND.NOC.GE.2) CALL NEUTRON(ISTAR)
+         IF (ERR.LT.EPS.AND.NOC.GE.2) THEN
+            CALL NEUTRON(ISTAR)
+         END IF
          IF (ERR .LT. EPS .OR. ERR.GE.1d-1 .OR. ERMAX.GE.1D1) RETURN
  200     ERRPR = ERR
 C CONTINUE ITERATING IF NOT YET ACCURATE ENOUGH

@@ -11,7 +11,9 @@
       PARAMETER (MAXMSH = 2000)
       COMMON /SOLV  / C(MAXMSH+1,51,51),S(50,151),ER(60),D,KH,NE,N2,
      :                N5, N6, N10, N12, N14, MM, IW(101), JW(4)
-      IF ( KH.GE.1 ) CALL PRINTC(KG)
+      IF ( KH.GE.1 ) THEN
+         CALL PRINTC(KG)
+      END IF
       IF ( J2.GT.J4 .OR. 1.GT.J3 .OR. J10.GT.J12 ) RETURN
       NN = J10 - 1
       NP = N12 - N14
