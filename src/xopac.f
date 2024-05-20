@@ -1,4 +1,4 @@
-      SUBROUTINE Xopacty (JX,fT,fR,FKL,FKH)
+      SUBROUTINE Xopacty(JX, fT, fR, FKL, FKH)
 
       IMPLICIT NONE
 

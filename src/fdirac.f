@@ -1,4 +1,4 @@
-      SUBROUTINE FDIRAC (F, G)
+      SUBROUTINE FDIRAC(F, G)
 
       IMPLICIT NONE
 

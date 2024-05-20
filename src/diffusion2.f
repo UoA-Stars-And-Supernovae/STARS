@@ -1,6 +1,6 @@
 C     Compute diffusion coefficients from Paquette et al. 1986
 C     For minor species
-      SUBROUTINE DIFFUSION2(RHO,T)
+      SUBROUTINE DIFFUSION2(RHO, T)
 
       IMPLICIT NONE
 

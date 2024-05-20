@@ -1,5 +1,5 @@
 C     Compute diffusion coefficients from Paquette et al. 1986
-      SUBROUTINE DIFFUSION(RHO,T)
+      SUBROUTINE DIFFUSION(RHO, T)
 
       IMPLICIT NONE
 

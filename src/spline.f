@@ -2,7 +2,7 @@ C     Calculate the coefficients of a 1-D cubic spline:
 C
 C     Forsythe, Malcolm, Moler, Computer Methods for Mathematical
 C     Computations, Prentice-Hall, 1977, p.76
-      SUBROUTINE SPLINE(N,X,F)
+      SUBROUTINE SPLINE(N, X, F)
 
       IMPLICIT NONE
 
