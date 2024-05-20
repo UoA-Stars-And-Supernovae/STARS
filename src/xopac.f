@@ -10,7 +10,6 @@
       PARAMETER (MT = 141,MR = 31)
       COMMON /OPDAT / cbase,obase,TFM(141),FRM(31),fZ
       COMMON /COPDAT/ F(4,4,141,31,305)
-      SAVE
 *
 * Calculate a bicubic spline interpolation fit for the temperature
 * and density opacity fit.  Do not stop if the input lies outside the

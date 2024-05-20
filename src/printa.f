@@ -43,7 +43,6 @@
       INTEGER IDREDGE, INF, IDET, IVMS, NCSX, IMLWR
 
       REAL*8 MAT(4,141),Xcompos(3,305),COcompos(8)
-      SAVE
 
       INTEGER MAXMSH
 

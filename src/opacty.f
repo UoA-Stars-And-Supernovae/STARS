@@ -12,7 +12,7 @@
      :                JCSX
       COMMON /STAT3 / F(4,4,127,90,10),TFM(127),FRM(90),
      :                FKLM(6),FKHM(6)
-      SAVE
+
 *
 * Calculate a bicubic spline interpolation fit for the temperature
 * and density opacity fit.  Do not stop if the input lies outside the
