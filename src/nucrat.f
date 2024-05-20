@@ -1,8 +1,9 @@
-**==NUCRAT.FOR
+C     Compute rates of (at present) 20 nuclear reactions, and the corresponding
+C     energy and neutrino release
       SUBROUTINE NUCRAT(TL)
-* Compute rates of (at present) 20 nuclear reactions, and the corresponding
-* energy and neutrino release
+
       IMPLICIT NONE
+
       REAL*8 CDUM, T6R, RANE, CAT, N12, RCO, RPNA, ELSEIF
       REAL*8 CNSTS, QRT, ABUND, SQRT, VX, CZB, TT, CRT
       REAL*8 RHB, R33, N14, W1, AVM, FPNG, CZA, ENX

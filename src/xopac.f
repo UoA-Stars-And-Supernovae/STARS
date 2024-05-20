@@ -1,6 +1,7 @@
-**==XOPAC.FOR
       SUBROUTINE Xopacty (JX,fT,fR,FKL,FKH)
+
       IMPLICIT NONE
+
       REAL*8 FKLO, OPDAT, GT, FKL, DR, FKHO, COPDAT, F
       REAL*8 DT, GE, FZ, FR, FKH, TFM, FT
       REAL*8 OBASE, FRM, CBASE

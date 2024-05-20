@@ -1,8 +1,7 @@
-C Program to sort out the slightly complicated issue of binary star mass-loss
-C ML1 and ML2 are BC1 for stars 1 and 2 - Assumes input is set up with star 1 data
-C first
       SUBROUTINE MASSLOSS(I,ML1,ML2, BCHORB, BCHSPIN1, BCHSPIN2)
+
       IMPLICIT NONE
+
       REAL*8 CG, XH, ENDING, HT, RMVB, BETAW, MT, BM
       REAL*8 OCRIT, ME, FAM, RSUN, MTACC, OS, TCONV, ETH
       REAL*8 CNSTS, MOMINER, DVIN, AR, SEP, SQRT, STARTING, ALPHACE
@@ -35,10 +34,11 @@ C first
       INTEGER IDIFF, IRAM, ISGTH, NMESH, IW, IY, INUC, IMERGE
       INTEGER NMOD, IBC, IDONOR, IRS2, I2, ION, I, I1
       INTEGER INERTI, ICL, N2, ICEP, ISTAR, IVMC, ISTAROTHER, IACC
-      INTEGER INF, IDET, IVMS
-
+      INTEGER INF, IDET, IVMS, IVARACC, IMLWR
       INTEGER MAXMSH
+
       PARAMETER (MAXMSH = 2000)
+
       COMMON H(60,MAXMSH),DH(60,MAXMSH),EPS,DEL,DH0,NMESH,JIN,IW(200)
       COMMON /TRANS / HT(26,MAXMSH,2)
       COMMON /AUXIN / ICL, ION, JW, IOP, INUC, IBC, ICN, IML(2),ISGTH,
@@ -65,6 +65,7 @@ C first
       COMMON /ZAMS  / TKH(2)
       COMMON /STATUS/ IDET, IMERGE
       COMMON /MISC  / NMOD
+      COMMON /VARACC/ IVARACC, IMLWR
 
       DIMENSION T(2), AM(2), M(2), MT(2), AR(2), R(2), DAR(2), L(2), XH(2),
      :     XHE(2), XC(2), XO(2), HSPIN(2), DHSPIN(2), ML(2),

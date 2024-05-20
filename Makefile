@@ -11,7 +11,7 @@ FC = gfortran
 #FFLAGS = -ffixed-line-length-none -finit-local-zero -fno-automatic -O2
 #FFLAGS = -extend_source -fast # -fpe3
 #FFLAGS = -extend_source -g
-FFLAGS = -g -fdump-core -ffixed-line-length-none -fno-automatic -march=native
+FFLAGS = -g -fdump-core -ffixed-line-length-none -fno-automatic -march=native -fimplicit-none
 
 #ifort options
 #FFLAGS = -e -fast

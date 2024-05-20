@@ -1,9 +1,10 @@
-**==NUCRAT2.FOR
+C     RJS 14/8/03 - funcs2 compatible version of nucrat.f
+C     Compute rates of (at present) 20 nuclear reactions, and the corresponding
+C     energy and neutrino release
       SUBROUTINE NUCRAT2(TL)
-C RJS 14/8/03 - funcs2 compatible version of nucrat.f
-* Compute rates of (at present) 20 nuclear reactions, and the corresponding
-* energy and neutrino release
+
       IMPLICIT NONE
+
       REAL*8 CDUM, T6R, RANE, NNI61, CAT, N12, RCO, RPNA
       REAL*8 NSI29, ELSEIF, CNSTS, DECAY, QRT, ABUND, SQRT, NN14
       REAL*8 NN20, RDFE60, NAL27, VX, CZB, NNE21, NN13, TT

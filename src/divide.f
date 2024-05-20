@@ -1,6 +1,7 @@
-**==DIVIDE.FOR
       SUBROUTINE DIVIDE(J1, J2, J3, J4, J6, K)
+
       IMPLICIT NONE
+
       REAL*8 ER, GT, DLOG, VX, DABS, D, SOLV, VM
       REAL*8 GE, VT, S, EQ, VS, C
       INTEGER LL, N6, M, J1, N12, J, J2, JW

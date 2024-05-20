@@ -1,13 +1,17 @@
 C
-C          _______.___________.    ___      .______          _______.
-C         /       |           |   /   \     |   _  \        /       |
-C        |   (----`---|  |----`  /  ^  \    |  |_)  |      |   (----`
-C         \   \       |  |      /  /_\  \   |      /        \   \
-C     .----)   |      |  |     /  _____  \  |  |\  \----.----)   |
-C     |_______/       |__|    /__/     \__\ | _| `._____|_______/
+C
+C  ░▒▓███████▓▒░▒▓████████▓▒░▒▓██████▓▒░░▒▓███████▓▒░ ░▒▓███████▓▒░
+C ░▒▓█▓▒░         ░▒▓█▓▒░  ░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░
+C ░▒▓█▓▒░         ░▒▓█▓▒░  ░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░
+C  ░▒▓██████▓▒░   ░▒▓█▓▒░  ░▒▓████████▓▒░▒▓███████▓▒░ ░▒▓██████▓▒░
+C        ░▒▓█▓▒░  ░▒▓█▓▒░  ░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░      ░▒▓█▓▒░
+C        ░▒▓█▓▒░  ░▒▓█▓▒░  ░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░      ░▒▓█▓▒░
+C ░▒▓███████▓▒░   ░▒▓█▓▒░  ░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░▒▓███████▓▒░
+C
 C
 
       IMPLICIT NONE
+
       REAL*8 GT, V, STATUS, F10, EVMODE, ERR, DT
       REAL*4 CPU
       REAL*8 EPS, H, EQ, TCPU, DH
@@ -26,7 +30,8 @@ C       REAL dtime,cpu(2),dt,tcpu
       DIMENSION CPU(2)
 
 C Read physical data and an initial model
-      CALL PRINTA ( -1, NSTEP, ITER1, ITER2, NWRT5 )
+      CALL PRINTA(-1, NSTEP, ITER1, ITER2, NWRT5)
+
       IF (NSTEP.NE.0) THEN ! If the step size is zero - just stop the program now.
             ITER = ITER1
             nter = 0
@@ -41,7 +46,7 @@ C Read physical data and an initial model
 C Begin evolutionary loop of NSTEP time steps.
             DO WHILE (NM.NE.NSTEP)
 C Solve for structure, mesh, and major composition variables
-                  CALL SOLVER ( 1, ITER, KTER, ERR, ID, NWRT5 )
+                  CALL SOLVER(1, ITER, KTER, ERR, ID, NWRT5)
 
 C Store the previous model number, and increase the current one,
 C if the error isn't too large.
@@ -57,31 +62,31 @@ C if the error isn't too large.
                   IF (ERR.GT.EPS) kter = -kter
 C         write(61,99000) nm, kter, dt, dt/kter, nter, tcpu, tcpu/nter,
 C     &        tcpu/nm
-99000             FORMAT(i6,i3,2f8.4,i7,f10.2,2f9.5)
+99000             FORMAT(I6,I3,2F8.4,I7,F10.2,2F9.5)
                   CALL flush(31) ! 31 is nucleosynthesis file.
 C If model didn't converge, restart from 2 steps back with DT halved
                   IF (ERR.GT.EPS) THEN
                         nm = npr ! nm - 2
-                        CALL PRINTA ( 2, NSTEP, ITER1, ITER2, NWRT5 )
+                        CALL PRINTA(2, NSTEP, ITER1, ITER2, NWRT5)
                         GO TO 1
                   END IF
 C If required, solve for minor composition variables, with mesh, structure fixed.
 C First pass for star 1
-                  CALL SOLVER ( 2, ITER, KTER, ERR, IE, NWRT5 )
+                  CALL SOLVER ( 2, ITER, KTER, ERR, IE, NWRT5)
 C Restart if failed on composition
                   IF (ERR.GT.EPS) THEN
                         nm = npr ! nm - 2
-                        CALL PRINTA ( 2, NSTEP, ITER1, ITER2, NWRT5 )
+                        CALL PRINTA(2, NSTEP, ITER1, ITER2, NWRT5)
                         GO TO 1
                   END IF
 
                   IF (IMODE.EQ.2) THEN
 C Second nucleosynthesis pass - this time for star 2
-                        CALL SOLVER ( 3, ITER, KTER, ERR, IE, NWRT5 )
+                        CALL SOLVER(3, ITER, KTER, ERR, IE, NWRT5)
 C Restart if failed on composition
                         IF (ERR.GT.EPS) THEN
                               nm = npr ! nm - 2
-                              CALL PRINTA ( 2, NSTEP, ITER1, ITER2, NWRT5 )
+                              CALL PRINTA(2, NSTEP, ITER1, ITER2, NWRT5)
                               GO TO 1
                         END IF
                   END IF
@@ -90,7 +95,7 @@ C If model didn't converge, give up
                         EXIT
                   END IF
                   IF (ERR.LT.EPS) THEN
-                        CALL PRINTA ( 0, NSTEP, ITER1, ITER2, NWRT5 )
+                        CALL PRINTA(0, NSTEP, ITER1, ITER2, NWRT5)
                   END IF
 
     1             ITER = ITER2
@@ -98,7 +103,7 @@ C If model didn't converge, give up
       END IF
 
 C Output the last converged model
-    3 CALL PRINTA ( 1, NSTEP, ITER1, ITER2, NWRT4 )
+    3 CALL PRINTA(1, NSTEP, ITER1, ITER2, NWRT4)
 
       STOP
       END

@@ -1,6 +1,7 @@
-**==ELIMN8.FOR
       SUBROUTINE ELIMN8(J2, J3, J4, J5, J10, J12, KG)
+
       IMPLICIT NONE
+
       REAL*8 ER, GT, VX, D, SOLV, GE, S, C
       INTEGER J5, N6, M, N12, J10, J, J2, JW
       INTEGER I, IW, J12, K, KH, N14, N2, MM

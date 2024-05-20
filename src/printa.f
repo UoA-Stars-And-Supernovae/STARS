@@ -1,7 +1,7 @@
-**==PRINTA.FOR
       SUBROUTINE PRINTA(IEND, NP, IT1, IT2, NT5)
 
       IMPLICIT NONE
+
       REAL*8 CDUM, RATEN, XH, E12, BM, OPDAT, FAM
       REAL*8 RSUN, OS, F5, DTOLDP, SGTHFAC, ETH, CNSTS, MZAMS
       REAL*8 TOTMP, ALPHACE, F8, AM, COPDAT, CNTRXH, VX, TRB
@@ -40,7 +40,7 @@
       INTEGER NT2, IRS2, JZ, ISTAR, NUCMAT, I2, NT5, NP2
       INTEGER IB2, ISGFAC, J, I6, NPR, ION, I, NMOD2
       INTEGER ISTART, KS, NNMOD, KPR, ICL, ICEP, IAM, IVMC
-      INTEGER IDREDGE, INF, IDET, IVMS, NCSX
+      INTEGER IDREDGE, INF, IDET, IVMS, NCSX, IMLWR
 
       REAL*8 MAT(4,141),Xcompos(3,305),COcompos(8)
       SAVE
@@ -70,7 +70,7 @@
       COMMON /YUK1  / PX(34), WMH, WMHE, VMH, VME, VMC, VMG, BE, VLH,
      :                VLE, VLC, VLN, VLT, MCB(12),WWW(100)
       COMMON /CEE   / MHC(2), MENVC(2), DSEP, ICE, ICEP, ALPHACE
-      COMMON /VARACC/ IVARACC
+      COMMON /VARACC/ IVARACC, IMLWR
       COMMON /OPDAT / cbase,obase,opT(141),opR(31),fZ
       COMMON /XOPDAT/ opac(4,4,141,31,5)
       COMMON /COPDAT/ opacCO(4,4,141,31,305)
@@ -108,7 +108,7 @@ C Here we define some data format blocks.
      : ,/, I2,F6.1,I2,F6.1, 1X, F4.2, I2, I2, 2(1X, E8.2),
      :/,I2,E8.1,E8.1, I5,
      :/,I2,F4.1,
-     :/,I2)
+     :/,I2,I2)
 99004 FORMAT (1X, 10F7.3)                                                       ! phys02.dat
 99005 FORMAT (1X, 1P, 2E14.6, E17.9, 3E14.6, 0P, 4I6, 1P, 2E11.3)               ! modin (first line only)
       IF ( IEND.NE.-1 ) GO TO 30                                                ! Go to almost EOF if IEND (passed parameter) is -1
@@ -160,7 +160,7 @@ C Read in data
      :IVMC, TRC1, IVMS, TRC2, MWTS, IAGB, ISGFAC, FACSGMIN, SGTHFAC,
      :ISTART, HKH, GFF, NNMOD,
      :ICEP, ALPHACE,
-     :IVARACC
+     :IVARACC, IMLWR
 
 C Idiot proofing -- otherwise the logic in solver will fail
       FACSGMIN = DMIN1(1d0, FACSGMIN)                                           ! Constrain FACSGMIN (thermohaline mixing reduction factor)
@@ -191,7 +191,7 @@ C        WRITE (*,'(I2,F4.1)') ICEP, ALPHACE
      :IVMC, TRC1, IVMS, TRC2, MWTS, IAGB, ISGFAC, FACSGMIN, SGTHFAC,
      :ISTART, HKH, GFF, NNMOD,
      :ICEP, ALPHACE,
-     :IVARACC
+     :IVARACC, IMLWR
 
       WRITE(32, 99005)
       WRITE(32, 99005) SM, DTY, AGE, PER, BMS, EC,NH,NP,NMOD,IB,PMH(1),PME(1)

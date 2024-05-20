@@ -6,7 +6,7 @@ NOTICE
 
 # Common child directories
 .ipynb_checkpoints/
-*/*
+projects/
 !dat/*
 !modins/*
 !src/*
@@ -29,6 +29,9 @@ nohup.out
 *.tex
 !/.gitignore
 *.bak*
+
+# Special diagnosis files
+tokenize
 
 # STARS outputs and inputs
 modin*

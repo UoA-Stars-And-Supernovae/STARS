@@ -1,8 +1,9 @@
-**==NEUTRON.F
-C Sorts out where n's get used up - I hope!
-C NEEDS TO BE OVERHAULED!
+C     Sorts out where n's get used up - I hope!
+C     NEEDS TO BE OVERHAULED!
       SUBROUTINE NEUTRON(ISTAR)
+
       IMPLICIT NONE
+
       REAL*8 RANE22, RANE, RPC14, RANE22N, W6, RCO, ETH, ABUND
       REAL*8 WW2, RANA23NT, W5, RPBE, RPLI, RAN15G, TRB, RPNE21
       REAL*8 RPNA23A, XA2, R33, RPMG26, RPB11, W1, RANE21, RNNA22A

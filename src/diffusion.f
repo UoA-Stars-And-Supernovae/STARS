@@ -1,7 +1,8 @@
-**==DIFFUSION.F RJS 18/4/08
-C Compute diffusion coefficients from Paquette et al. 1986
+C     Compute diffusion coefficients from Paquette et al. 1986
       SUBROUTINE DIFFUSION(RHO,T)
+
       IMPLICIT NONE
+
       REAL*8 CG, DNSUM, MT, RSUN, CNSTS, ABUND, ECHAR, DIFFUS
       REAL*8 PHITT11, MSUM, GAMMATT, SUMNZ2, GAMMA1T, DC, AVM, E
       REAL*8 DH2, EPS1T, F1T22, EPSTT, P1T, DELTA, PSI1T, CKBA

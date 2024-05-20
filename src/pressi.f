@@ -1,9 +1,10 @@
-**==PRESSI.FOR
+C     Computes effects on the EOS of a free energy contribution
+C     delta(F) = -k*T*N_e*G(XI,TI), where XI = n_e*m_u and TI = 1eV/(k*T).
       SUBROUTINE PRESSI(ICL, TI, XI, XF, XT, F, DC, DVT, DVF, DP, DPT,
      :                  DPF, DS, DST, DSF, DU)
-* Computes effects on the EOS of a free energy contribution 
-* delta(F) = -k*T*N_e*G(XI,TI), where XI = n_e*m_u and TI = 1eV/(k*T).
+
       IMPLICIT NONE
+
       REAL*8 CDUM, EEG, CNSTS, XFFT, THX, XFTT, ABUND, SQRT
       REAL*8 THFT, STATFD, VX, DGDG, DPF, WF, BEGG, CA1
       REAL*8 F, DC, DD1, GAMY, ZI, DST, AVM, GAMXY

@@ -1,8 +1,9 @@
-**==DIFFUSION2.F RJS 19/9/08
-C Compute diffusion coefficients from Paquette et al. 1986
-C For minor species
+C     Compute diffusion coefficients from Paquette et al. 1986
+C     For minor species
       SUBROUTINE DIFFUSION2(RHO,T)
+
       IMPLICIT NONE
+
       REAL*8 CG, DNSUM, MIZZ, MT, RSUN, CNSTS, ABUND, WW2
       REAL*8 ECHAR, DIFFU2, XA2, PHITT11, MSUM, GAMMATT, SUMNZ2, GAMMA1T
       REAL*8 DC, AVM, E, DH2, EPS1T, F1T22, EPSTT, P1T

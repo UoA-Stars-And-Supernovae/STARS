@@ -1,6 +1,7 @@
-**==FDIRAC.F
       SUBROUTINE FDIRAC (F, G)
+
       IMPLICIT NONE
+
       REAL*8 GG, GT, DFTT, DTT, SQRT, G, DFF, STATFD
       REAL*8 VF, UF, WV, UG, VX, FF, VG, D
       REAL*8 F, DTTT, DFT, EQ, DFFF, DFFT, VW, C

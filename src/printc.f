@@ -1,6 +1,7 @@
-**==PRINTC.FOR
       SUBROUTINE PRINTC(K)
+
       IMPLICIT NONE
+
       REAL*8 ER, D, SOLV, S, C
       INTEGER N6, N12, J, JW, I, IW, K, KH
       INTEGER N14, N2, MM, I5, N5, N10, NE, MAXMSH
