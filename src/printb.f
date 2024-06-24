@@ -43,6 +43,8 @@
       REAL*8 R3A, CC, ANG, QPNA, M0, F10, DD, RENV
       REAL*8 RPN, CNUC, RCD, QCCG, ATDATA, DMAX1, CHI, TOTMC
       REAL*8 RGNE, LEDD, WINDACC, RBP, WT, QD
+      REAL*8 EMAX(3), VMX(3), MEX(12), THB(12) ! EXX(3),
+
       INTEGER ITH, IMODE, KMH, I4, NPRINT, IB, NWRT1
       INTEGER KTM, IX, I13, ICE, NWRT2, NMESH, NWRT4
       INTEGER JTHB, JZ, I6, NWRT3, ISTAR, INF, IVMS
@@ -51,12 +53,11 @@
       INTEGER JJTIME, NMOD, NCDATA, I, KME, KHE, JC, IVMC
       INTEGER II, IS, KK, IEND, KCE, JE, IW, IY
       INTEGER NUCMAT, J, IDREDGE, JJ
-
-      CHARACTER*5 AX(34), BX(16), CX(16), DX(17)
       INTEGER KCB(12), KMX(3), KEX(12), KENV(2)
-      REAL*8 EMAX(3), VMX(3), MEX(12), THB(12) ! EXX(3),
       INTEGER IPX(25)
       INTEGER MAXMSH
+
+      CHARACTER*5 AX(34), BX(16), CX(16), DX(17)
 
       PARAMETER (MAXMSH = 2000)
 
@@ -109,7 +110,7 @@ C Extra common for extra timestep control stuff - P for previous, C for current
       COMMON /ACCR  / WINDACC(2)
       COMMON /TIDES / MENV(2), RENV(2)
       COMMON /JJTIME/ RLFcheck1,RLFcheck2 !!!JJE's new timestep check - 11/12/2023
-      PS(VX) = 0.5D0*(VX+DABS(VX))
+
       DIMENSION XA(10), TCB(12), RCB(12)
       DIMENSION SX(45,MAXMSH+1)
       DIMENSION XINIT(44),YIELD(44)
@@ -156,13 +157,15 @@ C Used A&G for H,He,C,N,O,Ne rather than input for convenience
 99006 FORMAT (I4, 1P, 11E14.7)
 99007 FORMAT (I4, 1P, 17(1X,E10.3))
 99008 FORMAT (1P,12(1X,E14.7))
-99018 FORMAT (I4, 1X, I6, 1X, 1P, E20.13, 2(1X,E12.5))
-99019 FORMAT (I6,0P,100E16.9)
- 115  FORMAT (I6,1P,E16.9,0P,24F10.5,1P,3E13.6,18(1X,E12.5),0P,52F9.5)
- 116  FORMAT (I6,1P,E16.9,0P,17(1X,E13.6),1P,19(1X,E13.6),15I5)
- 117  FORMAT (I6,1P,E16.9,54(1X,E13.6))
-10001 FORMAT (I6,1P,E17.9,0P)
-10002 FORMAT (1P,E13.6,4E11.4,25E11.3,0P)
+99009 FORMAT (I4, 1X, I6, 1X, 1P, E20.13, 2(1X,E12.5))
+99010 FORMAT (I6,0P,100E16.9)
+99011 FORMAT (I6,1P,E16.9,0P,24F10.5,1P,3E13.6,18(1X,E12.5),0P,52F9.5)
+99012 FORMAT (I6,1P,E16.9,0P,17(1X,E13.6),1P,19(1X,E13.6),15I5)
+99013 FORMAT (I6,1P,E16.9,54(1X,E13.6))
+99014 FORMAT (I6,1P,E17.9,0P)
+99015 FORMAT (1P,E13.6,4E11.4,25E11.3,0P)
+
+      PS(VX) = 0.5D0*(VX+DABS(VX))
 
 C Store previous values of extra timestep control variables
       VMHP = VMH
@@ -194,7 +197,7 @@ C Store previous values of extra timestep control variables
             DO J = 1, 3
                   KMX(J) = 1
                   VMX(J) = 0.0D0
-C     EXX(J) = 0.0D0
+C                 EXX(J) = 0.0D0
                   EMAX(J) = 0.0D0
             END DO
             EXLIM = 10.0*H(8,1)/EXP(H(4,1))
@@ -338,12 +341,12 @@ C           CO core:
                         KME = K
                         PME(ISTAR) = (PX(2)*(XF-SX(11,KK))+SX(2,KK)*(XHE-XF)) / (XHE-SX(11,KK))
                   END IF
-C           ONe core:
-                  IF (XH.GT.XF.AND.SX(10,KK).LT.XF) THEN
-                        VMH = (PX(9)*(XF-SX(10,KK))+SX(9,KK)*(XH-XF))/(XH-SX(10,KK))
-                        KMH = K
-                        PMH(ISTAR) = (PX(2)*(XF-SX(10,KK))+SX(2,KK)*(XH-XF))/(XH-SX(10,KK))
-                  END IF
+C           ONe core: (This is just He core all over again?)
+C                   IF (XH.GT.XF.AND.SX(10,KK).LT.XF) THEN
+C                         VMH = (PX(9)*(XF-SX(10,KK))+SX(9,KK)*(XH-XF))/(XH-SX(10,KK))
+C                         KMH = K
+C                         PMH(ISTAR) = (PX(2)*(XF-SX(10,KK))+SX(2,KK)*(XH-XF))/(XH-SX(10,KK))
+C                   END IF
                   IF (XC.GT.XF.AND.SX(12,KK).LT.XF) THEN
                         VMC = (PX(9)*(XF-SX(12,KK))+SX(9,KK)*(XC-XF))/(XC-SX(12,KK))
                   END IF
@@ -497,7 +500,7 @@ C Some integrated quantities, to be printed in the short summary
                         IF (MOD(NMOD,NMONT).EQ.0) THEN
 C Output for use in MONTAGE -- may need smart output control RJS 29/5/08
                               IF (K.EQ.NMESH) THEN
-                                    WRITE(42+20*(ISTAR-1),99018) NMESH, NMOD, AGE*CSECYR, VLH, VLE
+                                    WRITE(42+20*(ISTAR-1),99009) NMESH, NMOD, AGE*CSECYR, VLH, VLE
                               END IF
 
                               WRITE(42+20*(ISTAR-1),99008) DLOG10(PX(4)), DLOG10(PX(3)), DLOG10(WL),
@@ -509,7 +512,7 @@ C Output for use in MONTAGE -- may need smart output control RJS 29/5/08
 
 C           Write out the SNEPLOT file.
             LOGG = LOG10(10*6.67*PX(9)*1.989/(PX(17) * 6.9634)**2) ! Put into SI units. TODO: cgs?
-            WRITE(49+20*(ISTAR-1), 99019) NMOD, LOGG, WINDML(1), WINDML(2),
+            WRITE(49+20*(ISTAR-1), 99010) NMOD, LOGG, WINDML(1), WINDML(2),
      :                                    WINDACC(1), WINDACC(2),RLF/CSECYR, BE
 C           End SNEPLOT
 
@@ -577,7 +580,7 @@ C        Store core mass. need to be more intelligent about this - SMR
             MHC(ISTAR) = VMH
             MENVC(ISTAR) = MENV(ISTAR)/MSUN
 C Write plot/plot2 file
-            WRITE(33+20*(ISTAR-1),115) NMOD,AGE,LOG10(PX(17)),LOG10(PX(4)),
+            WRITE(33+20*(ISTAR-1),99011) NMOD,AGE,LOG10(PX(17)),LOG10(PX(4)),
      &            LOG10(PX(18)),PX(9),VMH,VME,LOG10(MAX(VLH,1.01D-10)),
      &            LOG10(MAX(VLE,1.01D-10)), LOG10(MAX(VLC,1.01D-10)), ! TEMPORARY WILL GO IN SNEPLOT
      &            MCB,VMX(1),VMX(2),LOG10(FK),DTY,(PX(JJ),JJ=10,14), PX(16),
@@ -590,7 +593,7 @@ C Write plot/plot2 file
     !     IF(ISTAR.EQ.2) RLFcheck2=RLF !!!JJE's new timestep check - 11/12/2023
             CALL FLUSH(33+20*(ISTAR-1))
 C Write output for nucleosynthesis stuff
-            WRITE(41+20*(ISTAR - 1),116) NMOD,AGE,VMH,VME,VMH - VME,PX(9),XASH,(TCB(I)/1d8,
+            WRITE(41+20*(ISTAR - 1),99012) NMOD,AGE,VMH,VME,VMH - VME,PX(9),XASH,(TCB(I)/1d8,
      :            I=1,12),RCB,
      :            TBCE,THMID,THBASE,TINTMID,TINTBASE,PERIOD,DABS(DMT)
 
@@ -598,12 +601,12 @@ C Write output for nucleosynthesis stuff
 
             IF (IW(102).NE.0) THEN
 C Write surface/centre abundances, yields -- but only if using NS code!
-                  WRITE(39+20*(ISTAR - 1),117) NMOD,AGE,(HNUC(I+50*(ISTAR-1),1),I=1,50),
+                  WRITE(39+20*(ISTAR - 1),99013) NMOD,AGE,(HNUC(I+50*(ISTAR-1),1),I=1,50),
      :                  WINDML(ISTAR)/MSUN*CSECYR, FAKEWIND(ISTAR)/MSUN*CSECYR, DTY
 
                   CALL FLUSH(39+20*(ISTAR - 1))
 
-                  WRITE(40+20*(ISTAR - 1),117) NMOD,AGE,(HNUC(I+50*(ISTAR-1),NMESH),I=1,50), H(5+15*(ISTAR - 1),NMESH)
+                  WRITE(40+20*(ISTAR - 1),99013) NMOD,AGE,(HNUC(I+50*(ISTAR-1),NMESH),I=1,50), H(5+15*(ISTAR - 1),NMESH)
 
                   CALL FLUSH(40+20*(ISTAR - 1))
             END IF
@@ -613,9 +616,9 @@ C Write surface/centre abundances, yields -- but only if using NS code!
 C      NWRT5 = 21
 C      IF (IEND.LT.0) WRITE(11,'(2I6)') NMESH, NWRT5
 C      IF (NPRINT.EQ.1) THEN
-C         WRITE(11,10001) NMOD, AGE
+C         WRITE(11,99014) NMOD, AGE
 C         DO KK = 1, NMESH
-C            WRITE(11,10002) (SX(IPX(J),KK+1), J=1, NWRT5)
+C            WRITE(11,99015) (SX(IPX(J),KK+1), J=1, NWRT5)
 C         END DO
 C      END IF
 
@@ -695,6 +698,8 @@ C If boundary moves in, reduce DD
                   KICZ = KCB(3)
                   KBICZ = KMX(2)
             END IF
+
+C           Output plot file
 
             WRITE(32+20*(ISTAR-1),99003) NMOD,PX(9),DTY,TN,PER,VLH,VLT,SX(10,2),SX(11,2),
      :            SX(12,2),SX(13,2),SX(14,2),SX(15,2),SX(16,2),SX(1,2),SDC,STC,

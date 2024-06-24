@@ -91,7 +91,8 @@ C
       COMMON /DIFCOE/ DC(50,4,3), DCD(50,4)
       COMMON /STATUS/ IDET, IMERGE
       COMMON /MISC  / NMOD
-      COMMON /JJTIME/ RLFcheck1,RLFcheck2 !!!JJE's new timestep check - 11/12/2023
+      COMMON /JJTIME/ RLFcheck1,RLFcheck2
+      !!!JJE's new timestep check - 11/12/2023
 
       CBRT(VX) = DEXP(DLOG(VX)/3.0D0)
       RLOBE(VX) = 0.49D0*VX*VX/(0.6D0*VX*VX+DLOG(1.0D0+VX))

@@ -102,7 +102,7 @@ C If model didn't converge, give up
       END IF
 
 C Output the last converged model
-    3 CALL PRINTA(1, NSTEP, ITER1, ITER2, NWRT4)
+      CALL PRINTA(1, NSTEP, ITER1, ITER2, NWRT4)
 
       STOP
       END

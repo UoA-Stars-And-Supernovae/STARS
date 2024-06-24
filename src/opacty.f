@@ -20,43 +20,45 @@
 *
 * Check that we are in the table.
 *
-      IF((TF.LT.TFM(1)).OR.(TF.GE.TFM(MT)).OR.
-     &   (FR.LT.FRM(1)).OR.(FR.GE.FRM(MR))) THEN
-         FKL = FKLO
-         FKH = FKHO
-         WRITE(6,100) TF,FR,FKL,FKH
+      IF((TF.LT.TFM(1)).OR.(TF.GE.TFM(MT)).OR.(FR.LT.FRM(1)).OR.(FR.GE.FRM(MR))) THEN
+            FKL = FKLO
+            FKH = FKHO
+
+            WRITE(6,100) TF,FR,FKL,FKH
       ELSE
-         FKLO = FKL
-         FKHO = FKH
+            FKLO = FKL
+            FKHO = FKH
 *
 * Find interval in which target point lies.
 *
-         I = 1 + (MT-1)*(TF-TFM(1))/(TFM(MT)-TFM(1))
-         J = 1 + (MR-1)*(FR-FRM(1))/(FRM(MR)-FRM(1))
-         DT = TF-TFM(I)
-         DR = FR-FRM(J)
+            I = 1 + (MT-1)*(TF-TFM(1))/(TFM(MT)-TFM(1))
+            J = 1 + (MR-1)*(FR-FRM(1))/(FRM(MR)-FRM(1))
+            DT = TF-TFM(I)
+            DR = FR-FRM(J)
 *
 * Evaluate the splines.
 *
-         FKL = F(1,1,I,J,JX) + DR*(F(1,2,I,J,JX)
-     &   + DR*(F(1,3,I,J,JX) + DR*F(1,4,I,J,JX)))
-     &   + DT*(F(2,1,I,J,JX) + DR*(F(2,2,I,J,JX)
-     &   + DR*(F(2,3,I,J,JX) + DR*F(2,4,I,J,JX)))
-     &   + DT*(F(3,1,I,J,JX) + DR*(F(3,2,I,J,JX)
-     &   + DR*(F(3,3,I,J,JX) + DR*F(3,4,I,J,JX)))
-     &   + DT*(F(4,1,I,J,JX) + DR*(F(4,2,I,J,JX)
-     &   + DR*(F(4,3,I,J,JX) + DR*F(4,4,I,J,JX))))))
+            FKL = F(1,1,I,J,JX) + DR*(F(1,2,I,J,JX)
+     &          + DR*(F(1,3,I,J,JX) + DR*F(1,4,I,J,JX)))
+     &          + DT*(F(2,1,I,J,JX) + DR*(F(2,2,I,J,JX)
+     &          + DR*(F(2,3,I,J,JX) + DR*F(2,4,I,J,JX)))
+     &          + DT*(F(3,1,I,J,JX) + DR*(F(3,2,I,J,JX)
+     &          + DR*(F(3,3,I,J,JX) + DR*F(3,4,I,J,JX)))
+     &          + DT*(F(4,1,I,J,JX) + DR*(F(4,2,I,J,JX)
+     &          + DR*(F(4,3,I,J,JX) + DR*F(4,4,I,J,JX))))))
 *
-         FKH = F(1,1,I,J,JX+1) + DR*(F(1,2,I,J,JX+1)
-     &   + DR*(F(1,3,I,J,JX+1) + DR*F(1,4,I,J,JX+1)))
-     &   + DT*(F(2,1,I,J,JX+1) + DR*(F(2,2,I,J,JX+1)
-     &   + DR*(F(2,3,I,J,JX+1) + DR*F(2,4,I,J,JX+1)))
-     &   + DT*(F(3,1,I,J,JX+1) + DR*(F(3,2,I,J,JX+1)
-     &   + DR*(F(3,3,I,J,JX+1) + DR*F(3,4,I,J,JX+1)))
-     &   + DT*(F(4,1,I,J,JX+1) + DR*(F(4,2,I,J,JX+1)
-     &   + DR*(F(4,3,I,J,JX+1) + DR*F(4,4,I,J,JX+1))))))
-      ENDIF
+            FKH = F(1,1,I,J,JX+1) + DR*(F(1,2,I,J,JX+1)
+     &          + DR*(F(1,3,I,J,JX+1) + DR*F(1,4,I,J,JX+1)))
+     &          + DT*(F(2,1,I,J,JX+1) + DR*(F(2,2,I,J,JX+1)
+     &          + DR*(F(2,3,I,J,JX+1) + DR*F(2,4,I,J,JX+1)))
+     &          + DT*(F(3,1,I,J,JX+1) + DR*(F(3,2,I,J,JX+1)
+     &          + DR*(F(3,3,I,J,JX+1) + DR*F(3,4,I,J,JX+1)))
+     &          + DT*(F(4,1,I,J,JX+1) + DR*(F(4,2,I,J,JX+1)
+     &          + DR*(F(4,3,I,J,JX+1) + DR*F(4,4,I,J,JX+1))))))
+      END IF
+
   100 FORMAT ('OPACITY OUT OF RANGE',' TF FR FKL FKH ',4F9.4)
+
       RETURN
       END
 

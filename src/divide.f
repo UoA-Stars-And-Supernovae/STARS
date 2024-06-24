@@ -11,24 +11,38 @@
       INTEGER MAXMSH
 
       PARAMETER (MAXMSH = 2000)
-      COMMON /SOLV  / C(MAXMSH+1,51,51),S(50,151),ER(60),D,KH,NE,N2,N5, 
+      COMMON /SOLV  / C(MAXMSH+1,51,51),S(50,151),ER(60), D, KH,NE,N2,N5,
      :                N6, N10, N12, N14, MM, IW(101), JW(4)
       DIMENSION KM(51), LM(51), NM(51)
+
       JC = 1
-      IF ( J1.GT.J3 .OR. J2.GT.J4 .OR. J6.GT.N12 ) RETURN
-      IF ( KH.GE.1 ) THEN
-         CALL PRINTC(K)
+
+      IF ( J1.GT.J3 .OR. J2.GT.J4 .OR. J6.GT.N12 ) THEN
+            RETURN
       END IF
+
+      IF ( KH.GE.1 ) THEN
+            CALL PRINTC(K)
+      END IF
+
       DO J = J1, J3
-         NM(J) = 1
-         KM(J) = 5
+            NM(J) = 1
+            KM(J) = 5
       END DO
+
  100  CONTINUE
+
       JC = JC + 1
+
       DO J = J1, J3
-         IF ( KM(J).LT.3 ) KM(J) = KM(J) + 2
-         IF ( KM(J).LT.5 ) NM(LM(J)) = 0
+            IF ( KM(J).LT.3 ) THEN
+                  KM(J) = KM(J) + 2
+            END IF
+            IF ( KM(J).LT.5 ) THEN
+                  NM(LM(J)) = 0
+            END IF
       END DO
+
       VT = 0.0
 C Locate most significant remaining row, significant = ratio of largest
 C |element|=VM to sum of remaining |elements| = VS
@@ -37,82 +51,133 @@ C isn't found, at least ML still has a value
       ML = J1
 C RJS 9/6/09 -- set JM so that it's never zero
       JM = J1
+
       DO J = J1, J3
-         IF ( KM(J).GE.5 ) THEN
-            VM = 0.0
-            DO LL = J2, J4
-               L = LL - J2 + J1
+            IF ( KM(J).GE.5 ) THEN
+                  VM = 0.0
+                  DO LL = J2, J4
+                        L = LL - J2 + J1
 C Find most significant element
-               IF ( NM(L).NE.0 ) THEN
-                  VX = DABS(S(J,LL))
-                  IF ( VX.GE.VM ) VM = VX
-                  IF ( VX.EQ.VM ) ML = L
-               END IF
-               VS = 0.0D0
-            END DO
-            LM(J) = ML
+                        IF ( NM(L).NE.0 ) THEN
+                              VX = DABS(S(J,LL))
+                              IF ( VX.GE.VM ) THEN
+                                    VM = VX
+                              END IF
+                              IF ( VX.EQ.VM ) THEN
+                                    ML = L
+                              END IF
+                        END IF
+
+                        VS = 0.0D0
+                  END DO
+
+                  LM(J) = ML
 C Sum remaining elements
-            DO LL = J2, J4
-               L = LL - J2 + J1
-               IF ( L.NE.ML ) VS = VS + DABS(S(J,LL))
-            END DO
-            IF ( VS.EQ.0.0D0 ) KM(J) = 1
-            IF ( VM.EQ.0.0D0 ) KM(J) = 6
-            IF ( VS.EQ.0.0D0 .AND. VM.NE.0.0D0 ) NM(ML) = 0
-            IF ( VM.EQ.0.0D0 ) VX = 0.0D0
-            IF ( VS.EQ.0.0D0 .AND. VM.GT.0.0D0 ) VX = 2.0D0
-            IF ( VS.GT.0.0D0 ) VX = VM/(VM+VS)
-            IF ( VX.GE.VT ) VT = VX
-            IF ( VX.EQ.VT ) JM = J
-         END IF
+                  DO LL = J2, J4
+                        L = LL - J2 + J1
+                        IF ( L.NE.ML ) THEN
+                              VS = VS + DABS(S(J,LL))
+                        END IF
+                  END DO
+
+                  IF ( VS.EQ.0.0D0 ) THEN
+                        KM(J) = 1
+                  END IF
+
+                  IF ( VM.EQ.0.0D0 ) THEN
+                        KM(J) = 6
+                  END IF
+
+                  IF ( VS.EQ.0.0D0 .AND. VM.NE.0.0D0 ) THEN
+                        NM(ML) = 0
+                  END IF
+
+                  IF ( VM.EQ.0.0D0 ) THEN
+                        VX = 0.0D0
+                  END IF
+
+                  IF ( VS.EQ.0.0D0 .AND. VM.GT.0.0D0 ) THEN
+                        VX = 2.0D0
+                  END IF
+
+                  IF ( VS.GT.0.0D0 ) THEN
+                        VX = VM/(VM+VS)
+                  END IF
+
+                  IF ( VX.GE.VT ) THEN
+                        VT = VX
+                  END IF
+                  IF ( VX.EQ.VT ) THEN
+                        JM = J
+                  END IF
+            END IF
       END DO
-      IF ( KM(JM).EQ.5 ) KM(JM) = 2
+      IF ( KM(JM).EQ.5 ) THEN
+            KM(JM) = 2
+      END IF
 C Eliminate elements above and below largest element of most significant row
       DO I = J1, J3
-         IM = KM(I)
-         IF ( IM.LT.3 ) THEN
-            ML = LM(I) + J2 - J1
-            LA = J2
-            IF ( IM.EQ.1 ) LA = J6
-            VX = 1.0D0/S(I, ML)
+            IM = KM(I)
+            IF ( IM.LT.3 ) THEN
+                  ML = LM(I) + J2 - J1
+                  LA = J2
+                  IF ( IM.EQ.1 ) THEN
+                        LA = J6
+                  END IF
+
+                  VX = 1.0D0/S(I, ML)
 C What does D do? It is set to zero in each loop, but doesn't seem to be used.
-            D = D - DLOG(DABS(VX))
-            DO L = LA, N12
-               S(I, L) = VX*S(I, L)
-            END DO
-            S(I, ML) = 1.0D0
-            DO J = J1, J3
-               IF ( KM(J).GT.3 ) THEN
-                  VX = S(J, ML)
+C                   D = D - DLOG(DABS(VX))
+
                   DO L = LA, N12
-                     S(J, L) = S(J, L) - VX*S(I, L)
+                        S(I, L) = VX*S(I, L)
                   END DO
-                  S(J, ML) = 0.0D0
-               END IF
+
+                  S(I, ML) = 1.0D0
+
+                  DO J = J1, J3
+                        IF ( KM(J).GT.3 ) THEN
+                              VX = S(J, ML)
+                              DO L = LA, N12
+                                    S(J, L) = S(J, L) - VX*S(I, L)
+                              END DO
+
+                              S(J, ML) = 0.0D0
+                        END IF
+                  END DO
+            END IF
+
+            NM(I) = 1
+      END DO
+
+      IF (JC.LE.10000) THEN
+            DO J = J1, J3
+                  IF ( KM(J).EQ.5 .OR. KM(J).LE.2 ) THEN
+                        GO TO 100
+                  END IF
             END DO
-         END IF
-         NM(I) = 1
-      END DO
-      IF (JC.GT.10000) GOTO 200
-      DO J = J1, J3
-         IF ( KM(J).EQ.5 .OR. KM(J).LE.2 ) GO TO 100
-      END DO
+      END IF
  200  DO L = J6, N12
-         DO J = J1, J3
-            C(K, LM(J), L-N12+N14) = S(J, L)
-         END DO
+            DO J = J1, J3
+                  C(K, LM(J), L-N12+N14) = S(J, L)
+            END DO
       END DO
+
       IF ( KH.EQ.0 ) THEN
-         RETURN
+            RETURN
       END IF
 
       WRITE(24, 99001) K, KM, LM, NM
 
 99001 FORMAT (32I3)
+
       M = J6 - N12 + N14
+
       DO J = 1, NE
-         WRITE(24, 99002) (C(K,J,L), L=M, N14)
+            WRITE(24, 99002) (C(K,J,L), L=M, N14)
       END DO
+
 99002 FORMAT (1P, 10E13.5)
+
       RETURN
       END

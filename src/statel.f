@@ -10,24 +10,34 @@
       DATA IL/2, 0, 2, 2, 2, 1, 2, 1, 1, 1, 2, 2, 2, 
 C     :              2, 2, 2, 1, 2, 1, 1, 1, 2, 2, 2/
      :     2, 1, 1, 2, 2, 1, 1, 1, 2, 2, 2/
+
 C Subtract 15 from L if using 2 stars
       IF (LL.GT.15) THEN
-         L = LL - 15
+            L = LL - 15
       ELSE
-         L = LL
+            L = LL
       END IF
+
       I = IL(L+2)
-      IF ( I.NE.1 ) THEN
-         CALL STATEF(FL, TL)
-         CALL NUCRAT(TL)
-         IF ( I.GT.0 ) RETURN
-         DO J = 1, 60
-            SF(J,ISTAR) = VF(J)
-         END DO
-         RETURN
+
+      IF (I.NE.1) THEN
+            CALL STATEF(FL, TL)
+            CALL NUCRAT(TL)
+
+            IF (I.GT.0) THEN
+                  RETURN
+            END IF
+
+            DO J = 1, 60
+                  SF(J,ISTAR) = VF(J)
+            END DO
+
+            RETURN
       END IF
+
       DO J = 1, 60
-         VF(J) = SF(J,ISTAR)
+            VF(J) = SF(J,ISTAR)
       END DO
+
       RETURN
       END

@@ -65,9 +65,11 @@ C     energy and neutrino release
 * for strong (ZA, ZB, ZC) are intermediate screening (ZD). The reaction
 * dependent charge parameters are stored in CZA ... CZD.
       WC = 0.0
+
       DO I = 1, 10
-         WC = WC + N(I)*VZ(I)
+            WC = WC + N(I)*VZ(I)
       END DO
+
       N1 = N(1)
       N4 = N(2)
       N12 = N(3)
@@ -90,29 +92,37 @@ C     energy and neutrino release
       zw = 0.5*zt*vl
 * Reaction rates interpolated in T, mostly from Caughlan & Fowler (1988)
       TF = TL/CLN10
+
       DO J = 1, 92
-         RN = 0.0D0
-         TT = 50.0*(TF - 6.0) + 1.0
-         IF ( TT .GE. 1.0D0 ) THEN
-            IT = MAX(1, MIN(199, INT(TT)))
-            TT = TT - IT
-            TU = 1.0D0 - TT
-            RR = TU*CRT(IT, J) + TT*CRT(IT+1, J)
-            IF ( RR .GE. -50.0D0 ) THEN
-               SCRN = ZD*CZD(J)
-               STRN = ZA*CZA(J) + ZB*CZB(J)
-               DSTR = ZC*CZC(J)
-               IF (DSTR .LT. 0.29*STRN) SCRN = MIN(SCRN, STRN - DSTR)
+            RN = 0.0D0
+            TT = 50.0*(TF - 6.0) + 1.0
+            IF (TT.GE.1.0D0) THEN
+                  IT = MAX(1, MIN(199, INT(TT)))
+                  TT = TT - IT
+                  TU = 1.0D0 - TT
+                  RR = TU*CRT(IT, J) + TT*CRT(IT+1, J)
+
+                  IF ( RR .GE. -50.0D0 ) THEN
+                        SCRN = ZD*CZD(J)
+                        STRN = ZA*CZA(J) + ZB*CZB(J)
+                        DSTR = ZC*CZC(J)
+
+                        IF (DSTR.LT.0.29*STRN) THEN
+                              SCRN = MIN(SCRN, STRN - DSTR)
+                        END IF
 * weak screening
-               if (inuc.ge.10) scrn = zw*czw(j)
-               RN = EXP(CLN10*(RR + 20.0D0) + SCRN)*1.0D-20
+                        IF (inuc.ge.10) THEN
+                              scrn = zw*czw(j)
+                        END IF
+
+                        RN = EXP(CLN10*(RR + 20.0D0) + SCRN)*1.0D-20
+                  END IF
             END IF
-         END IF
-         IF (J+1.LE.20) THEN
-            RRT(J+1) = RN
-         ELSE
-            RRT2(J-19) = RN
-         END IF
+            IF (J+1.LE.20) THEN
+                  RRT(J+1) = RN
+            ELSE
+                  RRT2(J-19) = RN
+            END IF
       END DO
 C Sort out rates
       RPP = RRT(2)
@@ -135,24 +145,24 @@ C Sort out rates
       RGMG = RRT(19)
       RCCG = RRT(20)
       RPNG = RRT(21)
-      if(mod(inuc,10).eq.1)then
+      IF (MOD(inuc,10).EQ.1) THEN
 * correct rates to simulate Bahcall (1992) cross sections
-         rpp = rpp*0.9828
-         r33 = r33*0.971
-         r34 = r34*0.987
-         t6r = 10.0**(0.5*tf - 3.0)
-         rbe = 5.54d-9/t6r*(0.936 + 0.004*t6r*t6r)
-         rbp = rbp*0.933
-      elseif(mod(inuc,10).eq.2)then
+            rpp = rpp*0.9828
+            r33 = r33*0.971
+            r34 = r34*0.987
+            t6r = 10.0**(0.5*tf - 3.0)
+            rbe = 5.54d-9/t6r*(0.936 + 0.004*t6r*t6r)
+            rbp = rbp*0.933
+      ELSEIF (MOD(inuc,10).EQ.2) THEN
 * idem, for Bahcall (1995) cross sections
-         rpp = rpp*0.9557
-         r33 = r33*0.969
-         r34 = r34*0.970
-         t6r = 10.0**(0.5*tf - 3.0)
-         rbe = 5.54d-9/t6r*(0.936 + 0.004*t6r*t6r)
-         rbp = rbp*0.933
-         rpn = rpn*0.991
-      end if
+            rpp = rpp*0.9557
+            r33 = r33*0.969
+            r34 = r34*0.970
+            t6r = 10.0**(0.5*tf - 3.0)
+            rbe = 5.54d-9/t6r*(0.936 + 0.004*t6r*t6r)
+            rbp = rbp*0.933
+            rpn = rpn*0.991
+      END IF
 * Multiply with density and abundances to get rates per baryon per second,
 * note that abundances of He3 and Be7 are not needed in equilibrium
       RPP = RHB*NN1*NN1*RPP/2.0
@@ -322,19 +332,23 @@ C Free n t_0.5 = 10.3 min
 C (n,g) reactions
       TF = TL/CLN10
       DO J = 1, 45
-         RN = 0.0D0
-         TT = 50.0*(TF - 6.0) + 1.0
-         IF ( TT .GE. 1.0D0 ) THEN
-            IT = MAX(1, MIN(199, INT(TT)))
-            TT = TT - IT
-            TU = 1.0D0 - TT
-            RR = TU*NRT(IT, J) + TT*NRT(IT+1, J)
-            IF (RR.GE.-50.0d0) THEN
-               RN = EXP(CLN10*(RR + 20.0D0))*1.0D-20
+            RN = 0.0D0
+            TT = 50.0*(TF - 6.0) + 1.0
+
+            IF ( TT .GE. 1.0D0 ) THEN
+                  IT = MAX(1, MIN(199, INT(TT)))
+                  TT = TT - IT
+                  TU = 1.0D0 - TT
+                  RR = TU*NRT(IT, J) + TT*NRT(IT+1, J)
+
+                  IF (RR.GE.-50.0d0) THEN
+                     RN = EXP(CLN10*(RR + 20.0D0))*1.0D-20
+                  END IF
             END IF
-         END IF
-         NRATE(J) = RN
+
+            NRATE(J) = RN
       END DO
+
       NRATE(1) = RHB*Nn*NFE56*NRATE(1)
       NRATE(2) = RHB*Nn*NFE57*NRATE(2)
       NRATE(3) = RHB*Nn*NFE58*NRATE(3)
@@ -382,10 +396,10 @@ C (n,g) reactions
       NRATE(45) = RHB*Nn*NNI61*NRATE(45)
 C Check for negative rates
       DO I=1,45
-         IF (NRATE(I).LT.0d0) THEN
-            WRITE(32,*) "-ve rate in ",I
-            NRATE(I) = 0d0
-         END IF
+            IF (NRATE(I).LT.0d0) THEN
+                  WRITE(32,*) "-ve rate in ",I
+                  NRATE(I) = 0d0
+            END IF
       END DO
       RETURN
       END
