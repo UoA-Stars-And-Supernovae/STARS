@@ -26,9 +26,9 @@
       REAL*8 DHNUC, CFE, CSECYR, MWTS, ANG, CMG, DSEP, M0
       REAL*8 VLT, GFF, MENVC, F10, SM2, DD, F4, DELDAT
       REAL*8 ERR, RLF, VLHC, DTF2, GR, DT1, E17, RCD
-      REAL*8 DIFCOE, GE, SELECTION, PREVM, H, TSUNYR, FZ, ATDATA
+      REAL*8 DIFCOE, GE, PREVM, H, TSUNYR, FZ, ATDATA
       REAL*8 FMAC, ANGMOM, CPI, EC, CHI, FACSGMIN, MESH, TOTMC
-      REAL*8 AVAILABLE, VROT2, MSUN, F6, VMH, AUXIN, ZS, RMT
+      REAL*8 VROT2, MSUN, F6, VMH, AUXIN, ZS, RMT
       REAL*8 AGE2, LT, LEDD, CBASE, WW, SODDS, QQ, DEXP
       REAL*8 AK1, VMC, AC
       INTEGER NH, JIN, JR, NT1, IZ, IML, IMODE, IRS1
@@ -43,6 +43,7 @@
       INTEGER IDREDGE, INF, IDET, IVMS, NCSX, IMLWR
 
       REAL*8 MAT(4,141),Xcompos(3,305),COcompos(8)
+      CHARACTER(len=20) MLSchemes(10)
 
       INTEGER MAXMSH
 
@@ -99,7 +100,10 @@ C
 
       DIMENSION WW(16),WX(52),DELDAT(22), XH(2), CNTRXH(2)
       DATA COcompos /0.0d0,0.01d0,0.03d0,0.1d0,0.2d0,0.4d0,0.6d0,1.0d0/
-C99002 FORMAT (1X, 1P, 12E13.5, 0P)
+      DATA MLSchemes /"None", "Reimers", "Blocker", "V&W", "deJager-broken",
+     :                "deJager", "deJager-slow", "deJager-None", "<not implemented>",
+     :                "Eldridge"/
+
 C Here we define some data format blocks.
 99002 FORMAT (1P, 50E15.8, 0P)                                                 ! modin file
 99003 FORMAT (12I4,/,12I4,/,7I4,/,1P,5E8.1,0P,/,2(10I3,/,3(30I3,/)),3(15I      ! data file
@@ -169,6 +173,7 @@ C Read first line of modin
       READ(30, 99005) SM, DTY, AGE, PER, BMS, EC,NH,NP,NMOD,IB,PMH(1),PME(1)  ! This is the first line of modin
 
 26400 FORMAT(A, I2)
+26401 FORMAT(A, I2, 3A)
 
 C Adjust parameters if we are doing an evolution run
       IF (ISTART.EQ.1) THEN
@@ -206,10 +211,10 @@ C
       END IF
 !extra lines for COopac bit
 
-      WRITE(*,26400) 'Selection for opacity is: ',IOP
-      WRITE(*,26400) 'Selection for massloss (*1) is: ',IML(1)
-      WRITE(*,26400) 'Selection for massloss (*2) is: ',IML(2)
-      WRITE(*,26400) 'Common Envelope prescription is: ',ICEP
+      WRITE(*,26400) 'Selection for opacity is: ', IOP
+      WRITE(*,26401) 'Selection for massloss (*1) is:', IML(1), ' (', trim(MLSchemes(IML(1)+1)), ')'
+      WRITE(*,26401) 'Selection for massloss (*2) is:', IML(2), ' (', trim(MLSchemes(IML(2)+1)), ')'
+      WRITE(*,26400) 'Common Envelope prescription is: ', ICEP
 
       IF(IML(1).EQ.9) THEN
             WRITE(*,*) 'Mass-loss targeting enabled!'

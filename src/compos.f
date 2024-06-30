@@ -18,24 +18,24 @@
             J = JX(I)
             DO K = 1, NMESH
                   IF (H(J,K) + DH(J,K).GT.1.0D-12) THEN
-                        GO TO 1
+                        EXIT
                   END IF
 
                   H(J, K) = 0.0D0
                   DH(J, K) = 0.0D0
          END DO
-    1 END DO
+      END DO
 C Composition check for star 2 data
       DO I = 1, 7
             J = JX(I)+ 15
             DO K = 1, NMESH
                   IF (H(J,K) + DH(J,K).GT.1.0D-12) THEN
-                        GO TO 2
+                        EXIT
                   END IF
                   H(J, K) = 0.0D0
                   DH(J, K) = 0.0D0
             END DO
-    2 END DO
+      END DO
       DO K = 1,NMESH
             IF (H(15,K)+DH(15,K).LT.1d-12) THEN
                   H(15,K) = 0d0
