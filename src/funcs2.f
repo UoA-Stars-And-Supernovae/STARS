@@ -133,7 +133,7 @@ C Set up thermodynamic variables
             WW(I) = HT(4+I, K, ISTAR)
       END DO
 C Take SGTH and MU from evolution model
-      IF (ISGTH.EQ.1) THEN
+      IF (ISGTH.EQ.1 .AND. ISTAR.EQ.2) THEN ! TODO-TEMP
             SGTH = HT(19, K, ISTAR)
       ELSE
             SGTH = 0d0

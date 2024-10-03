@@ -1,11 +1,11 @@
 C
-C ░▒▓██████████████▓▒░ ░▒▓██████▓▒░ ░▒▓███████▓▒░▒▓███████▓▒░      ░▒▓█▓▒░      ░▒▓██████▓▒░ ░▒▓███████▓▒░▒▓███████▓▒░
-C ░▒▓█▓▒░░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░     ░▒▓█▓▒░             ░▒▓█▓▒░     ░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░     ░▒▓█▓▒░
-C ░▒▓█▓▒░░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░     ░▒▓█▓▒░             ░▒▓█▓▒░     ░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░     ░▒▓█▓▒░
-C ░▒▓█▓▒░░▒▓█▓▒░░▒▓█▓▒░▒▓████████▓▒░░▒▓██████▓▒░░▒▓██████▓▒░       ░▒▓█▓▒░     ░▒▓█▓▒░░▒▓█▓▒░░▒▓██████▓▒░░▒▓██████▓▒░
-C ░▒▓█▓▒░░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░      ░▒▓█▓▒░     ░▒▓█▓▒░      ░▒▓█▓▒░     ░▒▓█▓▒░░▒▓█▓▒░      ░▒▓█▓▒░     ░▒▓█▓▒░
-C ░▒▓█▓▒░░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░      ░▒▓█▓▒░     ░▒▓█▓▒░      ░▒▓█▓▒░     ░▒▓█▓▒░░▒▓█▓▒░      ░▒▓█▓▒░     ░▒▓█▓▒░
-C ░▒▓█▓▒░░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░▒▓███████▓▒░▒▓███████▓▒░       ░▒▓████████▓▒░▒▓██████▓▒░░▒▓███████▓▒░▒▓███████▓▒░
+C ░▒▓██████████████▓▒░ ░▒▓██████▓▒░ ░▒▓███████▓▒░▒▓███████▓▒░░▒▓█▓▒░      ░▒▓██████▓▒░ ░▒▓███████▓▒░▒▓███████▓▒░
+C ░▒▓█▓▒░░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░     ░▒▓█▓▒░       ░▒▓█▓▒░     ░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░     ░▒▓█▓▒░
+C ░▒▓█▓▒░░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░     ░▒▓█▓▒░       ░▒▓█▓▒░     ░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░     ░▒▓█▓▒░
+C ░▒▓█▓▒░░▒▓█▓▒░░▒▓█▓▒░▒▓████████▓▒░░▒▓██████▓▒░░▒▓██████▓▒░ ░▒▓█▓▒░     ░▒▓█▓▒░░▒▓█▓▒░░▒▓██████▓▒░░▒▓██████▓▒░
+C ░▒▓█▓▒░░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░      ░▒▓█▓▒░     ░▒▓█▓▒░░▒▓█▓▒░     ░▒▓█▓▒░░▒▓█▓▒░      ░▒▓█▓▒░     ░▒▓█▓▒░
+C ░▒▓█▓▒░░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░      ░▒▓█▓▒░     ░▒▓█▓▒░░▒▓█▓▒░     ░▒▓█▓▒░░▒▓█▓▒░      ░▒▓█▓▒░     ░▒▓█▓▒░
+C ░▒▓█▓▒░░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░▒▓███████▓▒░▒▓███████▓▒░ ░▒▓████████▓▒░▒▓██████▓▒░░▒▓███████▓▒░▒▓███████▓▒░
 C
 C     The following ML routines are currently implemented:
 C           IML = 0: No mass loss
@@ -22,7 +22,7 @@ C           IML = 9: Eldridge (evolve to target mass loss; ZAMS only)
 
       IMPLICIT NONE
 
-      REAL*8 CG, XH, ENDING, HT, RMVB, BETAW, MT, BM
+      REAL*8 CG, XH, HT, RMVB, BETAW, MT, BM
       REAL*8 OCRIT, ME, FAM, RSUN, MTACC, OS, TCONV, ETH
       REAL*8 CNSTS, MOMINER, DVIN, AR, SEP, SQRT, ALPHACE
       REAL*8 BCHSPIN2, AM, CNTRXH, VX, TRB, DABS, VESC2, ZAMS
@@ -46,9 +46,10 @@ C           IML = 9: Eldridge (evolve to target mass loss; ZAMS only)
       REAL*8 SWIND, RENV, RLF, SURFXH, DT1, RCD, CPL, GE
       REAL*8 H, FMAC, TSUNYR, DMAX1, DSQRT, ANGMOM, CPI, MESH
       REAL*8 BCHSPIN1, EC, R2O, DMOMINER, TF, VROT2, MSUN, HTF
-      REAL*8 ACCLIMIT, SURFXHE, LOG10, AUXIN, ZS, RMT, XC, LT
+      REAL*8 ACCLIMIT, SURFXHE, LOG10, ZS, RMT, XC, LT
       REAL*8 LEDD, TRANS, DG, SODDS, WINDACC, PS, DEXP, AK1
-      REAL*8 QQ, AC
+      REAL*8 QQ, AC, COREXH
+
       INTEGER JIN, J2, JW, IZ, ITH, IML, IRS1, IMODE
       INTEGER IMO, ICEPR, ISX, IB, ICN, IX, ICE, IOP
       INTEGER IDIFF, IRAM, ISGTH, NMESH, IW, IY, INUC, IMERGE
@@ -70,7 +71,7 @@ C           IML = 9: Eldridge (evolve to target mass loss; ZAMS only)
       COMMON /INF   / VIN(60)
       COMMON /DINF  / DVIN(60)
       COMMON /OP    / ZS, LEDD, MM, DG, GRADT, ETH, RRLF, EGR, RR, Q
-      COMMON /MASLOS/ AIJ(6,5),baseN
+      COMMON /MASLOS/ AIJ(6,5), baseN
       COMMON /CNSTS / CPI, PI4, CLN10, CA, CB, CC, CD, CG, CR(2), CEVB,
      &                CEN, CPL, CMEVMU, CSECYR, LSUN, MSUN, RSUN, TSUNYR,
      &                STEFBOLTZ
@@ -86,6 +87,8 @@ C           IML = 9: Eldridge (evolve to target mass loss; ZAMS only)
       COMMON /STATUS/ IDET, IMERGE
       COMMON /MISC  / NMOD
       COMMON /VARACC/ IVARACC, IMLWR
+
+      COMMON /COREAB/ COREXH(2)
 
       DIMENSION T(2), AM(2), M(2), MT(2), AR(2), R(2), DAR(2), L(2), XH(2),
      :     XHE(2), XC(2), XO(2), HSPIN(2), DHSPIN(2), ML(2),
@@ -132,7 +135,7 @@ C necessary quantities
 C Orbital angular velocity
       OORB = HORB*BM/(M(1)*M(2)*SEP**2.0)
 C surface boundary conditions
-      DO ISTAR = 1,IMODE!2
+      DO ISTAR = 1, IMODE
             IF (ISTAR.EQ.1) THEN
                   ISTAROTHER = 2
             ELSE
@@ -500,6 +503,11 @@ C Am I missing an MSUN out of all this? I think so...
                         IF(T(ISTAR).GT.5d4.AND.T(ISTAR).LT.6d4) THEN
                               BC1 = ((6d4-T(ISTAR))*(10d0**RMVA)*MSUN/CSECYR+(T(ISTAR)-5d4)*(BCPREWR1))/1d4
                         END IF
+C     Switch on IML=6 if we are getting close to WR temperature with Hydrogen-exhausted core
+                        IF(COREXH(ISTAR).LT.1d-5 .AND. LOG10(T(ISTAR)).GE.4.0) THEN
+                              write (*,*) 'High temp, core hydrogen exhaustion. Switching to IML=6'
+                              IML(ISTAR) = 6
+                        END IF
 C     New mass loss to get to target mass by JJE - 2/5/2021
                   ELSE IF (IML(ISTAR).EQ.9) THEN
 C mass loss rate is from target mass - current mass limited to 10% of thermal timesvale
@@ -510,7 +518,7 @@ C note - the funny constants around RML are because the value is modified to cod
 C Save wind mass loss for orbital angular momentum calculation
 C Enhance wind mass loss by 1/(1-Omega/Omega_crit)
                   OSPIN(ISTAR) = HSPIN(ISTAR)/VI(ISTAR)*SQRT(CG)
-                  OCRIT = DSQRT(6.67d-11*(M(ISTAR)*1d30)/((1d9*R(ISTAR))**3.0))
+                  OCRIT = DSQRT(6.67d-11*(M(ISTAR)*1d30)/((1d9*R(ISTAR))**3.0))     ! Sean to check if right
                   OSC(ISTAR) = OSPIN(ISTAR)/OCRIT
             ! BC1 = BC1/DMAX1(1d-2,(1-OSC(ISTAR)/0.8))
                   BC1 = BC1/(1-OSC(ISTAR)/0.8) ! Changed after conversation with M. Briel on 14/06/23 -- otherwise when it gets weird when the radius of the primary gets close to the separation -- hypothesized this was due to tidal effects but it wasn't.
@@ -702,7 +710,7 @@ C Numerical factor supressing tide
             FCONV = DMIN1(1d0,(0.5d0*PID/TCONV)**2d0) ! check units match, should be ok now...
 C Form of k/T
             DkT = (2d0/21d0)*(FCONV/TCONV)*(ME/M(ISTAR))
-C Dynamical tide with radiative damping, also from HTP 2002
+C Dynamical tide with radiative damping, also from HPT 2002
 C Don't understand their formula, but from eq 28 & 41
             DkTR = SQRT(CG*M(ISTAR)/R(ISTAR)**3d0)*(1d0+QQ)**(5d0/6d0)
 C This is a fit to tabulated data for MS stars from Zahn '75 -- how valid is it

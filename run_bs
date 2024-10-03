@@ -74,6 +74,9 @@ ln -s montage2 fort.62; ln -s sneplot2 fort.69
 ln -s extra2 fort.67
 # need to add - sprocess?
 
+ln -s hspin fort.420
+ln -s hspin2 fort.421
+
 # Run.
 $EXEDIR/bs
 #unalias rm

@@ -2,26 +2,27 @@
 
       IMPLICIT NONE
 
-      REAL*8 ER, ELSEIF, SGTHFAC, TOTMP, VX, RLFC, DABS, HAS
-      REAL*8 FACSG, BECOME, TRC2, VLHP, HNUC, TOLERANCE, ABS, TRC1
-      REAL*8 BOOSTING, DLOG, EXCEEDED, FRR, ERMAX, VZ, VLCP, RESTARTING
+      REAL*8 ER, SGTHFAC, TOTMP, VX, RLFC, DABS
+      REAL*8 FACSG, TRC2, VLHP, HNUC, ABS, TRC1
+      REAL*8 DLOG, FRR, ERMAX, VZ, VLCP
       REAL*8 DH, VLEC, C, VLCC, FAC, RLFP, GT, DTCONT
-      REAL*8 AT, EPS, ERT, S, EQ, VARIABLE, F7
+      REAL*8 AT, EPS, ERT, S, EQ, F7
       REAL*8 DH0, SNAFU, DT2, DMIN1, DEL, VLEP, DHNUC, ERRPR
       REAL*8 DD, ERR, D, VLHC, SOLV, DT1, GE, H
       REAL*8 DMAX1, FACSGMIN, TOTMC, STAR
       INTEGER JIN, N12, J2, NB, N8, KMAX, NE2, IH
       INTEGER KK, N14, K1, MWT, KMESH, N5, IN, N10
       INTEGER N6, NE3, I4, IA, K2, MIXFUD, KTER, MM
-      INTEGER JMAX, NOC, NEV, N1, NAN, NE, J1, NUCLEOSYNTHESIS
+      INTEGER JMAX, NOC, NEV, N1, NAN, NE, J1
       INTEGER NV, NMESH, IE, IW, N16, NE4, K, KH
-      INTEGER MIXING, ID, N7, LE, NWRT5, NW, N3, MAX
+      INTEGER ID, N7, LE, NWRT5, NW, N3, MAX
       INTEGER N11, NN, NUCMAT, MAXMSH, I2, ISGFAC, J, N4
       INTEGER N15, ITER, NF, N9, I, L, MWTS, NE1
       INTEGER N13, MIN0, MK, N2, ISTAR, MESH, IVMC, JTER
-      INTEGER LT, IVMS, JH, MESHPOINT
+      INTEGER LT, IVMS, JH, SNAFUS, NMOD, SNAFUNMOD
 
       PARAMETER (MAXMSH = 2000)
+
       COMMON H(60,MAXMSH),DH(60,MAXMSH),EPS,DEL,DH0,NMESH,JIN,IW(200)
       COMMON /NUCMAT/ HNUC(100,MAXMSH), DHNUC(100,MAXMSH)
       COMMON /SOLV  / C(MAXMSH+1,51,51),S(50,151),ER(60),D,KH,NE,N2,N5,
@@ -31,6 +32,8 @@
      :     VLEC(2), VLCC(2), RLFC(2), TOTMC(2)
       COMMON /MIXFUD/ SGTHFAC, FACSGMIN, FACSG, ISGFAC
       COMMON /MESH  / TRC1,TRC2,DD,DT1,DT2,MWT,MWTS,IVMC,IVMS
+      COMMON /ERRORS/ SNAFUS, SNAFUNMOD
+      COMMON /MISC  / NMOD
       DIMENSION MK(60), ERT(60), IE(100)
       LOGICAL REDUCE
 
@@ -342,11 +345,28 @@ C RJS 10/11/02 - Added lines to print out reason for failure
             END IF
 C NaN trap
             IF (ERR.NE.ERR) THEN
-                  WRITE(32,*) "ERR has become NaN (SNAFU), restarting"
+                  IF (NMOD.NE.SNAFUNMOD) THEN
+                        ! Reset snafu counter -- we snafu'd on a new model
+                        SNAFUS = 1
+                        SNAFUNMOD = NMOD
+                  ELSE
+                        SNAFUS = SNAFUS + 1
+                  END IF
+
+99004             FORMAT(A, I6)
+
+                  IF (SNAFUS.GT.50) THEN
+                        WRITE(*,*) 'Too many SNAFUs... aborting on model number ', NMOD
+                        STOP
+                  END IF
 
                   IF (DD.GT.0.1) THEN
                         DD = DD / 2.0
                   END IF
+
+99005             FORMAT(A, I2, A)
+
+                  WRITE(32,*) "ERR has become NaN (SNAFU), restarting. ", SNAFUS, "/50."
 
                   ERR = 1d1
             END IF

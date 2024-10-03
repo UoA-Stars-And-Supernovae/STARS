@@ -15,18 +15,24 @@ C
       REAL*8 GT, V, STATUS, F10, EVMODE, ERR, DT
       REAL*4 CPU
       REAL*8 EPS, H, EQ, TCPU, DH
-      INTEGER IDOKR, JIN, I6, ITER, NTER, NPR, I3, NMESH
+      INTEGER JIN, I6, ITER, NTER, NPR, I3, NMESH
       INTEGER IE, I7, NSTEP, IMERGE, NWRT4, ID, NM, KTER
       INTEGER IMODE, NWRT5, ITER2, IDET, LT, ITER1, NE, MAXMSH
+      INTEGER SNAFUS, SNAFUNMOD
 
       PARAMETER (MAXMSH = 2000)
 
       COMMON H(60,MAXMSH),DH(60,MAXMSH),EPS,V(2),NMESH,JIN,ID(100),IE(100)
       COMMON /EVMODE/ IMODE
-      COMMON /STATUS/ IDET, IMERGE, IDOKR
+      COMMON /STATUS/ IDET, IMERGE
+      COMMON /ERRORS/ SNAFUS, SNAFUNMOD
+
 
 C       REAL dtime,cpu(2),dt,tcpu
       DIMENSION CPU(2)
+
+      SNAFUS = 0
+      SNAFUNMOD = 0
 
 C Read physical data and an initial model
       CALL PRINTA(-1, NSTEP, ITER1, ITER2, NWRT5)
@@ -35,7 +41,6 @@ C Read physical data and an initial model
             ITER = ITER1
             nter = 0
             nm = 0 ! Current model number
-            IDOKR = 0
             npr = nm ! Previous model number
             tcpu = dtime(cpu) ! This is a sneaky line. dtime returns the time elapsed since this was *last* called.
                               ! In future, we want it to be "since execution began". So we call it here to update
@@ -103,6 +108,8 @@ C If model didn't converge, give up
 
 C Output the last converged model
       CALL PRINTA(1, NSTEP, ITER1, ITER2, NWRT4)
+
+      WRITE (*,*) "Code termination reached -- stopping :)"
 
       STOP
       END

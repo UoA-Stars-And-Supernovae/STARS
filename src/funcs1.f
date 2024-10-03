@@ -175,6 +175,7 @@ C Need to mess about with units to get this right
             WRITE(32+(ISTAR-1),*) "Break-up velocity reached!"
             WRITE(32+(ISTAR-1),*) ISTAR, 1.0D11*CG*M/R2, 1d11*2.0/3.0*OSPIN**2.0*R, VI(ISTAR)
             WRITE(32+(ISTAR-1),*) OSPIN, R, H(14+15*(ISTAR - 1),1) + DH(14+15*(ISTAR - 1),1)
+            WRITE(*,*) "Break up velcity reached -- stopping!"
             STOP
       END IF
 
@@ -470,7 +471,7 @@ C can't diffuse through H if we don't have any...
             D3 = 0d0
       END IF
 
-      IF (ISGTH.EQ.1) THEN
+      IF (ISGTH.EQ.1 .AND. ISTAR.EQ.2) THEN ! TODO-TEMP
             MU = 1.0/(2.0*XH1 + 0.75*XHE1 + 7.0/12.0*XC1 + 8.0/14.0*XN1 + 9.0/16.0*XO1
      :                        + 11.0/20.0*XNE1 + XHE31)
             ! + 13.0/24.0*XMG + 15.0/28.0*XSI + 27.0/56.0*XFE)

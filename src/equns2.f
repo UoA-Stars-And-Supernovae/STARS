@@ -56,8 +56,10 @@ C Interior points
                   SG1 = 0.5d0*(SG(2)+SG(1)) - PS(DMT(2))
                   SG2 = 0.5d0*(SG(3)+SG(2)) - PS(-DMT(3))
 C Plus thermohaline mixing
-                  SG1 = SG1 + 0.5*(SGTH(1)+SGTH(2))*PS((DMU(1) - DMU(2)))
-                  SG2 = SG2 + 0.5*(SGTH(2)+SGTH(3))*PS((DMU(2)-DMU(3)))
+                  IF (ISTAR.EQ.2) THEN ! TODO-TEMP
+                        SG1 = SG1 + 0.5*(SGTH(1)+SGTH(2))*PS((DMU(1) - DMU(2)))
+                        SG2 = SG2 + 0.5*(SGTH(2)+SGTH(3))*PS((DMU(2)-DMU(3)))
+                  END IF
 
                   DO J = 1, NE
                         DO I = 1, NE
@@ -95,7 +97,9 @@ C     :              *SG1 - XT(2, J))
 C Central conditions
                   SG2 = 0.5d0*(SG(3)+SG(2))
 C Plus thermohaline mixing
-                  SG2 = SG2 + 0.5*(SGTH(2)+SGTH(3))*PS((DMU(2)-DMU(3)))
+                  IF (ISTAR.EQ.2) THEN ! TODO-TEMP
+                        SG2 = SG2 + 0.5*(SGTH(2)+SGTH(3))*PS((DMU(2)-DMU(3)))
+                  END IF
                   DO J = 1, NE
                         DO I = 1, NE
                               DEQU(I, 1, J) = 0.0

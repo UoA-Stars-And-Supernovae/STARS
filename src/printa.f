@@ -490,6 +490,7 @@ C This is no longer used, so I don't care whether it works or not. RJS
       END IF
 
       IF(IB.EQ.2 .AND. (ST(KS+2).EQ.0.0D0.OR.RLF.GT.0.0D0)) THEN
+            WRITE(*,*) 'IB=2 and (ST(KS+2)=0 or RLF>0) -- stopping'
             STOP
       END IF
       DELTA = 0.0D0
@@ -713,7 +714,9 @@ C   11    CT(J+10) = PR(J)
 
    34 DT = 0.8*DT
       IF (DT .LT. 0.01*PR(2)) THEN
-            STOP
+            WRITE(*,*) 'DT < 1% of previous DT -- setting to 10% TKH'
+C             STOP
+            DT = 3e7/(SM**2d0) * HKH * CSECYR
       END IF
 
    33 DO K = 1, NH

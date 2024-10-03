@@ -129,8 +129,10 @@ C second-order difference equations at interior points
                   SG1 = 0.5D0*(SG(1)+SG(2)) - PS(MT(2))
                   SG2 = 0.5D0*(SG(2)+SG(3)) - PS(-MT(3))
 C Add in thermohaline mixing
-                  SG1 = SG1 + 0.5*(SGTH(1)+SGTH(2))*PS((MU(1)-MU(2)))
-                  SG2 = SG2 + 0.5*(SGTH(2)+SGTH(3))*PS((MU(2)-MU(3)))
+                  IF (ISTAR.EQ.2) THEN
+                        SG1 = SG1 + 0.5*(SGTH(1)+SGTH(2))*PS((MU(1)-MU(2)))
+                        SG2 = SG2 + 0.5*(SGTH(2)+SGTH(3))*PS((MU(2)-MU(3)))
+                  END IF
 C Note gravitational settling is hard-wired into having H as the dominant element!
                   EQU(7) = (SG2 + 0.5*(DA4(2)+DA4(3)))*(X1(3)-X1(2))
      :                   - (SG1+0.5*(DA4(1)+DA4(2)))*(X1(2)-X1(1)) - X1T(2)
@@ -184,7 +186,9 @@ C     :         *MT(3)
 C central boundary conditions for second-order equations
       SG2 = 0.5D0*(SG(2)+SG(3))
 C Plus thermohaline mixing
-      SG2 = SG2 + 0.5*(SGTH(2)+SGTH(3))*PS((MU(2)-MU(3)))
+      IF (ISTAR.EQ.2) THEN  ! TODO-TEMP
+            SG2 = SG2 + 0.5*(SGTH(2)+SGTH(3))*PS((MU(2)-MU(3)))
+      END IF
       EQU(4) = SG2*(X1(3)-X1(2)) + X1T(3)
       EQU(5) = SG2*(X16(3)-X16(2)) + X16T(3)
       EQU(6) = SG2*(X4(3)-X4(2)) + X4T(3)

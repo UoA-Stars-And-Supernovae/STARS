@@ -44,6 +44,7 @@
       REAL*8 RPN, CNUC, RCD, QCCG, ATDATA, DMAX1, CHI, TOTMC
       REAL*8 RGNE, LEDD, WINDACC, RBP, WT, QD
       REAL*8 EMAX(3), VMX(3), MEX(12), THB(12) ! EXX(3),
+      REAL*8 COREXH
 
       INTEGER ITH, IMODE, KMH, I4, NPRINT, IB, NWRT1
       INTEGER KTM, IX, I13, ICE, NWRT2, NMESH, NWRT4
@@ -111,6 +112,8 @@ C Extra common for extra timestep control stuff - P for previous, C for current
       COMMON /TIDES / MENV(2), RENV(2)
       COMMON /JJTIME/ RLFcheck1,RLFcheck2 !!!JJE's new timestep check - 11/12/2023
 
+      COMMON /COREAB/ COREXH(2)
+
       DIMENSION XA(10), TCB(12), RCB(12)
       DIMENSION SX(45,MAXMSH+1)
       DIMENSION XINIT(44),YIELD(44)
@@ -164,6 +167,7 @@ C Used A&G for H,He,C,N,O,Ne rather than input for convenience
 99013 FORMAT (I6,1P,E16.9,54(1X,E13.6))
 99014 FORMAT (I6,1P,E17.9,0P)
 99015 FORMAT (1P,E13.6,4E11.4,25E11.3,0P)
+99420 FORMAT (I6, 1X, 199E16.9)
 
       PS(VX) = 0.5D0*(VX+DABS(VX))
 
@@ -187,6 +191,7 @@ C Store previous values of extra timestep control variables
             KME = 0
             TMAX = 0.0D0
             VI(ISTAR) = 0d0
+
             DO K=1,NMESH - 1
                   VI(ISTAR) = VI(ISTAR) + 2.0/3.0*(DEXP(H(4+15*(ISTAR-1),K)+DH(4+15*(ISTAR-1),K))
      :            - DEXP(H(4+15*(ISTAR-1),K+1)+DH(4+15*(ISTAR-1),K)))*DEXP(H(7+15*(ISTAR-1),K)
@@ -700,6 +705,8 @@ C If boundary moves in, reduce DD
             END IF
 
 C           Output plot file
+
+            COREXH(ISTAR) = SX(10,2)
 
             WRITE(32+20*(ISTAR-1),99003) NMOD,PX(9),DTY,TN,PER,VLH,VLT,SX(10,2),SX(11,2),
      :            SX(12,2),SX(13,2),SX(14,2),SX(15,2),SX(16,2),SX(1,2),SDC,STC,

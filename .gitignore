@@ -11,6 +11,9 @@ projects/
 !modins/*
 !src/*
 
+# WIP documentation
+docs/
+
 # Build Directory
 obj/*
 
