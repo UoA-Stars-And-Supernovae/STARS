@@ -11,4 +11,4 @@ It is a fork of the Cambridge STARS code originally written by Peter Eggleton, [
 
 # Documentation
 
-I'm slowly cobbling together an operation manual [here](https://www.overleaf.com/read/qgtbhrgpwhqn)
+Documentation is presently being written for this version. Until then, [the version most recently written by Warrick Ball](https://people.ast.cam.ac.uk/~stars/doc/stars.pdf) can be used, though it does not describe the changes made in particular for variable composition accretion.
