@@ -615,12 +615,14 @@ C Fakewind deals with mass-loss in CE systems - will interfer with normal evolut
             END IF
 
             ML(ISTAR) = ML(ISTAR) - RMG*M(ISTAR) + MT(ISTAR)
-     :                  + DMIN1(RMT*(PS(RLF(ISTAR)))**3, MASSLIMIT*MSUN/CSECYR)
+     :                  + DMIN1(RMT*((M(ISTAR)/MSUN)**2d0)*((PS(RLF(ISTAR)))**3d0), MASSLIMIT*MSUN/CSECYR)
 
             IF (IMODE.EQ.2) THEN
 C Add (1-omega/omega_crit) to reduce accretion rate
-                  ML(ISTAR) = ML(ISTAR) - DMIN1(FMAC*DMIN1(RMT*(PS(RLF(ISTAROTHER)))**3.0, MASSLIMIT*MSUN/CSECYR), ACCLIMIT(ISTAR)*MSUN/CSECYR)
+                  ML(ISTAR) = ML(ISTAR) - DMIN1(FMAC*DMIN1(RMT*((M(ISTAROTHER)/MSUN)**2d0)*((PS(RLF(ISTAROTHER)))**3d0), MASSLIMIT*MSUN/CSECYR), ACCLIMIT(ISTAR)*MSUN/CSECYR)
             END IF
+c  c          write(*,*) FMAC,RMT
+
       END DO
 
       IF (IDET.EQ.2) THEN

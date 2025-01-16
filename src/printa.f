@@ -360,7 +360,7 @@ C Convert some things to `cgs' units: 10**11 cm, 10**33 gm, 10**33 erg/s
       MZAMS(2) = TM(2)
 
       RMG = RMG/CSECYR
-      RMT = MSUN*(RMT*TM(1)**2)/CSECYR
+      RMT = MSUN*RMT/CSECYR
 C       WF = DSQRT(1.0D0+DEXP(H(1,1)))
 C       PSI = 2.0D0*(WF-DLOG(WF+1.0D0))+H(1,1)
 C       RMT = MSUN*(10**(PSI+10)*TM(1)**2)/CSECYR
