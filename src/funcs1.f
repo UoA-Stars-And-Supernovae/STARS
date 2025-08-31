@@ -207,7 +207,7 @@ C if GRADR < GRADA, we get WCV = 0 and GRADT = GRADR
       GTMA = GRADT - GRADA
       ATM = GRADT*APM
 C Old MSF 2000
-      IOLD = 0
+      IOLD = 0 ! Uhhhhhh....
       IF (IOLD.EQ.1 .OR. IMODE.EQ.1) THEN
             CT1 = 1.0D1**(1.0D1*CT(1)) !!! should change input format !!!
 
@@ -228,8 +228,8 @@ C Old MSF 2000
                   !this is a JJ fix to avoid problems when removing hydrogen envelope
             END IF
 
-            CT(5) = 0.15
-            CT(2) = 0.0
+*           CT(5) = 0.15
+*           CT(2) = 0.0
 
             VP = CT(4)*AP + CT(5)*LOG(P+CP3) +   CT(2)*LOG(P+CP1)
      &                  + CT(2)*LOG(P+CP2)

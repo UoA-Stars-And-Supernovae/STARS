@@ -186,7 +186,9 @@ C Adjust parameters if we are doing an evolution run
 
 C        WRITE (*,'(I2,F4.1)') ICEP, ALPHACE
 
-      WRITE(32,99003) NH2,IT1,IT2,JIN,JOUT,NCH,JP,IZ,IMODE,                    ! Output the data file block to out
+
+      DO ISTAR = 1,IMODE
+            WRITE(32+20*(ISTAR-1),99003) NH2,IT1,IT2,JIN,JOUT,NCH,JP,IZ,IMODE,                    ! Output the data file block to out
      :ICL,ION,IAM,IOP,IBC,INUC,ICN,IML(1),IML(2), ISGTH, IMO, IDIFF,
      :NT1,NT2,NT3,NT4,NT5,NSV,NMONT,
      :EP,DT3,DD,ID,ISX,DT1,DT2,CT,ZS,ALPHA,CH,CC,CN,CO,
@@ -198,8 +200,9 @@ C        WRITE (*,'(I2,F4.1)') ICEP, ALPHACE
      :ICEP, ALPHACE,
      :IVARACC, IMLWR
 
-      WRITE(32, 99005)
-      WRITE(32, 99005) SM, DTY, AGE, PER, BMS, EC,NH,NP,NMOD,IB,PMH(1),PME(1)
+            WRITE(32+20*(ISTAR-1), 99005)
+            WRITE(32+20*(ISTAR-1), 99005) SM, DTY, AGE, PER, BMS, EC,NH,NP,NMOD,IB,PMH(1),PME(1)
+      END DO
 
 C Convert RML from eta to coefficient required
       RML = 4d-13*RML                                                           ! Okay so this line puts us into "Eggleton" units kinda for ML.

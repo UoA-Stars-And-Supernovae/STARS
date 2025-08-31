@@ -63,7 +63,9 @@ C if the error isn't too large.
                   dt = dtime(cpu)
                   tcpu = tcpu + dt ! Update the current execution time
 
-                  IF (ERR.GT.EPS) kter = -kter
+                  IF (ERR.GT.EPS) THEN
+                        kter = -kter
+                  END IF
 C         write(61,99000) nm, kter, dt, dt/kter, nter, tcpu, tcpu/nter,
 C     &        tcpu/nm
 99000             FORMAT(I6,I3,2F8.4,I7,F10.2,2F9.5)
@@ -109,7 +111,7 @@ C If model didn't converge, give up
 C Output the last converged model
       CALL PRINTA(1, NSTEP, ITER1, ITER2, NWRT4)
 
-      WRITE (*,*) "Code termination reached -- stopping :)"
+      WRITE (*,*) "Code termination reached -- stopping."
 
       STOP
       END
