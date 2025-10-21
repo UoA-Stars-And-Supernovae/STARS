@@ -1,5 +1,5 @@
-C     Computes effects on the EOS of a free energy contribution
-C     delta(F) = -k*T*N_e*G(XI,TI), where XI = n_e*m_u and TI = 1eV/(k*T).
+!     Computes effects on the EOS of a free energy contribution
+!     delta(F) = -k*T*N_e*G(XI,TI), where XI = n_e*m_u and TI = 1eV/(k*T).
       SUBROUTINE PRESSI(ICL, TI, XI, XF, XT, F, DC, DVT, DVF, DP, DPT,
      :                  DPF, DS, DST, DSF, DU)
 
@@ -29,8 +29,8 @@ C     delta(F) = -k*T*N_e*G(XI,TI), where XI = n_e*m_u and TI = 1eV/(k*T).
       DATA CA1, CA2, CA3 /0.89752, 0.768, 0.208/
       DATA CF1, CF2 /1.07654, 0.56956/
       DATA CP1, CP2, CP3, CP4 /3.0, 0.25, 2.0, 3.0D-2/
-* Pressure ionization. 
-* FF and CC are approximations of the degeneracy parameters F and PSI
+! Pressure ionization.
+! FF and CC are approximations of the degeneracy parameters F and PSI
       YI = 13.6*TI
       ZI = CF1*XI*YI*SQRT(YI)
       DD = CF2*ZI
@@ -61,10 +61,10 @@ C     delta(F) = -k*T*N_e*G(XI,TI), where XI = n_e*m_u and TI = 1eV/(k*T).
       DGDYY = AA*BYY
 
       IF (ICL.EQ.1) THEN
-* Coulomb interaction.
-* the input variable F is used, rather than the above approximation, 
-* resulting in quite a bit of programming to get the derivatives of 
-* TH = d log(n_e)/d(psi). XFF, XFFF etc are 2nd and 3rd derivatives of n_e.
+! Coulomb interaction.
+! the input variable F is used, rather than the above approximation,
+! resulting in quite a bit of programming to get the derivatives of
+! TH = d log(n_e)/d(psi). XFF, XFFF etc are 2nd and 3rd derivatives of n_e.
             FF1 = F + 1.0
             WF = SQRT(FF1)
             FF2 = -0.5*F/FF1
@@ -79,7 +79,7 @@ C     delta(F) = -k*T*N_e*G(XI,TI), where XI = n_e*m_u and TI = 1eV/(k*T).
             THXX = (THFF - THX*XFF)/XF**2
             THXY = THXX*XT - (THFT - THX*XFT)/XF
             THYY = THXX*XT**2 + 2*XT/XF*(THX*XFT - THFT) + THTT - THX*XTT
-* GAM is the plasma interaction parameter. Note that THC = ZT**2*NI/NE
+! GAM is the plasma interaction parameter. Note that THC = ZT**2*NI/NE
             THC = TH + ABS(NZZ/NE)
             GAM = CBRT(XI*(CPL*NE/NI)**2/3.0)*TI/CEVB*THC
             BB = (CA1*SQRT(3.0/GAM))**(1.0/CA2)
@@ -104,8 +104,8 @@ C     delta(F) = -k*T*N_e*G(XI,TI), where XI = n_e*m_u and TI = 1eV/(k*T).
             DGDXY = DGDXY + DGDGG*GAMX*GAMY + DGDG*GAMXY
             DGDYY = DGDYY + DGDGG*GAMY**2 + DGDG*GAMYY
       END IF
-* evaluate changes to ionization potential (DC), pressure (DP), and
-* entropy (DS), and their derivatives w.r.t. log(f) and log(T)
+! evaluate changes to ionization potential (DC), pressure (DP), and
+! entropy (DS), and their derivatives w.r.t. log(f) and log(T)
       DC = DGDX + GI
       DVT = DGDXX + DGDX
       DVF = DVT*XF

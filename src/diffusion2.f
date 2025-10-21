@@ -1,5 +1,5 @@
-C     Compute diffusion coefficients from Paquette et al. 1986
-C     For minor species
+!     Compute diffusion coefficients from Paquette et al. 1986
+!     For minor species
       SUBROUTINE DIFFUSION2(RHO, T)
 
       IMPLICIT NONE
@@ -36,11 +36,11 @@ C     For minor species
      : 59.0,60.0,59.0,58.0,59.0,60.0,61.0,1.0,4.0,12.0,14.0,16.0,20.0,1.0,1.0,1.0,1.0/ 
       DATA MIZZ/30,0,1,2,3,4,5,6,6,7,8,8,9,10,10,11,11,12,12,12,13,13,13,14,14,14,15,
      :16,16,16,26,26,26,26,26,27,28,28,28,28,1,2,6,7,8,10,0,0,0,0/
-C Important consts not passed in CNSTS
+! Important consts not passed in CNSTS
       AMU = 1.6605402D-24
       ECHAR = 4.8032068D-10
       LAMBDAI = (3d0/(PI4*RHO/(AVM*AMU)))**(1d0/3d0) ! should be n_i...
-C Compute Debye length
+! Compute Debye length
       LAMBDAD = CKBA*AMU*T/(PI4*(ECHAR**2d0))
       SUMNZ2 = 0d0
       DO I = 1,50
@@ -50,18 +50,18 @@ C Compute Debye length
       END DO
 
       LAMBDAD = (LAMBDAD/SUMNZ2)**(1d0/2d0)
-C pick max of lambdaI and lambdad
+! pick max of lambdaI and lambdad
       LAMBDA = DMAX1(LAMBDAI,LAMBDAD)
 
       DO I=1,50
             IF (I.NE.2) THEN
-C assume species 1 is hydrogen
+! assume species 1 is hydrogen
                   gamma1t = 4d0*CKBA*AMU*T*LAMBDA/(1d0*MIZZ(I)*ECHAR**2d0)
                   psi1t = DLOG(DLOG(1+gamma1t**(2d0)))
                   msum = 1d0 + BARYN(I)
                   m1 = 1d0/msum
                   mt = BARYN(I)/msum
-C     number densities of species
+!     number densities of species
                   dn1 = RHO*XA2(41)/(AMU*BARYN(41))
                   dnt = RHO*XA2(I)/(AMU*BARYN(I))
                   dnsum = dn1 + dnt
@@ -69,16 +69,16 @@ C     number densities of species
                   xt = dnt/dnsum
                   eps1t = CPI*(1d0*MIZZ(I)*ECHAR**2d0/(2d0*CKBA*AMU*T))**2d0
                   eps1t = eps1t*(CKBA*T/(2d0*CPI*(msum*m1*mt)))**(0.5d0)
-C Choose appropriate psi region
-C note we're only using the repulsive potentials
+! Choose appropriate psi region
+! note we're only using the repulsive potentials
                   IF (psi1t.LE.3.0) THEN
-C Determine appropriate n value for psi1t
+! Determine appropriate n value for psi1t
                         N = MAX(1, MIN(50, INT((psi1t +7d0)/0.2d0)))
                         PSIN1 = -7d0 + 0.2d0*(N+1)
                         PSIN = -7d0 + 0.2d0*N
                         psin1psi = PSIN1 - psi1t
                         psipsin = psi1t - PSIN
-C use splines to calculate collision integrals
+! use splines to calculate collision integrals
                         DO J=1,3
                               F1t1(J) = DEXP(DC(N,1,J)*psin1psi**3.0 + DC(N,2,J)*psipsin**3.0
      +                                + DC(N,3,J)*psin1psi + DC(N,4,J)*psipsin)
@@ -89,7 +89,7 @@ C use splines to calculate collision integrals
      +                        + DD(N,3)*psin1psi + DD(N,4)*psipsin)
                         PHI1t22 = F1t22*eps1t
                   ELSE
-C     Doesn't need splitting in two as we only consider repulsive potentials
+!     Doesn't need splitting in two as we only consider repulsive potentials
                         F1t1(1) = 1.00141d0*DEXP(psi1t) - 3.18209d0
                         F1t1(2) = 0.99559d0*DEXP(psi1t) - 1.29553d0
                         F1t1(3) = 1.99814d0*DEXP(psi1t) - 0.64413d0
@@ -101,18 +101,18 @@ C     Doesn't need splitting in two as we only consider repulsive potentials
                   END IF
             
                   IF (I.EQ.41) THEN
-C Self-interaction for H
+! Self-interaction for H
                         PHI1122 = PHI1t22
                         E11 = CKBA*AMU*T/(8d0*m1*m1*PHItt11)
                         P1 = 8d0*m1*E11*PHI1122/(5d0*CKBA*AMU*T)
                   ELSE
-C also need self interaction terms for each species
+! also need self interaction terms for each species
                         gammatt = 4d0*CKBA*AMU*T*LAMBDA/((MIZZ(I)*ECHAR)**2d0)
                         psitt = DLOG(DLOG(1+gammatt**(2d0)))
                         epstt = CPI*((MIZZ(I)*ECHAR)**2d0/(2d0*CKBA*AMU*T))**2d0
                         epstt = epstt*(CKBA*T/(2d0*CPI*(0.5*BARYN(I))))**(0.5d0)
                         IF (psitt.LE.3.0) THEN
-C Determine appropriate n value for psi1t
+! Determine appropriate n value for psi1t
                               N = MAX(1, MIN(50, INT((psitt +7d0)/0.2d0)))
                               PSIN1 = -7d0 + 0.2d0*(N+1)
                               PSIN = -7d0 + 0.2d0*N
@@ -129,49 +129,49 @@ C Determine appropriate n value for psi1t
                               PHItt22 = Ftt22*epstt
                         END IF
                   END IF
-C         if (I.EQ.2) write (*,*) I, PHI1t1(1), PHI1t1(2), PHI1t1(3), PHI1t22
-C         if (I.EQ.2) write(*,*) psitt, PHItt22, epstt, eps1t
+!         if (I.EQ.2) write (*,*) I, PHI1t1(1), PHI1t1(2), PHI1t1(3), PHI1t22
+!         if (I.EQ.2) write(*,*) psitt, PHItt22, epstt, eps1t
                   A = PHI1t22/(5d0*PHI1t1(1))
                   B = (5d0*PHI1t1(2) - PHI1t1(3))/(5d0*PHI1t1(1))
                   C = (2d0*PHI1t1(2)/(5d0*PHI1t1(1))) - 1d0
-C     if (I.EQ.2) write (*,*) I, A, B, C
+!     if (I.EQ.2) write (*,*) I, A, B, C
                   E = CKBA*AMU*T/(8d0*m1*mt*PHI1t1(1))
                   P1t = 3d0*(m1 - mt)**2d0 +4d0*m1*mt*A
-C Is E right for P_i? It's not clear what subscripts should be on omega, 
-C which for some reason I've called PHI. Don't know what I was on...
-C original implementation
+! Is E right for P_i? It's not clear what subscripts should be on omega,
+! which for some reason I've called PHI. Don't know what I was on...
+! original implementation
                   P1 = 8d0*m1*E*PHI1122/(5d0*CKBA*AMU*T)
                   Pt = 8d0*mt*E*PHItt22/(5d0*CKBA*AMU*T)
-C New implementation -- assumes E should be the self-property
-C         Ett = CKBA*AMU*T/(8d0*mt*mt*PHItt11)
-C         Pt = 8d0*mt*Ett*PHItt22/(5d0*CKBA*AMU*T)
-C         if (I.EQ.2) write (*,*) P1t, P1, Pt
+! New implementation -- assumes E should be the self-property
+!         Ett = CKBA*AMU*T/(8d0*mt*mt*PHItt11)
+!         Pt = 8d0*mt*Ett*PHItt22/(5d0*CKBA*AMU*T)
+!         if (I.EQ.2) write (*,*) P1t, P1, Pt
                   Q1 = P1*(6d0*mt**2d0 + 5*m1**2d0 - 4d0*(m1**2d0)*B + 8*m1*mt*A)
                   Qt = Pt*(6d0*m1**2d0 + 5*mt**2d0 - 4d0*(mt**2d0)*B + 8*mt*m1*A)
                   Q1t = 3d0*(m1 - mt)**2d0
                   Q1t = Q1t*(5d0-4d0*B) + 4*m1*mt*A*(11d0-4d0*B)+2d0*P1*Pt
-C         if (I.EQ.2) write (*,*) Q1t, Q1, Qt
+!         if (I.EQ.2) write (*,*) Q1t, Q1, Qt
                   S1 = m1*P1 - mt*(3d0*(mt-m1)+4d0*m1*A)
                   St = mt*Pt - m1*(3d0*(m1-mt)+4d0*mt*A)
                   delta = 5d0*(C**2d0)*((m1**2d0)*P1*(x1**2d0) + (mt**2d0)*Pt*(xt**2d0)
      :           + P1t*x1*xt)
                   delta = delta/((x1**2d0)*Q1 + (xt**2d0)*Qt + x1*xt*Q1t)
-C delta fudge to stop getting silly values
+! delta fudge to stop getting silly values
                   delta = dmin1(delta, 0.1d0)
-C         if (I.EQ.2) write (*,*) S1, St, delta
-C         IF (delta.gt.1d0) write (*,*) "delta problems!", delta, I
-C         IF (delta.gt.1d0.AND.I.EQ.2) THEN
-C                 write (*,*) A, B, T, RHO, X(1), X(2)
-C                 write (*,*) ((x1**2d0)*Q1 + (xt**2d0)*Qt + x1*xt*Q1t)
-C                 write (*,*) 5d0*C**2d0*((m1**2d0)*P1*(x1**2d0) + (mt**2d0)*Pt*(xt**2d0)
-C     :        + P1t*x1*xt)
-C                 write (*,*) C, m1, mt, x1, xt, P1, Pt, P1t, Q1, Qt, Q1t
-C                 stop
-C         END IF
+!         if (I.EQ.2) write (*,*) S1, St, delta
+!         IF (delta.gt.1d0) write (*,*) "delta problems!", delta, I
+!         IF (delta.gt.1d0.AND.I.EQ.2) THEN
+!                 write (*,*) A, B, T, RHO, X(1), X(2)
+!                 write (*,*) ((x1**2d0)*Q1 + (xt**2d0)*Qt + x1*xt*Q1t)
+!                 write (*,*) 5d0*C**2d0*((m1**2d0)*P1*(x1**2d0) + (mt**2d0)*Pt*(xt**2d0)
+!     :        + P1t*x1*xt)
+!                 write (*,*) C, m1, mt, x1, xt, P1, Pt, P1t, Q1, Qt, Q1t
+!                 stop
+!         END IF
                   D(I) = 3d0*CKBA*T/(16d0*dnsum*msum*m1*mt*PHI1t1(1))
-C second approx to diffusion coeff.
+! second approx to diffusion coeff.
                   D(I) = D(I)/(1-delta)
-C thermodiffusion coeff. -- if I need it...
+! thermodiffusion coeff. -- if I need it...
                   A12(I) = 5d0*C*(x1*S1 - xt*St)/((x1**2d0)*Q1 + (xt**2d0)*Qt + x1*xt*Q1t)
             END IF
       END DO

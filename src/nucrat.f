@@ -1,5 +1,5 @@
-C     Compute rates of (at present) 20 nuclear reactions, and the corresponding
-C     energy and neutrino release
+!     Compute rates of (at present) 20 nuclear reactions, and the corresponding
+!     energy and neutrino release
       SUBROUTINE NUCRAT(TL)
 
       IMPLICIT NONE
@@ -37,17 +37,17 @@ C     energy and neutrino release
       DATA CSA, CSB, CSC, CSD, CXD /0.624, 0.316, 0.460, 0.38, 0.86/
       DATA czw /2,8,8,0,8,12,14,16,16,24,28,32,40,72,96,128,0,0,0,0/
 
-* RHB is 'baryon density': 1 amu * number of baryons per cm3
+! RHB is 'baryon density': 1 amu * number of baryons per cm3
       RHB = RHO/AVM
-* Electron screening theory from Graboske, DeWitt, Grossman & Cooper (1973),
-* for strong (ZA, ZB, ZC) are intermediate screening (ZD). The reaction
-* dependent charge parameters are stored in CZA ... CZD.
+! Electron screening theory from Graboske, DeWitt, Grossman & Cooper (1973),
+! for strong (ZA, ZB, ZC) are intermediate screening (ZD). The reaction
+! dependent charge parameters are stored in CZA ... CZD.
       WC = 0.0
 
       DO I = 1, 10
             WC = WC + N(I)*VZ(I)
       END DO
-C Ionization details for He3 not worked out - RJS
+! Ionization details for He3 not worked out - RJS
 
       N1 = N(1)
       N4 = N(2)
@@ -68,9 +68,9 @@ C Ionization details for He3 not worked out - RJS
       ZB = CSB*XB*ZA
       ZC = CSC/(XB*XB)
       ZD = CSD*WC*WA*EXP(LOG(VL/(WA*ZT))*CXD)
-* weak screening
+! weak screening
       zw = 0.5*zt*vl
-* Reaction rates interpolated in T, mostly from Caughlan & Fowler (1988)
+! Reaction rates interpolated in T, mostly from Caughlan & Fowler (1988)
       TF = TL/CLN10
 
       DO J = 1, 19
@@ -88,7 +88,7 @@ C Ionization details for He3 not worked out - RJS
                         IF (DSTR .LT. 0.29*STRN) THEN
                               SCRN = MIN(SCRN, STRN - DSTR)
                         END IF
-* weak screening
+! weak screening
                         IF (INUC.GE.10) THEN
                               SCRN = zw*czw(j)
                         END IF
@@ -99,7 +99,7 @@ C Ionization details for He3 not worked out - RJS
 
             RRT(J+1) = RN
       END DO
-C Sort out rates
+! Sort out rates
       RPP = RRT(2)
       R33 = RRT(3)
       R34 = RRT(4)
@@ -122,7 +122,7 @@ C Sort out rates
       RPNG = RRT(21)
 
       IF(MOD(INUC,10).EQ.1) THEN
-* correct rates to simulate Bahcall (1992) cross sections
+! correct rates to simulate Bahcall (1992) cross sections
          rpp = rpp*0.9828
          r33 = r33*0.971
          r34 = r34*0.987
@@ -130,7 +130,7 @@ C Sort out rates
          rbe = 5.54d-9/t6r*(0.936 + 0.004*t6r*t6r)
          rbp = rbp*0.933
       ELSE IF (MOD(INUC,10).EQ.2) THEN
-* idem, for Bahcall (1995) cross sections
+! idem, for Bahcall (1995) cross sections
          rpp = rpp*0.9557
          r33 = r33*0.969
          r34 = r34*0.970
@@ -139,8 +139,8 @@ C Sort out rates
          rbp = rbp*0.933
          rpn = rpn*0.991
       END IF
-* Multiply with density and abundances to get rates per baryon per second,
-* note that abundances of He3 and Be7 are not needed in equilibrium
+! Multiply with density and abundances to get rates per baryon per second,
+! note that abundances of He3 and Be7 are not needed in equilibrium
 
       RPP = RHB*N1*N1*RPP/2.0
       R33 = RHB*N3*N3*R33/2.0 !RHB*R33/2.0
@@ -160,7 +160,7 @@ C Sort out rates
       ROO = RHB*N16*N16*ROO/2.0
       RGNE = N20*RGNE
       RGMG = N24*RGMG
-* Branching of pN and CC reactions
+! Branching of pN and CC reactions
       FPNG = 8.0D-4
       RPNA = (1.0 - FPNG)*RPN
       RPNG = FPNG*RPN
@@ -169,17 +169,17 @@ C Sort out rates
       RCCA = (1.0 - FCCG)*RCC
       RCCG = FCCG*RCC
       RCC = RCCA
-* PP chain in equilibrium, RPP becomes effective rate of 2 H1 -> 0.5 He4
-C      F34 = 0.0
-C      IF (R34 .GT. 1.0D-20)
-C     :     F34 = 2.0/(1.0 + SQRT(1.0 + 8.0*RPP*R33/(R34*R34)))
-C      RPP = RPP*(1.0 + F34)
-C      PP2 = 1.0
-C      IF (RBE+RBP .GT. 1.0D-20) PP2 = RBE/(RBE + RBP)
-C      PP3 = 1.0 - PP2
-C      QPP = QRT(1) + 0.5*QRT(2)
-C      QNPP = (QNT(1) + F34*(QNT(4)*PP2 + QNT(5)*PP3))/(1.0 + F34)
-C Put rates back to RRT
+! PP chain in equilibrium, RPP becomes effective rate of 2 H1 -> 0.5 He4
+!      F34 = 0.0
+!      IF (R34 .GT. 1.0D-20)
+!     :     F34 = 2.0/(1.0 + SQRT(1.0 + 8.0*RPP*R33/(R34*R34)))
+!      RPP = RPP*(1.0 + F34)
+!      PP2 = 1.0
+!      IF (RBE+RBP .GT. 1.0D-20) PP2 = RBE/(RBE + RBP)
+!      PP3 = 1.0 - PP2
+!      QPP = QRT(1) + 0.5*QRT(2)
+!      QNPP = (QNT(1) + F34*(QNT(4)*PP2 + QNT(5)*PP3))/(1.0 + F34)
+! Put rates back to RRT
       RRT(2) = RPP
       RRT(3) = R33
       RRT(4) = R34
@@ -200,7 +200,7 @@ C Put rates back to RRT
       RRT(19) = RGMG
       RRT(20) = RCCG
       RRT(21) = RPNG
-* calculate energy release and neutrino loss, in erg/gram/sec
+! calculate energy release and neutrino loss, in erg/gram/sec
       EX = 0d0
       ENX = 0d0
 
@@ -208,15 +208,15 @@ C Put rates back to RRT
             EX = EX + QRT(J)*RRT(J+1)
             ENX = ENX + QNT(J)*RRT(J+1)
       END DO
-C      EX = QPP*RPP
-c      EXH = CMEVMU*((QPP + 0.5*Q33)*RPP + QPC*RPC + QPO*RPO + QPNA*RPN 
-c     :     + QPNG*RPNG)/AVM
-c      EXHE = CMEVMU*(Q3A*R3A + QAC*RAC + QAN*RAN + QAO*RAO + QANE*RANE)
-c     :     /AVM
-c      EXC = CMEVMU*(QCCA*RCC + QCCG*RCCG + QCO*RCO + QOO*ROO + QGNE*RGNE
-c     :     + QGMG*RGMG)/AVM
-c      EX = EXH + EXHE + EXC
-C      ENX = QNPP*RPP
+!      EX = QPP*RPP
+!      EXH = CMEVMU*((QPP + 0.5*Q33)*RPP + QPC*RPC + QPO*RPO + QPNA*RPN
+!     :     + QPNG*RPNG)/AVM
+!      EXHE = CMEVMU*(Q3A*R3A + QAC*RAC + QAN*RAN + QAO*RAO + QANE*RANE)
+!     :     /AVM
+!      EXC = CMEVMU*(QCCA*RCC + QCCG*RCCG + QCO*RCO + QOO*ROO + QGNE*RGNE
+!     :     + QGMG*RGMG)/AVM
+!      EX = EXH + EXHE + EXC
+!      ENX = QNPP*RPP
       DO J = 6, 20
             EX = EX + QRT(J)*RRT(J+1)
             ENX = ENX + QNT(J)*RRT(J+1)

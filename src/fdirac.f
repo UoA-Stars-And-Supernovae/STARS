@@ -20,9 +20,9 @@
      :     10.310306, 14.755480, 45.031658, 46.909420, 16.633242, 
      :     7.386560, 22.159680, 22.438048, 7.664928/
 
-* Evaluate Fermi-Dirac integrals (Eggleton, Faulkner & Flannery 1973).
-* 1st row of matrix D contains rho*, P* and Q*; the 2nd row the logarithmic
-* derivatives w.r.t. T; the 3rd row logarithmic derivatives w.r.t. f
+! Evaluate Fermi-Dirac integrals (Eggleton, Faulkner & Flannery 1973).
+! 1st row of matrix D contains rho*, P* and Q*; the 2nd row the logarithmic
+! derivatives w.r.t. T; the 3rd row logarithmic derivatives w.r.t. f
       VF = 1.0/(1.0+F)
       VG = 1.0/(1.0+G)
       UF = F*VF
@@ -85,8 +85,8 @@
             D(I,3) = VX(1,2) + 1.0 + (0.5*D(I,2) - NC)*UF
 
             IF(I.EQ.1) THEN
-* second and third order derivatives of density, needed in PRESSI
-* !!! Programming should be checked!!!
+! second and third order derivatives of density, needed in PRESSI
+! !!! Programming should be checked!!!
                   DTT = VX(3,1) - VX(2,1)**2 + (2.5 - NC)*UG*VG
                   DFT = VX(2,2) - VX(2,1)*VX(1,2) + 0.5*UF*DTT
                   DFF = VX(1,3) - VX(1,2)**2 + UF*(DFT + (0.5*D(I,2) - NC)*VF

@@ -13,11 +13,11 @@
      :                JCSX
       COMMON /STAT3/ FSPL(4,4,127,90,10),TFM(127),FRM(90),
      :                FKLM(6),FKHM(6)
-*
-* Calculate a bicubic spline interpolation fit for the temperature
-* and density opacity fit.  This is based on routines from Princeton
-* Splines, D. McCune found by L. Dray.
-*
+!
+! Calculate a bicubic spline interpolation fit for the temperature
+! and density opacity fit.  This is based on routines from Princeton
+! Splines, D. McCune found by L. Dray.
+!
       DO JT = 1, MT
             TFM(JT) = 2.95D0 + 0.05D0*DFLOAT(JT)
       END DO
@@ -34,9 +34,9 @@
                         FSPL(1,1,JQ,IQ,JX) = CS(IQ,JQ,JX)
                   END DO
             END DO
-*
-* Construct splines in the T direction.
-*
+!
+! Construct splines in the T direction.
+!
             DO IR=1,MR
                   DO IT = 1,MT
                         MAT(1,IT) = FSPL(1,1,IT,IR,JX)
@@ -49,15 +49,15 @@
                         FSPL(3,1,IT,IR,JX) = MAT(3,IT)
                         FSPL(4,1,IT,IR,JX) = MAT(4,IT)
                   END DO
-*
+!
             END DO
-*
-* Construct splines in the rho direction.
-*
+!
+! Construct splines in the rho direction.
+!
             DO IT = 1,MT-1
-*
-* Construct splines for each T coeff
-*
+!
+! Construct splines for each T coeff
+!
                   DO IC = 1,4
                         DO IR = 1,MR
                               MAT(1,IR) = FSPL(IC,1,IT,IR,JX)

@@ -2,7 +2,8 @@
 
 # make clean && make # Debugging
 
-BSDIR="/home/sric560/Documents/STARS"
+# BSDIR="/home/sric560/Documents/STARS"
+BSDIR='.'
 DATDIR="$BSDIR/dat"
 EXEDIR="$BSDIR"
 

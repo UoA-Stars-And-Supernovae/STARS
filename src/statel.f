@@ -8,10 +8,10 @@
       COMMON /STAT2 / VF(60)
       DIMENSION IL(24), SF(60,2)
       DATA IL/2, 0, 2, 2, 2, 1, 2, 1, 1, 1, 2, 2, 2, 
-C     :              2, 2, 2, 1, 2, 1, 1, 1, 2, 2, 2/
+!     :              2, 2, 2, 1, 2, 1, 1, 1, 2, 2, 2/
      :     2, 1, 1, 2, 2, 1, 1, 1, 2, 2, 2/
 
-C Subtract 15 from L if using 2 stars
+! Subtract 15 from L if using 2 stars
       IF (LL.GT.15) THEN
             L = LL - 15
       ELSE

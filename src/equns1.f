@@ -29,7 +29,7 @@
      :            D4(3), D12(3), D14(3), D16(3), D20(3), D3(3),
      :            WI(309)
       COMMON /OP    / ZS, LEDD, VVM, GR, GRAD, ETH, RLF, EGR, R, QQ
-C VAR(3),(2),(1) are values of VAR at current, previous and anteprevious meshpts
+! VAR(3),(2),(1) are values of VAR at current, previous and anteprevious meshpts
       COMMON /OUTE  / EQU(50)
       COMMON /MESH  / TRC1,TRC2,DD,DT1,DT2,MWT,MWTS, IVMC,IVMS
       COMMON /ACCRET/ ACCOMPOS(7,31, 2)
@@ -38,11 +38,11 @@ C VAR(3),(2),(1) are values of VAR at current, previous and anteprevious meshpts
       COMMON /VARACC/ IVARACC, IMLWR
 
       PS(VX) = 0.5D0*(VX+DABS(VX))
-C 30/5/03 RJS Smooth viscous mesh
+! 30/5/03 RJS Smooth viscous mesh
       WTM = 0.5 + 0.5*TANH((K - TRC1)/1.5)
       WTM = MWT*WTM
 
-C Surface mesh viscosity
+! Surface mesh viscosity
       IF (IVMS.EQ.1) THEN
             WTM = WTM + MWTS*(0.5 - 0.5*TANH((K - TRC2)/1.5))
       END IF
@@ -54,21 +54,21 @@ C Surface mesh viscosity
       END IF
 
       IF ( K.LE.K1 ) THEN
-C surface boundary conditions
+! surface boundary conditions
             EQU(1) = BC1(3)
             EQU(2) = BC2(3)
             EQU(3) = BC3(3)
-C Orbital angular momentum
+! Orbital angular momentum
             EQU(4) = BCHORB(3)
-C Spin period of star
+! Spin period of star
             EQU(5) = BCHSPIN(3)
 
             RETURN
       ELSE IF ( K.LE.K2 ) THEN
-C first-order difference equations at interior points
+! first-order difference equations at interior points
             WT3 = 0.5D0
-C weighted alternative to central differencing
-C        WT3 = 0.5D0*WT(3)/(1.0D0+WT(3))
+! weighted alternative to central differencing
+!        WT3 = 0.5D0*WT(3)/(1.0D0+WT(3))
             WT2 = 1.0D0 - WT3
             EQU(1) = VP(3) - VP(2) - WT3*VPK(3)-WT2*VPK(2)
             EQU(2) = R2(3) - R2(2) - WT2*R2K(3)-WT3*R2K(2)
@@ -76,18 +76,18 @@ C        WT3 = 0.5D0*WT(3)/(1.0D0+WT(3))
             EQU(4) = L(3) - L(2) - WT2*LK(3)-WT3*LK(2)
      :              - LQ(2)*GTA(2)*PS(MT(2)) + LQ(3)*GTA(3)*PS(-MT(3))
             EQU(5) = VM(3) - VM(2) - 0.5D0*(VMK(3)+VMK(2))
-C 22/3/03 RJS Added viscous mesh
+! 22/3/03 RJS Added viscous mesh
             EQU(6)=(1.0-WTM)*(QK(3) - QK(2))+3.0d7*WTM*MT(3)
             EQU(13) = BCHSPIN(3) - BCHSPIN(2)
 
             IF ( K.EQ.K1+1 ) THEN
-C next-to-surface boundary conditions for second-order equations
-C Attempt at variable composition accretion - only if in binary mode
+! next-to-surface boundary conditions for second-order equations
+! Attempt at variable composition accretion - only if in binary mode
                   IOTHER = 3 - ISTAR ! This maps 1 -> 2 and 2 -> 3
                   IF ((HT(24,1,IOTHER).GT.0d0.OR.HT(23,1,ISTAR).LT.0d0).AND.IMODE.EQ.2 .AND. IVARACC.EQ.1) THEN
-C              If both stars are filling their roche lobes, set the abundance of the accreted material
-C              to the average of the two stars
-C                IF (HT(24,1,IOTHER).GT.0d0.AND.HT(24,1,ISTAR).GT.0d0.AND.IVARACC.EQ.1) THEN
+!              If both stars are filling their roche lobes, set the abundance of the accreted material
+!              to the average of the two stars
+!                IF (HT(24,1,IOTHER).GT.0d0.AND.HT(24,1,ISTAR).GT.0d0.AND.IVARACC.EQ.1) THEN
                         EQU(7) = 0.5*(ACCOMPOS(1,IVAR+1,IOTHER)+ X1(3)) - X1(2)
                         EQU(8) = 0.5*(ACCOMPOS(5,IVAR+1,IOTHER) + X16(3)) - X16(2)
                         EQU(9) = 0.5*(ACCOMPOS(2,IVAR+1,IOTHER) + X4(3)) - X4(2)
@@ -96,23 +96,23 @@ C                IF (HT(24,1,IOTHER).GT.0d0.AND.HT(24,1,ISTAR).GT.0d0.AND.IVARAC
                         EQU(12) = 0.5*(ACCOMPOS(4,IVAR+1,IOTHER) + X14(3)) - X14(2)
                         EQU(14) = 0.5*(ACCOMPOS(7,IVAR+1,IOTHER) + X3(3)) - X3(2)
                 ! SMR + JJE 21 November 2023
-C The following lines are a more accurate but less stable implementation of the
-C next to surface boundary condition -- should be used if you want to do thermohaline mixing
-C                SG2 = -(PS(MT(2))+1d-5) !1d-5
-C                EQU(7) = SG2*(X1(3)-X1(2)) + PS(MT(2))*(X1(2)-ACCOMPOS(1,IVAR+1,IOTHER))
-C      :              - X1T(2)
-C                EQU(8) = SG2*(X16(3)-X16(2)) + PS(MT(2))*(X16(2)-ACCOMPOS(5,IVAR+1,IOTHER))
-C      :              - X16T(2)
-C                EQU(9) = SG2*(X4(3)-X4(2)) + PS(MT(2))*(X4(2)-ACCOMPOS(2,IVAR+1,IOTHER))
-C      :              - X4T(2)
-C                EQU(10) = SG2*(X12(3)-X12(2)) + PS(MT(2))*(X12(2)-ACCOMPOS(3,IVAR+1,IOTHER))
-C      :              - X12T(2)
-C                EQU(11) = SG2*(X20(3)-X20(2)) + PS(MT(2))*(X20(2)-ACCOMPOS(6,IVAR+1,IOTHER))
-C      :              - X20T(2)
-C                EQU(12) = SG2*(X14(3)-X14(2)) + PS(MT(2))*(X14(2)-ACCOMPOS(4,IVAR+1,IOTHER))
-C      :              - X14T(2)
-C                EQU(14) = SG2*(X3(3)-X3(2)) + PS(MT(2))*(X3(2)-ACCOMPOS(7,IVAR+1,IOTHER))
-C      :              - X3T(2)
+! The following lines are a more accurate but less stable implementation of the
+! next to surface boundary condition -- should be used if you want to do thermohaline mixing
+!                SG2 = -(PS(MT(2))+1d-5) !1d-5
+!                EQU(7) = SG2*(X1(3)-X1(2)) + PS(MT(2))*(X1(2)-ACCOMPOS(1,IVAR+1,IOTHER))
+!      :              - X1T(2)
+!                EQU(8) = SG2*(X16(3)-X16(2)) + PS(MT(2))*(X16(2)-ACCOMPOS(5,IVAR+1,IOTHER))
+!      :              - X16T(2)
+!                EQU(9) = SG2*(X4(3)-X4(2)) + PS(MT(2))*(X4(2)-ACCOMPOS(2,IVAR+1,IOTHER))
+!      :              - X4T(2)
+!                EQU(10) = SG2*(X12(3)-X12(2)) + PS(MT(2))*(X12(2)-ACCOMPOS(3,IVAR+1,IOTHER))
+!      :              - X12T(2)
+!                EQU(11) = SG2*(X20(3)-X20(2)) + PS(MT(2))*(X20(2)-ACCOMPOS(6,IVAR+1,IOTHER))
+!      :              - X20T(2)
+!                EQU(12) = SG2*(X14(3)-X14(2)) + PS(MT(2))*(X14(2)-ACCOMPOS(4,IVAR+1,IOTHER))
+!      :              - X14T(2)
+!                EQU(14) = SG2*(X3(3)-X3(2)) + PS(MT(2))*(X3(2)-ACCOMPOS(7,IVAR+1,IOTHER))
+!      :              - X3T(2)
                   ELSE
                         EQU(7) = X1(3) - X1(2)
                         EQU(8) = X16(3) - X16(2)
@@ -125,15 +125,15 @@ C      :              - X3T(2)
 
                   RETURN
             ELSE
-C second-order difference equations at interior points
+! second-order difference equations at interior points
                   SG1 = 0.5D0*(SG(1)+SG(2)) - PS(MT(2))
                   SG2 = 0.5D0*(SG(2)+SG(3)) - PS(-MT(3))
-C Add in thermohaline mixing
+! Add in thermohaline mixing
                   IF (ISTAR.EQ.2) THEN
                         SG1 = SG1 + 0.5*(SGTH(1)+SGTH(2))*PS((MU(1)-MU(2)))
                         SG2 = SG2 + 0.5*(SGTH(2)+SGTH(3))*PS((MU(2)-MU(3)))
                   END IF
-C Note gravitational settling is hard-wired into having H as the dominant element!
+! Note gravitational settling is hard-wired into having H as the dominant element!
                   EQU(7) = (SG2 + 0.5*(DA4(2)+DA4(3)))*(X1(3)-X1(2))
      :                   - (SG1+0.5*(DA4(1)+DA4(2)))*(X1(2)-X1(1)) - X1T(2)
      :                   + D4(2)*X4(2) - D4(3)*X4(3)
@@ -163,7 +163,7 @@ C Note gravitational settling is hard-wired into having H as the dominant elemen
                   RETURN
             END IF
       END IF
-C central boundary conditions for first-order equations
+! central boundary conditions for first-order equations
       IF (WTM.GT.1.0) THEN
             WTM = 1.0
       END IF
@@ -177,15 +177,15 @@ C central boundary conditions for first-order equations
       ELSE
             EQU(1) = VM(3) + 1.5D0*VMK(3) - 0.5D0*VMK(2)
       END IF
-C This was the original central L boundary condition -- PPE said there
-C was a good reason for it but he couldn't remember it.
-C      EQU(2) = L(3) + 0.93333D0*LK(3) - 0.1885D0*LK(2) - LQ(3)*GTA(3)
-C     :         *MT(3)
+! This was the original central L boundary condition -- PPE said there
+! was a good reason for it but he couldn't remember it.
+!      EQU(2) = L(3) + 0.93333D0*LK(3) - 0.1885D0*LK(2) - LQ(3)*GTA(3)
+!     :         *MT(3)
       EQU(2) = L(3) + 1.5D0*LK(3) - 0.5D0*LK(2) - LQ(3)*GTA(3)*MT(3)
       EQU(3) = R2(3) + 1.5D0*R2K(3) - 0.5D0*R2K(2)
-C central boundary conditions for second-order equations
+! central boundary conditions for second-order equations
       SG2 = 0.5D0*(SG(2)+SG(3))
-C Plus thermohaline mixing
+! Plus thermohaline mixing
       IF (ISTAR.EQ.2) THEN  ! TODO-TEMP
             SG2 = SG2 + 0.5*(SGTH(2)+SGTH(3))*PS((MU(2)-MU(3)))
       END IF

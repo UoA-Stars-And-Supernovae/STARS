@@ -69,17 +69,17 @@
      :  EC, BM, ANG, CM, MTA, MTB, TM(2), T0, M0, TC(2), OS, AC, RCD,
      :  RMG, RHL, XF, DR, AK1 ,RMT, AK2, ITH, IX, IY, IZ, IB, ISX(45),
      :  TRB
-* extra common for mesh-spacing
+! extra common for mesh-spacing
       COMMON /PMESH / PMH(2), PME(2), IAGB
       COMMON /CEE   / MHC(2), MENVC(2), DSEP, ICE, ICEP, ALPHACE
       COMMON /INF   / Q(60)
       COMMON /DINF  / QD(60)
       COMMON /OP    / ZS, LEDD, VM, GR, GRAD, ETH, RLF, EGR, R, QQ
       COMMON /ABUND / WA1(10), YA(10), WA(3), AVM
-c GR is ov value, XX is Schwarzschild value, of gradr-grada
+! GR is ov value, XX is Schwarzschild value, of gradr-grada
       COMMON /STAT2 / PL, RL, U, P, RHO, FK, T, SF, ST, ZT, GRADA, CP,
-c     :                CH, S, PR, PG, PF, PT, EN, RR(20), EX, WX, EXX(3),
-c     :                RW(16)
+!     :                CH, S, PR, PG, PF, PT, EN, RR(20), EX, WX, EXX(3),
+!     :                RW(16)
      :                CH, S, PR, PG, PF, PT, EN, RPP, R33, R34, RBE, RBP,
      :                RPC, RPN, RPO, R3A, RAC, RAN, RAO, RANE, RCC, RCO,
      :                ROO, RGNE, RGMG, RCCG, RPNG, EX, ENX, EXX(3), AAWT,
@@ -93,9 +93,9 @@ c     :                RW(16)
      :                QAN, QAO, QANE, QCCA, QCO, QOO, QGNE, QGMG, QCCG,
      :                QPNG, CNUC(390)
       COMMON /WT    / PWT,SG,MK,MT2,LQP,LKP
-*
-* Extra COMMON for main-sequence evolution.
-*
+!
+! Extra COMMON for main-sequence evolution.
+!
       COMMON /ZAMS  / TKH(2), MZAMS(2)
       COMMON /MESH  / TRC1,TRC2,DD,DT1,DT2,MWT,MWTS,IVMC,IVMS
       COMMON /MIX   / KBICZ,KICZ
@@ -104,7 +104,7 @@ c     :                RW(16)
       COMMON /EVMODE/ IMODE
       COMMON /INERTI/ VI(2)
       COMMON /MONTAG/ WCV, WL
-C Extra common for extra timestep control stuff - P for previous, C for current
+! Extra common for extra timestep control stuff - P for previous, C for current
       COMMON /DTCONT/ VLHP(2), VLEP(2), VLCP(2), RLFP(2), TOTMP(2), VLHC(2),
      :     VLEC(2), VLCC(2), RLFC(2), TOTMC(2)
       COMMON /WINDS / WINDML(2), FAKEWIND(2), BE2
@@ -120,8 +120,8 @@ C Extra common for extra timestep control stuff - P for previous, C for current
 
       DATA IPX/9, 17, 2, 3, 4, 5, 6, 8, 10, 11, 12, 13, 14, 15, 16,
      &     18, 19, 20, 21, 28, 27, 7, 24, 25, 26/
-C Data required to compute yields - Anders & Grevasse '89 abunds
-C Used A&G for H,He,C,N,O,Ne rather than input for convenience
+! Data required to compute yields - Anders & Grevasse '89 abunds
+! Used A&G for H,He,C,N,O,Ne rather than input for convenience
       DATA XINIT/4.801d-5,2.929d-5,9.353d-9,0d0,4.725d-9,3.650d-5,0d0,
      :     4.363d-6,3.887d-6,2.167d-5,4.051d-7,4.127d-6,1.302d-4,0d0,
      :     3.339d-5,5.148d-4,6.766d-5,7.760d-5,0d0,0d0,5.798d-5,6.530d-4,
@@ -171,7 +171,7 @@ C Used A&G for H,He,C,N,O,Ne rather than input for convenience
 
       PS(VX) = 0.5D0*(VX+DABS(VX))
 
-C Store previous values of extra timestep control variables
+! Store previous values of extra timestep control variables
       VMHP = VMH
 
       DO I=1,2
@@ -202,7 +202,7 @@ C Store previous values of extra timestep control variables
             DO J = 1, 3
                   KMX(J) = 1
                   VMX(J) = 0.0D0
-C                 EXX(J) = 0.0D0
+!                 EXX(J) = 0.0D0
                   EMAX(J) = 0.0D0
             END DO
             EXLIM = 10.0*H(8,1)/EXP(H(4,1))
@@ -228,7 +228,7 @@ C                 EXX(J) = 0.0D0
             VLN = 0d0
             VLT = 0d0
             NPRINT = 0
-C     Decide whether to print the interior or not
+!     Decide whether to print the interior or not
             IF (MOD(NMOD,NWRT1).EQ.0) NPRINT = 1
             IF (NPRINT.EQ.1) THEN
                   WRITE(32+20*(ISTAR-1), 99001) (AX(ISX(J)), J=1,15)
@@ -256,7 +256,7 @@ C     Decide whether to print the interior or not
                         Q(28) = H(13, K)
                   END IF
                   CALL FUNCS1(-1, K, 1, NMESH, ISTAR)
-C call mass-loss to get surface conditions
+! call mass-loss to get surface conditions
                   IF (ISTAR.EQ.1.AND.IMODE.EQ.2.AND.K.EQ.1) THEN
                         DO J=1,30
                               IF (IEND.LT.0) THEN
@@ -269,9 +269,9 @@ C call mass-loss to get surface conditions
                         END DO
                         CALL MASSLOSS(-1,A1,A2,A3,A4,A5)
                   END IF
-*
-* Correct abundances for actual atomic masses
-*
+!
+! Correct abundances for actual atomic masses
+!
                   DO I = 1, 10
                         XA(I) = AM(I)*YA(I)/AVM
                   END DO
@@ -285,7 +285,7 @@ C call mass-loss to get surface conditions
                   XSI = XA(8)
                   XFE = XA(9)
                   XHE3 = XA(10)
-C Evaluate the functions to be printed
+! Evaluate the functions to be printed
                   WF = DSQRT(1.0D0+DEXP(Q(1)))
                   PX(1) = 2.0D0*(WF-DLOG(WF+1.0D0))+Q(1)
                   PX(2) = P
@@ -302,80 +302,78 @@ C Evaluate the functions to be printed
                   PX(7) = GRAD
                   PX(8) = DMIN1(9.99D0, GR)
                   PX(9) = VM/MSUN
-C locate convective/radiative boundaries (GR=0)
+! locate convective/radiative boundaries (GR=0)
                   IF (KK.LT.2.OR.JC.GT.12.OR.SX(8,KK)*PX(8).GT.0.0D0.OR. AAWT.LT.1.0D-1) THEN
                         GO TO 1
                   END IF
-C            IF (K.GT.KBICZ+1) GOTO 1
                   MCB(JC) = (SX(9,KK)*PX(8)-PX(9)*SX(8,KK))/(PX(8)-SX(8,KK))
                   KCB(JC) = K
                   TCB(JC) = (SX(4,KK)*PX(8)-PX(4)*SX(8,KK))/(PX(8)-SX(8,KK)) !T
                   RCB(JC) = (SX(3,KK)*PX(8)-PX(3)*SX(8,KK))/(PX(8)-SX(8,KK)) !RHO
-C     Find T at base of conv. envelope
+!     Find T at base of conv. envelope
                   IF (K.GT.50.AND.K.LT.300) THEN
                         TBCE = (SX(4,KK)*PX(8)-PX(4)*SX(8,KK))/(PX(8)-SX(8,KK))
                   END IF
-C Find T and rho of convective pulse extrema
-C         IF (K.LT.750) THEN
-C            TCB(JC) = T
-C            RCB(JC) = RHO
-C         END IF
+! Find T and rho of convective pulse extrema
+!         IF (K.LT.750) THEN
+!            TCB(JC) = T
+!            RCB(JC) = RHO
+!         END IF
                   IF (PX(4).GT.1.0D5) THEN
                         KCE = KK
                   END IF
 
                   JC = JC + 1
-C locate convective/semiconvective boundaries (loosely, GR=0.01)
+! locate convective/semiconvective boundaries (loosely, GR=0.01)
  1                IF ((PX(8)-DR)*(SX(8,KK)-DR).GT.0.0D0 .OR. KK.LT.2 .OR. JC.GT.12 .OR. AAWT.LT.1.0D-1) THEN
                         GO TO 2
                   END IF
-C            IF (K.GT.KBICZ+1) GOTO 2
                   MCB(JC) = -(SX(9,KK)*(PX(8)-DR)-PX(9)*(SX(8,KK)-DR)) / (PX(8)-SX(8,KK))
                   KCB(JC) = -K
                   JC = JC + 1
-C locate burning shell boundaries
-C           He core:
+! locate burning shell boundaries
+!           He core:
  2                IF (XH.GT.XF.AND.SX(10,KK).LT.XF) THEN
                         VMH = (PX(9)*(XF-SX(10,KK))+SX(9,KK)*(XH-XF))/(XH-SX(10,KK))
                         KMH = K
                         PMH(ISTAR) = (PX(2)*(XF-SX(10,KK))+SX(2,KK)*(XH-XF))/(XH-SX(10,KK))
                   END IF
-C           CO core:
+!           CO core:
                   IF (XHE.GT.XF.AND.SX(11,KK).LT.XF.AND.K.GT.NMESH/2) THEN
                         VME = (PX(9)*(XF-SX(11,KK))+SX(9,KK)*(XHE-XF)) / (XHE-SX(11,KK))
                         KME = K
                         PME(ISTAR) = (PX(2)*(XF-SX(11,KK))+SX(2,KK)*(XHE-XF)) / (XHE-SX(11,KK))
                   END IF
-C           ONe core: (This is just He core all over again?)
-C                   IF (XH.GT.XF.AND.SX(10,KK).LT.XF) THEN
-C                         VMH = (PX(9)*(XF-SX(10,KK))+SX(9,KK)*(XH-XF))/(XH-SX(10,KK))
-C                         KMH = K
-C                         PMH(ISTAR) = (PX(2)*(XF-SX(10,KK))+SX(2,KK)*(XH-XF))/(XH-SX(10,KK))
-C                   END IF
+!           ONe core: (This is just He core all over again?)
+!                   IF (XH.GT.XF.AND.SX(10,KK).LT.XF) THEN
+!                         VMH = (PX(9)*(XF-SX(10,KK))+SX(9,KK)*(XH-XF))/(XH-SX(10,KK))
+!                         KMH = K
+!                         PMH(ISTAR) = (PX(2)*(XF-SX(10,KK))+SX(2,KK)*(XH-XF))/(XH-SX(10,KK))
+!                   END IF
                   IF (XC.GT.XF.AND.SX(12,KK).LT.XF) THEN
                         VMC = (PX(9)*(XF-SX(12,KK))+SX(9,KK)*(XC-XF))/(XC-SX(12,KK))
                   END IF
-C N abundance in H-burning ash
+! N abundance in H-burning ash
                   IF (XH.GT.1d-10.AND.SX(10,KK).LT.1d-10) THEN
                         XASH = XN
                   END IF
-C     Find T_hmid (XH = 0.345)
+!     Find T_hmid (XH = 0.345)
                   IF (XH.GT.0.345.AND.SX(10,KK).LT.0.345) THEN
                         THMID = (PX(4)*(0.345-SX(10,KK))+SX(4,KK)*(XH-0.345)) / (XH-SX(10,KK))
                   END IF
-C Find T_hbase (XH = 0.05)
+! Find T_hbase (XH = 0.05)
                   IF (XH.GT.0.05.AND.SX(10,KK).LT.0.05) THEN
                         THBASE = (PX(4)*(0.05-SX(10,KK))+SX(4,KK)*(XH-0.05)) / (XH-SX(10,KK))
                   END IF
-C Find T_intmid (Xhe = 0.45)
+! Find T_intmid (Xhe = 0.45)
                   IF (XHE.GT.0.45.AND.SX(11,KK).LT.0.45) THEN
                         TINTMID = (PX(4)*(0.45-SX(11,KK))+SX(4,KK)*(XHE-0.45)) / (XHE-SX(11,KK))
                   END IF
-C Find T_intbase (Xhe = 0.05)
+! Find T_intbase (Xhe = 0.05)
                   IF (XHE.GT.0.05.AND.SX(11,KK).LT.0.05) THEN
                         TINTBASE = (PX(4)*(0.05-SX(11,KK))+SX(4,KK)*(XHE-0.05)) / (XHE-SX(11,KK))
                   END IF
-C find points of max energy generation
+! find points of max energy generation
                   EXX(1) = CMEVMU*((QPP + 0.5*Q33)*RPP + QPC*RPC + QPO*RPO + QPNA*RPN + QPNG*RPNG)
                   EXX(2) = CMEVMU*(Q3A*R3A + QAC*RAC + QAN*RAN + QAO*RAO + QANE*RANE)
                   EXX(3) = CMEVMU*(QCCA*RCC + QCCG*RCCG + QCO*RCO +QOO*ROO + QGNE*RGNE + QGMG*RGMG)
@@ -399,7 +397,7 @@ C find points of max energy generation
                   PX(18) = Q(8)/LSUN
                   PX(19) = ETH
                   PX(20) = EX
-C locate boundaries of burning regions (EX > EXLIM)
+! locate boundaries of burning regions (EX > EXLIM)
                   IF((PX(20)-EXLIM)*(SX(20,KK)-EXLIM).LE.0.0D0.AND.JE.LT.12.AND.KK.GE.2) THEN
                         MEX(JE)= (SX(9,KK)*(PX(20)-EXLIM)-PX(9)*(SX(20,KK)-EXLIM)) / (PX(20)-SX(20,KK))
                         KEX(JE) = K
@@ -424,15 +422,15 @@ C locate boundaries of burning regions (EX > EXLIM)
                   TADJ = FK*CP*T*(1.0D11*PX(22)/(4*PI4*R*R))**2/(3*CL*PR)/CSECYR
                   PX(30) = LKP !TADJ
                   PX(31) = CR*RHO*T/PG
-C         PX(32) = HT(2,K)*HT(4,K)*1.0D66
+!         PX(32) = HT(2,K)*HT(4,K)*1.0D66
                   PX(32) = MT2*PS(PX(30) - SX(30,KK))! Thermohaline mixing coeff ! LKP
-C RJS 4/4/07 Locate TH boundaries
+! RJS 4/4/07 Locate TH boundaries
                   IF (KK.GT.2.AND.JTHB.LT.12.AND.((PX(32).LE.-1d-20.AND
      :            .SX(32,KK).GT.-1d-20).OR.(PX(32).GT.-1d-20.AND.SX(32,KK).LE.-1d-20))) THEN
                         THB(JTHB) = (SX(9,KK)*PX(32)-PX(9)*SX(32,KK))/(PX(32)-SX(32,KK))
                         JTHB = JTHB + 1
                   END IF
-C Print the interior details on first `page', if required
+! Print the interior details on first `page', if required
                   IF ( NPRINT.EQ.1.AND.MOD(K-1,NWRT2).EQ.0 ) THEN
                         WRITE(32+20*(ISTAR-1),99002) K, (PX(ISX(J)), J=1,15)
                   END IF
@@ -481,7 +479,7 @@ C Print the interior details on first `page', if required
                   DO J=1,34
                         SX(J,KK+1)=PX(J)
                   END DO
-C Some integrated quantities, to be printed in the short summary
+! Some integrated quantities, to be printed in the short summary
                   WMH = WMH + PX(22)*XH
                   WMHE = WMHE + PX(22)*XHE
 
@@ -503,7 +501,7 @@ C Some integrated quantities, to be printed in the short summary
 
                   IF (NMONT.NE.0) THEN
                         IF (MOD(NMOD,NMONT).EQ.0) THEN
-C Output for use in MONTAGE -- may need smart output control RJS 29/5/08
+! Output for use in MONTAGE -- may need smart output control RJS 29/5/08
                               IF (K.EQ.NMESH) THEN
                                     WRITE(42+20*(ISTAR-1),99009) NMESH, NMOD, AGE*CSECYR, VLH, VLE
                               END IF
@@ -515,14 +513,14 @@ C Output for use in MONTAGE -- may need smart output control RJS 29/5/08
                   END IF
             END DO ! Loop over KK=1, NMESH
 
-C           Write out the SNEPLOT file.
+!           Write out the SNEPLOT file.
             LOGG = LOG10(10*6.67*PX(9)*1.989/(PX(17) * 6.9634)**2) ! Put into SI units. TODO: cgs?
             WRITE(49+20*(ISTAR-1), 99010) NMOD, LOGG, WINDML(1), WINDML(2),
      :                                    WINDACC(1), WINDACC(2),RLF/CSECYR, BE
-C           End SNEPLOT
+!           End SNEPLOT
 
             IF (NWRT3.NE.1) THEN
-C Write further `pages' for each detailed model, if required
+! Write further `pages' for each detailed model, if required
                   DO I=2, NWRT3
                         IJ = 15*I-15
                         IF (NPRINT.EQ.1) THEN
@@ -530,7 +528,7 @@ C Write further `pages' for each detailed model, if required
                         END IF
                         DO KK = 1, NMESH
                               K = NMESH + 1 - KK
-C Have to choose the SX's that are wanted
+! Have to choose the SX's that are wanted
                               IF (NPRINT.EQ.1.AND.MOD(K-1,NWRT2).EQ.0) THEN
                                     WRITE(32+20*(ISTAR-1),99002) K, (SX(ISX(J+IJ),KK+1), J=1,15)
                               END IF
@@ -541,8 +539,8 @@ C Have to choose the SX's that are wanted
                   END DO
             END IF
  3          TM(ISTAR) = VM
-C         PER = BM/3.55223D0*(ANG/(TM(1)*(BM-TM(1))))**3
-C        Adjust separation due to common envelope effects (sorted in massloss.f)
+!         PER = BM/3.55223D0*(ANG/(TM(1)*(BM-TM(1))))**3
+!        Adjust separation due to common envelope effects (sorted in massloss.f)
             IF (ICE.EQ.1 .AND. IMODE.EQ.2) THEN
                   ! Reduce the orbit due to CEE effects.
                   ! This change results in SEP = SEP + DSEP
@@ -554,37 +552,37 @@ C        Adjust separation due to common envelope effects (sorted in massloss.f)
             IF (ISTAR.EQ.1) THEN
                   PER = BM/3.55223D0*(Q(13)/(TM(1)*(BM-TM(1))))**3
             ELSE
-C            PER = BM/3.55223D0*(H(13,1)/(TM(1)*(BM-TM(1))))**3
+!            PER = BM/3.55223D0*(H(13,1)/(TM(1)*(BM-TM(1))))**3
                   PER = (TM(1)+TM(2))/3.55223D0*(H(13,1)/(TM(1)*TM(2)))**3
             END IF
 
             DMT = PX(9)*DH(4+15*(ISTAR-1), 1)/DTY
             TKH(ISTAR) = DABS(BE)/(Q(8)*CSECYR)
             TN = 4.0D10*PX(9)/Q(8)
-C convective mixing timescale needed in FUNCS1
+! convective mixing timescale needed in FUNCS1
             TC(ISTAR) = RCD/(CSECYR*TN*DSQRT(VM))
-*
-* Write to the numerical data storage unit for plotting purposes.
-*
+!
+! Write to the numerical data storage unit for plotting purposes.
+!
             IF (IMODE.EQ.2) THEN
                   SEP = (TM(1)+TM(2))*(H(13,1)/(TM(1)*TM(2)))**2.0
             ELSE
                   SEP = BM*(H(13,1)/(TM(1)*(BM-TM(1))))**2.0
             END IF
-C Total angular momentum
+! Total angular momentum
             HTOT = H(14,1) + H(29,1) + H(13,1)
-C Total spin angular momentum
+! Total spin angular momentum
             HSPINTOT = H(14,1) + H(29,1)
-C Orbital angular velocity
+! Orbital angular velocity
             OORB = H(13,1)*(TM(1)+TM(2))/(TM(1)*TM(2)*SEP**2.0)
             VIORB = (TM(1)*TM(2)/(TM(1)+TM(2)))*SEP**2.0
             OSPIN = Q(14)/VI(ISTAR)
             OCRIT = DSQRT(6.67d-11*PX(9)*2d30/(6.96d8*PX(17))**3.0) !/DSQRT(CG)
             SEP = SEP/RSUN
-C        Store core mass. need to be more intelligent about this - SMR
+!        Store core mass. need to be more intelligent about this - SMR
             MHC(ISTAR) = VMH
             MENVC(ISTAR) = MENV(ISTAR)/MSUN
-C Write plot/plot2 file
+! Write plot/plot2 file
             WRITE(33+20*(ISTAR-1),99011) NMOD,AGE,LOG10(PX(17)),LOG10(PX(4)),
      &            LOG10(PX(18)),PX(9),VMH,VME,LOG10(MAX(VLH,1.01D-10)),
      &            LOG10(MAX(VLE,1.01D-10)), LOG10(MAX(VLC,1.01D-10)), ! TEMPORARY WILL GO IN SNEPLOT
@@ -597,7 +595,7 @@ C Write plot/plot2 file
             END IF
     !     IF(ISTAR.EQ.2) RLFcheck2=RLF !!!JJE's new timestep check - 11/12/2023
             CALL FLUSH(33+20*(ISTAR-1))
-C Write output for nucleosynthesis stuff
+! Write output for nucleosynthesis stuff
             WRITE(41+20*(ISTAR - 1),99012) NMOD,AGE,VMH,VME,VMH - VME,PX(9),XASH,(TCB(I)/1d8,
      :            I=1,12),RCB,
      :            TBCE,THMID,THBASE,TINTMID,TINTBASE,PERIOD,DABS(DMT)
@@ -605,7 +603,7 @@ C Write output for nucleosynthesis stuff
             CALL FLUSH(41+20*(ISTAR - 1))
 
             IF (IW(102).NE.0) THEN
-C Write surface/centre abundances, yields -- but only if using NS code!
+! Write surface/centre abundances, yields -- but only if using NS code!
                   WRITE(39+20*(ISTAR - 1),99013) NMOD,AGE,(HNUC(I+50*(ISTAR-1),1),I=1,50),
      :                  WINDML(ISTAR)/MSUN*CSECYR, FAKEWIND(ISTAR)/MSUN*CSECYR, DTY
 
@@ -615,19 +613,19 @@ C Write surface/centre abundances, yields -- but only if using NS code!
 
                   CALL FLUSH(40+20*(ISTAR - 1))
             END IF
-*
-* Write detailed model data for plotting purposes. -- Note new unit number needed! RJS
-*
-C      NWRT5 = 21
-C      IF (IEND.LT.0) WRITE(11,'(2I6)') NMESH, NWRT5
-C      IF (NPRINT.EQ.1) THEN
-C         WRITE(11,99014) NMOD, AGE
-C         DO KK = 1, NMESH
-C            WRITE(11,99015) (SX(IPX(J),KK+1), J=1, NWRT5)
-C         END DO
-C      END IF
+!
+! Write detailed model data for plotting purposes. -- Note new unit number needed! RJS
+!
+!      NWRT5 = 21
+!      IF (IEND.LT.0) WRITE(11,'(2I6)') NMESH, NWRT5
+!      IF (NPRINT.EQ.1) THEN
+!         WRITE(11,99014) NMOD, AGE
+!         DO KK = 1, NMESH
+!            WRITE(11,99015) (SX(IPX(J),KK+1), J=1, NWRT5)
+!         END DO
+!      END IF
 
-C Print the short summary, for every NWRT4'th model
+! Print the short summary, for every NWRT4'th model
             IF (MOD(NMOD,NWRT4).NE.0) THEN
                   RETURN
             END IF
@@ -638,8 +636,8 @@ C Print the short summary, for every NWRT4'th model
             END IF
             FR = DLOG10(PX(17))
             FL = DLOG10(PX(18))
-* print at max He energy generation, rather than Tmax
-* Restore to Tmax
+! print at max He energy generation, rather than Tmax
+! Restore to Tmax
             KHE = NMESH + 2 - KMX(2)
             SDC = DLOG10(SX(3,2))
             SDM = DLOG10(SX(3,KTM))
@@ -649,24 +647,24 @@ C Print the short summary, for every NWRT4'th model
             STS = DLOG10(PX(4))
             PER0 =  1.5D0*FR - 0.5D0*DLOG10(8.157D0*PX(9))
             WMI = DLOG10(SX(9,KCE)*SX(17,KCE)**2*SX(23,KCE))
-C RJS - Viscous mesh
+! RJS - Viscous mesh
             IF (IVMC.EQ.1) THEN
-C            MWT = DMAX1(0d0, 0.75*(DTY/1d-4 - 1))
+!            MWT = DMAX1(0d0, 0.75*(DTY/1d-4 - 1))
                   MWT = DMAX1(0d0, 0.25*(DTY/1d-4 - 1))
                   MWT = DEXP(-DSQRT(MWT))
                   MWT = DMAX1(0.1d0,DMIN1(1d0,MWT))
             ELSE
                   MWT = 0d0
             END IF
-C Timestep control for TP-AGB
-C Switch on mechanism for dealing with dredge up when necessary
+! Timestep control for TP-AGB
+! Switch on mechanism for dealing with dredge up when necessary
             VLEC(ISTAR) = VLE
             LHEF = (VLEC(ISTAR) - VLEP(ISTAR))/VLEP(ISTAR)
             IF (IAGB.EQ.1) THEN
                   IF (IDREDGE.EQ.0.AND.VLEC(ISTAR).GT.5d5.AND.LHEF.LT.0d0) THEN
                         IDREDGE = 1
                   END IF
-C Find out where next to outer conv boundary is
+! Find out where next to outer conv boundary is
                   IF (IDREDGE.EQ.1) THEN
                         MAXB = 0d0
                         DO II = 1,12
@@ -677,7 +675,7 @@ C Find out where next to outer conv boundary is
 
                         IDREDGE = 2
                   END IF
-C If boundary moves in, reduce DD
+! If boundary moves in, reduce DD
                   IF (IDREDGE.EQ.2.AND.VLEC(ISTAR).LT.1d5) THEN
                         MAXB2 = 0d0
                         DO II = 1,12
@@ -704,7 +702,7 @@ C If boundary moves in, reduce DD
                   KBICZ = KMX(2)
             END IF
 
-C           Output plot file
+!           Output plot file
 
             COREXH(ISTAR) = SX(10,2)
 
@@ -720,7 +718,7 @@ C           Output plot file
             CALL FLUSH (36+20*(ISTAR-1))
             CALL FLUSH (37+20*(ISTAR-1))
             CALL FLUSH (38+20*(ISTAR-1))
-C Find convective envelope base
+! Find convective envelope base
             MENV(ISTAR) = 0d0
             RENV(ISTAR) = 0d0
             DO K=NMESH-1,1,-1 !surf to centre
@@ -730,7 +728,7 @@ C Find convective envelope base
                         KENV(ISTAR) = NMESH - K
                   END IF
             END DO
-C Update current values for extra timestep control variables
+! Update current values for extra timestep control variables
             VLHC(ISTAR) = VLH
             VLEC(ISTAR) = VLE
             VLCC(ISTAR) = VLC

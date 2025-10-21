@@ -1,6 +1,6 @@
-C     RJS 14/8/03 - funcs2 compatible version of nucrat.f
-C     Compute rates of (at present) 20 nuclear reactions, and the corresponding
-C     energy and neutrino release
+!     RJS 14/8/03 - funcs2 compatible version of nucrat.f
+!     Compute rates of (at present) 20 nuclear reactions, and the corresponding
+!     energy and neutrino release
       SUBROUTINE NUCRAT2(TL)
 
       IMPLICIT NONE
@@ -59,11 +59,11 @@ C     energy and neutrino release
      :     72,20,80,80,20,80,80,0,0,22,22,22,22,24,96,24,24,24,96,96,
      :     96,24,24,24,24,96,96,96,0,0,0,26,0,0,0,26,0,0,0,26,26,26,104,
      :     88,88,88,28,28,28,14,16,20/
-* RHB is 'baryon density': 1 amu * number of baryons per cm3
+! RHB is 'baryon density': 1 amu * number of baryons per cm3
       RHB = RHO/AVM
-* Electron screening theory from Graboske, DeWitt, Grossman & Cooper (1973),
-* for strong (ZA, ZB, ZC) are intermediate screening (ZD). The reaction
-* dependent charge parameters are stored in CZA ... CZD.
+! Electron screening theory from Graboske, DeWitt, Grossman & Cooper (1973),
+! for strong (ZA, ZB, ZC) are intermediate screening (ZD). The reaction
+! dependent charge parameters are stored in CZA ... CZD.
       WC = 0.0
 
       DO I = 1, 10
@@ -88,9 +88,9 @@ C     energy and neutrino release
       ZB = CSB*XB*ZA
       ZC = CSC/(XB*XB)
       ZD = CSD*WC*WA*EXP(LOG(VL/(WA*ZT))*CXD)
-* weak screening
+! weak screening
       zw = 0.5*zt*vl
-* Reaction rates interpolated in T, mostly from Caughlan & Fowler (1988)
+! Reaction rates interpolated in T, mostly from Caughlan & Fowler (1988)
       TF = TL/CLN10
 
       DO J = 1, 92
@@ -110,7 +110,7 @@ C     energy and neutrino release
                         IF (DSTR.LT.0.29*STRN) THEN
                               SCRN = MIN(SCRN, STRN - DSTR)
                         END IF
-* weak screening
+! weak screening
                         IF (inuc.ge.10) THEN
                               scrn = zw*czw(j)
                         END IF
@@ -124,7 +124,7 @@ C     energy and neutrino release
                   RRT2(J-19) = RN
             END IF
       END DO
-C Sort out rates
+! Sort out rates
       RPP = RRT(2)
       R33 = RRT(3)
       R34 = RRT(4)
@@ -146,7 +146,7 @@ C Sort out rates
       RCCG = RRT(20)
       RPNG = RRT(21)
       IF (MOD(inuc,10).EQ.1) THEN
-* correct rates to simulate Bahcall (1992) cross sections
+! correct rates to simulate Bahcall (1992) cross sections
             rpp = rpp*0.9828
             r33 = r33*0.971
             r34 = r34*0.987
@@ -154,7 +154,7 @@ C Sort out rates
             rbe = 5.54d-9/t6r*(0.936 + 0.004*t6r*t6r)
             rbp = rbp*0.933
       ELSEIF (MOD(inuc,10).EQ.2) THEN
-* idem, for Bahcall (1995) cross sections
+! idem, for Bahcall (1995) cross sections
             rpp = rpp*0.9557
             r33 = r33*0.969
             r34 = r34*0.970
@@ -163,10 +163,10 @@ C Sort out rates
             rbp = rbp*0.933
             rpn = rpn*0.991
       END IF
-* Multiply with density and abundances to get rates per baryon per second,
-* note that abundances of He3 and Be7 are not needed in equilibrium
+! Multiply with density and abundances to get rates per baryon per second,
+! note that abundances of He3 and Be7 are not needed in equilibrium
       RPP = RHB*NN1*NN1*RPP/2.0
-C      RPP = RHB*RPP/2.0 ! Why divide by 2?
+!      RPP = RHB*RPP/2.0 ! Why divide by 2?
       R33 = RHB*NN3*NN3*R33/2.0
       R34 = RHB*NN3*NN4*R34
       RBE = RHB*NE*RBE
@@ -183,8 +183,8 @@ C      RPP = RHB*RPP/2.0 ! Why divide by 2?
       RCO = RHB*NN12*NN16*RCO
       ROO = RHB*NN16*NN16*ROO/2.0
       RGNE = NN20*RGNE
-C      RGMG = N24*RGMG
-* Branching of pN and CC reactions
+!      RGMG = N24*RGMG
+! Branching of pN and CC reactions
       FPNG = 8.0D-4
       RPNA = (1.0 - FPNG)*RPN
       RPNG = FPNG*RPN
@@ -193,7 +193,7 @@ C      RGMG = N24*RGMG
       RCCA = (1.0 - FCCG)*RCC
       RCCG = FCCG*RCC
       RCC = RCCA
-C Put rates back to RRT
+! Put rates back to RRT
       RRT(2) = RPP
       RRT(3) = R33
       RRT(4) = R34
@@ -214,7 +214,7 @@ C Put rates back to RRT
       RRT(19) = RGMG
       RRT(20) = RCCG
       RRT(21) = RPNG
-C Minor variable reaction rates - 3/9/03 RJS
+! Minor variable reaction rates - 3/9/03 RJS
       RRT2(1) = 0d0
       RRT2(2) = RHB*NN1*NN2*RRT2(2)
       RRT2(3) = RHB*NN1*NNB7*RRT2(3)
@@ -228,45 +228,45 @@ C Minor variable reaction rates - 3/9/03 RJS
       RRT2(11) = RHB*NN4*NN17*RRT2(11)
       RRT2(12) = RHB*NN4*NNL7*RRT2(12)
       RRT2(13) = RHB*NN1*NN11*RRT2(13)
-C C14 reactions
+! C14 reactions
       RRT2(14) = RHB*NN1*NN14*RRT2(14)
       RRT2(15) = RHB*NN4*NN14*RRT2(15)
-C O18 reactions
+! O18 reactions
       RRT2(16) = RHB*NN1*NN18*RRT2(16)
       RRT2(17) = RHB*NN1*NN18*RRT2(17)
       RRT2(18) = RHB*NN4*NN18*RRT2(18)
       RRT2(19) = RHB*NN4*NN18*RRT2(19)
-C F19 reactions
+! F19 reactions
       RRT2(20) = RHB*NN1*NN19*RRT2(20)
       RRT2(21) = RHB*NN1*NN19*RRT2(21)
       RRT2(22) = RHB*NN4*NN19*RRT2(22)
-C Ne21
+! Ne21
       RRT2(23) = RHB*NN1*NNE21*RRT2(23)
       RRT2(24) = RHB*NN4*NNE21*RRT2(24)
       RRT2(25) = RHB*NN4*NNE21*RRT2(25)
-C Ne22
+! Ne22
       RRT2(26) = RHB*NN1*NNE22*RRT2(26)
       RRT2(27) = RHB*NN4*NNE22*RRT2(27)
       RRT2(28) = RHB*NN4*NNE22*RRT2(28)
-C Na22
+! Na22
       RRT2(29) = RHB*Nn*NNA22*RRT2(29)
       RRT2(30) = RHB*Nn*NNA22*RRT2(30)
       RRT2(31) = RHB*NN1*NNA22*RRT2(31)
-C Na23
+! Na23
       RRT2(32) = RHB*NN1*NNA23*RRT2(32)
       RRT2(33) = RHB*NN1*NNA23*RRT2(33)
       RRT2(34) = RHB*NN1*NNA23*RRT2(34)
-C Mg24
+! Mg24
       RRT2(35) = RHB*NN1*NMG24*RRT2(35)
       RRT2(36) = RHB*NN4*NMG24*RRT2(36)
-C Mg25
+! Mg25
       RRT2(37) = RHB*NN1*NMG25*RRT2(37)
       RRT2(38) = RHB*NN1*NMG25*RRT2(38)
       RRT2(39) = RHB*NN1*NMG25*RRT2(39)
       RRT2(40) = RHB*NN4*NMG25*RRT2(40)
       RRT2(41) = RHB*NN4*NMG25*RRT2(41)
       RRT2(42) = RHB*NN4*NMG25*RRT2(42)
-C Mg26
+! Mg26
       RRT2(43) = RHB*NN1*NMG26*RRT2(43)
       RRT2(44) = RHB*NN1*NMG26*RRT2(44)
       RRT2(45) = RHB*NN1*NMG26*RRT2(45)
@@ -274,62 +274,62 @@ C Mg26
       RRT2(47) = RHB*NN4*NMG26*RRT2(47)
       RRT2(48) = RHB*NN4*NMG26*RRT2(48)
       RRT2(49) = RHB*NN4*NMG26*RRT2(49)
-C Al26T
-C      RRT2(50) = RHB*N26T*RRT2(50)
-C      RRT2(51) = RHB*Nn*N26T*RRT2(51)
-C      RRT2(52) = RHB*Nn*N26T*RRT2(52)
-C      RRT2(53) = RHB*NN1*N26T*RRT2(53)
+! Al26T
+!      RRT2(50) = RHB*N26T*RRT2(50)
+!      RRT2(51) = RHB*Nn*N26T*RRT2(51)
+!      RRT2(52) = RHB*Nn*N26T*RRT2(52)
+!      RRT2(53) = RHB*NN1*N26T*RRT2(53)
       RRT2(50) = 0d0
       RRT2(51) = 0d0
       RRT2(52) = 0d0
       RRT2(53) = 0d0
-C Al26M
+! Al26M
       RRT2(54) = RHB*N26M*RRT2(54)
       RRT2(55) = RHB*Nn*N26M*RRT2(55)
       RRT2(56) = RHB*Nn*N26M*RRT2(56)
       RRT2(57) = RHB*NN1*N26M*RRT2(57)
-C Al26G
+! Al26G
       RRT2(58) = RHB*N26G*RRT2(58)
       RRT2(59) = RHB*Nn*N26G*RRT2(59)
       RRT2(60) = RHB*Nn*N26G*RRT2(60)
       RRT2(61) = RHB*NN1*N26G*RRT2(61)
-C Al27
+! Al27
       RRT2(62) = RHB*NN1*NAL27*RRT2(62)
       RRT2(63) = RHB*NN1*NAL27*RRT2(63)
       RRT2(64) = RHB*NN4*NAL27*RRT2(64)
-C Na23(a,n)Al26TGM
+! Na23(a,n)Al26TGM
       RRT2(65) = RHB*NN4*NNA23*RRT2(65)
       RRT2(66) = RHB*NN4*NNA23*RRT2(66)
       RRT2(67) = RHB*NN4*NNA23*RRT2(67)
-C Si reactions
+! Si reactions
       RRT2(68) = RHB*NN1*NSI28*RRT2(68)
       RRT2(69) = RHB*NN1*NSI29*RRT2(69)
       RRT2(70) = RHB*NN1*NSI30*RRT2(70)
-C N15(p,gamma)
+! N15(p,gamma)
       RRT2(71) = RHB*NN1*NN15*RRT2(71)
-C O17(p,gamma)F18(beta+)O18
+! O17(p,gamma)F18(beta+)O18
       RRT2(72) = RHB*NN1*NN17*RRT2(72)
-C Ne20(p,gamma)Na21(beta+)Ne21
+! Ne20(p,gamma)Na21(beta+)Ne21
       RRT2(73) = RHB*NN1*NN20*RRT2(73)
-C Unstable particle decays
-C Al26G t_0.5 = 0.72 Myr
+! Unstable particle decays
+! Al26G t_0.5 = 0.72 Myr
       CLN2 = 0.69314718
       RDAL26G = (RHB/26.0)*N26G*CLN2/2.27d13
-C C14 t_0.5 = 5730 yr
+! C14 t_0.5 = 5730 yr
       RDC14 = (RHB/14.0)*NN14*CLN2/1.81d11
-C Na22 t_0.5 = 2.6 yr
+! Na22 t_0.5 = 2.6 yr
       RDNA22 = (RHB/22.0)*NNA22*CLN2/8.199d7
-C Al26M t_0.5 = 6 s Should just shortcut the network...
+! Al26M t_0.5 = 6 s Should just shortcut the network...
       RD26M = (RHB/26.0)*N26M*CLN2/6.0
-C Fe59 t_0.5 = 44.6 d
+! Fe59 t_0.5 = 44.6 d
       RDFe59 = (RHB/59.0)*NFE59*CLN2/3.85d6
-C Fe60 t_0.5 = 1.5 Myr
+! Fe60 t_0.5 = 1.5 Myr
       RDFe60 = (RHB/60.0)*NFE60*CLN2/4.73d13
-C Ni59 t_0.5 = 0.075 Myr
+! Ni59 t_0.5 = 0.075 Myr
       RDNi59 = (RHB/59.0)*NNi59*CLN2/2.365d12
-C Free n t_0.5 = 10.3 min
+! Free n t_0.5 = 10.3 min
       RDn = (RHB/1.0)*Nn*CLN2/6.18d2
-C (n,g) reactions
+! (n,g) reactions
       TF = TL/CLN10
       DO J = 1, 45
             RN = 0.0D0
@@ -394,7 +394,7 @@ C (n,g) reactions
       NRATE(43) = RHB*Nn*NFE60*NRATE(43)
       NRATE(44) = RHB*Nn*NS34*NRATE(44)
       NRATE(45) = RHB*Nn*NNI61*NRATE(45)
-C Check for negative rates
+! Check for negative rates
       DO I=1,45
             IF (NRATE(I).LT.0d0) THEN
                   WRITE(32,*) "-ve rate in ",I

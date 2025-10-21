@@ -46,13 +46,13 @@
       COMMON /ANGMOM/ VROT1, VROT2, FMAC, FAM, IRAM, IRS1, IRS2
 
       WRITE(32,*) "Remeshing model"
-C RJS 22/11/07 - Save NMESH, we need it for the second remesh pass
+! RJS 22/11/07 - Save NMESH, we need it for the second remesh pass
 
       NMESHORIG = NMESH
 
       DO ISTAR = 1,IMODE!2
             NMESH = NMESHORIG
-C Calculate moment of inertia
+! Calculate moment of inertia
             VI(ISTAR) = 0d0
             DO K=1,NMESH - 1
                   VI(ISTAR) = VI(ISTAR) + 2.0/3.0*(DEXP(H(4+15*(ISTAR-1),K)) -
@@ -62,9 +62,9 @@ C Calculate moment of inertia
             VI(ISTAR) = VI(ISTAR) + 2.0/5.0*DEXP(H(4+15*(ISTAR-1),NMESH))*DEXP(H(7+15*(ISTAR-1),NMESH))**2.0
 
             IF ( NCH.GE.3 ) THEN
-* Set initial composition.
-* The composition variables are NOT the actual mass fractions if we use
-* non-integer atomic masses, so we have to compute what they are
+! Set initial composition.
+! The composition variables are NOT the actual mass fractions if we use
+! non-integer atomic masses, so we have to compute what they are
                   CHE = 1.0 - CH - ZS
                   CN = 1D0 - CC - CO - CNE - CMG - CSI - CFE
                   XH = CH*BN(1)/AM(1)
@@ -73,16 +73,16 @@ C Calculate moment of inertia
                   XN = CN*ZS*BN(4)/AM(4)
                   XO = CO*ZS*BN(5)/AM(5)
                   XNE = CNE*ZS*BN(6)/AM(6)
-C should do He3 like this...
+! should do He3 like this...
                   XMG = CMG*ZS
                   XSI = CSI*ZS
                   XFE = CFE*ZS
                   VMA = XH + XHE + XC + XN + XO + XNE + XMG + XSI + XFE
-C Minor element initial abundances from Anders & Grevesse 89
+! Minor element initial abundances from Anders & Grevesse 89
                   XD = 4.801d-5*(ZS/0.02)
                   XHE3 = 2.929d-5*(ZS/0.02)
                   XLI = 9.353d-9*(ZS/0.02)
-C No data available for Be-7, assume it's zero?
+! No data available for Be-7, assume it's zero?
                   XBE = 0d0
                   XB11 = 4.725d-9*(ZS/0.02)
                   XC13 = 3.650d-5*(ZS/0.02)
@@ -126,9 +126,9 @@ C No data available for Be-7, assume it's zero?
                         H(10+15*(ISTAR-1),K) = XC/VMA
                         H(11+15*(ISTAR-1),K) = XNE/VMA
                         H(12+15*(ISTAR-1),K) = XN/VMA
-C HE3 for structure code
+! HE3 for structure code
                         H(15+15*(ISTAR - 1),K) = XHE3/VMA
-C Beginning of minor variables, in mass order (except gallinoes)
+! Beginning of minor variables, in mass order (except gallinoes)
                         HNUC(1+50*(ISTAR-1),K) = 0d0 ! gallinoes
                         HNUC(2+50*(ISTAR-1),K) = 0d0 ! neutrons
                         HNUC(3+50*(ISTAR-1),K) = XD/VMA
@@ -177,13 +177,13 @@ C Beginning of minor variables, in mass order (except gallinoes)
                         HNUC(46+50*(ISTAR-1),K) = XNE/VMA
                   END DO
             END IF
-C Orbital stuff doesn't work properly - copy surface point to all others
+! Orbital stuff doesn't work properly - copy surface point to all others
             DO K=2, NMESH
                   H(13,K) = H(13,1)
                   H(14,K) = H(14,1)
                   H(29,K) = H(29,1)
             END DO
-C Reset orbital AM using period in modin
+! Reset orbital AM using period in modin
             IF (IRAM.EQ.1.AND.ISTAR.EQ.1) THEN
                   WRITE(32,*) "Resetting orbital angular momentum"
 
@@ -196,7 +196,7 @@ C Reset orbital AM using period in modin
                   WRITE(32,*) "Resetting *1 spin"
                   VROT = VROT1*1d3
                   OMEGA = VROT/(1d9*DEXP(H(7,1)))
-C Convert omega to code units
+! Convert omega to code units
                   OMEGA = OMEGA/DSQRT(CG)
 
                   DO K=1,NMESH
@@ -235,8 +235,8 @@ C Convert omega to code units
             Q2 = (M-1.0D0)/PHI
 
             IF (NCH.GE.2) THEN
-C IF REQUIRED, REDISTRIBUTE THE MESH POINTS, EITHER BY CHANGING THEIR NUMBER
-C OR BY CHANGING THE MESH-SPACING FUNCTION.
+! IF REQUIRED, REDISTRIBUTE THE MESH POINTS, EITHER BY CHANGING THEIR NUMBER
+! OR BY CHANGING THE MESH-SPACING FUNCTION.
                   DO K = 1, NMESH
                         VX = H(5+15*(ISTAR-1), K) + 1.0D-10
                         H(5+15*(ISTAR-1), K) = DLOG(VX)
@@ -270,7 +270,7 @@ C OR BY CHANGING THE MESH-SPACING FUNCTION.
      :                                              + DK*(H(J+15*(ISTAR-1),KK+1)
      :                                              - H(J+15*(ISTAR-1),KK))
                         END DO
-C Remesh nucleosynthesis matrix
+! Remesh nucleosynthesis matrix
                         DO J=1,50
                               DHNUC(J+50*(ISTAR-1),K) = HNUC(J+50*(ISTAR-1), KK) +
      :                                                + DK*(HNUC(J+50*(ISTAR-1), KK+1)
@@ -282,7 +282,7 @@ C Remesh nucleosynthesis matrix
 
                   DO K = 1, NMESH
                         DH(5+15*(ISTAR-1), K) = DEXP(DH(5+15*(ISTAR-1),K)) - 1.0D-10
-C Is this line still necessary?
+! Is this line still necessary?
                         IF (DH(5+15*(ISTAR-1),K).LT.1.0D-5) THEN
                               DH(5+15*(ISTAR-1), K) = 0.0D0
                         END IF

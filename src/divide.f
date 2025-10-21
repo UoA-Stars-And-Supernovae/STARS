@@ -44,12 +44,12 @@
       END DO
 
       VT = 0.0
-C Locate most significant remaining row, significant = ratio of largest
-C |element|=VM to sum of remaining |elements| = VS
-C RJS 9/6/09 -- set an initial ML so that if a most significant element
-C isn't found, at least ML still has a value
+! Locate most significant remaining row, significant = ratio of largest
+! |element|=VM to sum of remaining |elements| = VS
+! RJS 9/6/09 -- set an initial ML so that if a most significant element
+! isn't found, at least ML still has a value
       ML = J1
-C RJS 9/6/09 -- set JM so that it's never zero
+! RJS 9/6/09 -- set JM so that it's never zero
       JM = J1
 
       DO J = J1, J3
@@ -57,7 +57,7 @@ C RJS 9/6/09 -- set JM so that it's never zero
                   VM = 0.0
                   DO LL = J2, J4
                         L = LL - J2 + J1
-C Find most significant element
+! Find most significant element
                         IF ( NM(L).NE.0 ) THEN
                               VX = DABS(S(J,LL))
                               IF ( VX.GE.VM ) THEN
@@ -72,7 +72,7 @@ C Find most significant element
                   END DO
 
                   LM(J) = ML
-C Sum remaining elements
+! Sum remaining elements
                   DO LL = J2, J4
                         L = LL - J2 + J1
                         IF ( L.NE.ML ) THEN
@@ -115,7 +115,7 @@ C Sum remaining elements
       IF ( KM(JM).EQ.5 ) THEN
             KM(JM) = 2
       END IF
-C Eliminate elements above and below largest element of most significant row
+! Eliminate elements above and below largest element of most significant row
       DO I = J1, J3
             IM = KM(I)
             IF ( IM.LT.3 ) THEN
@@ -126,8 +126,8 @@ C Eliminate elements above and below largest element of most significant row
                   END IF
 
                   VX = 1.0D0/S(I, ML)
-C What does D do? It is set to zero in each loop, but doesn't seem to be used.
-C                   D = D - DLOG(DABS(VX))
+! What does D do? It is set to zero in each loop, but doesn't seem to be used.
+!                   D = D - DLOG(DABS(VX))
 
                   DO L = LA, N12
                         S(I, L) = VX*S(I, L)

@@ -61,9 +61,9 @@
       DATA COcompos /0.0d0,0.01d0,0.03d0,0.1d0,0.2d0,0.4d0,0.6d0,1.0d0/
       DATA JT, JX /2, 2/
 
-* Evaluate Fermi-Dirac integrals according to Eggleton, Faulkner &
-* Flannery (1973): RE, PE, SE and UE correspond to rho*, P*, S* and U*. 
-* PSI is the usual degeneracy parameter
+! Evaluate Fermi-Dirac integrals according to Eggleton, Faulkner &
+! Flannery (1973): RE, PE, SE and UE correspond to rho*, P*, S* and U*.
+! PSI is the usual degeneracy parameter
       F = EXP(FL)
       T = EXP(TL)
       UF = F/(1.0+F)
@@ -81,10 +81,10 @@
       SEF = QE*(QEF-REF-0.5*UF) - 1.0/WF
       SET = QE*(QET-RET)
       UE = SE + PSI - PE/(RE*CT*T)
-* Some quantities that DO not depend on the state of ionization:
-* the NA are the element number densities (per baryon); AVM is the average
-* mass per baryon (in amu); NEO and NIO are the numbers of electrons and
-* ions assuming complete ionization.
+! Some quantities that DO not depend on the state of ionization:
+! the NA are the element number densities (per baryon); AVM is the average
+! mass per baryon (in amu); NEO and NIO are the numbers of electrons and
+! ions assuming complete ionization.
       NEO = 0.0
       NIO = 0.0
       NZZ = 0.0
@@ -97,10 +97,10 @@
             NEO = NEO + IZ(I)*NA(I)
             NZZ = NZZ + IZ(I)*IZ(I)*NA(I)
       END DO
-* PRESSI gives a crude model for pressure ionization and (IF ICL=1)
-* a model for Coulomb interactions, returning corrections to the electron
-* chemical potential, pressure, entropy and internal energy.
-* TI is 1eV/kT, DE is 1 amu * number of electrons/cm3
+! PRESSI gives a crude model for pressure ionization and (IF ICL=1)
+! a model for Coulomb interactions, returning corrections to the electron
+! chemical potential, pressure, entropy and internal energy.
+! TI is 1eV/kT, DE is 1 amu * number of electrons/cm3
       TI = CEVB/T
       DE = RE*CD
 
@@ -109,7 +109,7 @@
 
       DV = DC - PSI
       DVF = DVF - WF
-* Contributions of the completely ionized species
+! Contributions of the completely ionized species
       NE = 0.0
       NEF = 0.0
       NET = 0.0
@@ -123,13 +123,13 @@
             VM = AM(I)*SQRT(AM(I))
             SI = SI - NA(I)*LOG(NA(I)/VM + EPS)
       END DO
-* Calculate ionization of the first ION elements.
+! Calculate ionization of the first ION elements.
       DO I = ION, 1, -1
             SHA = 1.0
             SJHA = 0.0
             SCHA = 0.0
-* compute potentials VA and number ratios HA of ionization state J
-* relative to the ground state
+! compute potentials VA and number ratios HA of ionization state J
+! relative to the ground state
             DO J = 1, IZ(I)
                   VA(J) = -CHI(J,I)*TI + J*DV
                   IF (J.EQ.1) THEN
@@ -149,8 +149,8 @@
             SI = SI + NA(I)*LOG(VM)
 
             IF (I.GT.1) THEN
-* contributions to electron number density NE, entropy SI and
-* internal energy UI for Helium and heavier
+! contributions to electron number density NE, entropy SI and
+! internal energy UI for Helium and heavier
                   VX = NA(I)/SHA
                   SI = SI - VX*LOG(VX/OMG(IZ(I)+1) + EPS)
 
@@ -168,8 +168,8 @@
                   END DO
             END IF
       END DO
-* Ionization and molecular dissciation of Hydrogen.
-* partition function for H2 from Vardya (1960), Webbink (1975)
+! Ionization and molecular dissciation of Hydrogen.
+! partition function for H2 from Vardya (1960), Webbink (1975)
       DH2TI = DH2*TI
       D1TI = D1*TI
       D2TI = (D2*TI)**2
@@ -184,7 +184,7 @@
       H2A = CEN*(ZH2S/4.0)*DE/(T*SQRT(T))*EXP(DH2TI)
       H2BT = DH2TI + 1.5 - ZH2T
       H2AT = RET - H2BT
-* solve for densities of H+, H, and H2
+! solve for densities of H+, H, and H2
       AA = 2*H2A + HA(1)*(1.0 + HA(1))
       AB = NE + HA(1)*(NE - NA(1))
       AC = NA(1)*NE
@@ -194,7 +194,7 @@
       EN = 1.0/NE
       H2 = H2A*HG*HG*EN
       NI = NIO - H2
-* derivatives w.r.t. F and T
+! derivatives w.r.t. F and T
       AA = NE + 4*HG*H2A
       AB = HA(1)*(NE - 2*H2)
       AD = 1/(AA + AB)
@@ -212,25 +212,25 @@
       NET = NET + HIT
       H2F = H2*REF + EN*(2*H2A*HG*HGF - H2*NEF)
       H2T = H2*H2AT + EN*(2*H2A*HG*HGT - H2*NET)
-* hydrogen contribution to entropy, internal energy
+! hydrogen contribution to entropy, internal energy
       SIF = SIF - VA(1)*HIF - H2BT*H2F
       SIT = SIT - VA(1)*HIT - H2BT*H2T + H2*(ZH2T + ZH2TT)
       SI = SI - HI*LOG(HI/OMG(1) + EPS) - HG*LOG(HG/OMG(2) + EPS)
      &        - H2*(LOG(H2/ZH2S + EPS) + ZH2T)
       UI = UI + CHI(1,1)*HI + 0.5*DH2*(HI + HG)
-* DB is 1 amu * number of baryons/cm3; RHO is the mass density in g/cm3
+! DB is 1 amu * number of baryons/cm3; RHO is the mass density in g/cm3
       DB = EN*DE
       DL = LOG(DB)
       RHO = DB*AVM
       RL = LOG(RHO)
       RT = RET - EN*NET
       RF = REF - EN*NEF
-* second CALL to PRESSI compensates for spurious pressure and entropy terms
+! second CALL to PRESSI compensates for spurious pressure and entropy terms
       DE = DB*NEO
 
       CALL PRESSI(0, TI, DE, RF, RT, F, DC, DVT, DVF, DPB, DPBT, DPBF,
      :            DSB, DSBT, DSBF, DUB)
-* pressure terms
+! pressure terms
 
       PE = CB*PE
       TCR = T*CR
@@ -244,34 +244,34 @@
       PF = (PE*PEF      + PI*RF - H2F*P0 + TCR*(DPAF-DPBF))/P
       PT = (PE*PET + PI + PI*RT - H2T*P0 + TCR*(DPAT-DPBT) + PR*4.0)/P
       PL = LOG(P)
-* entropy, in erg/g/K
+! entropy, in erg/g/K
       DSF = NEF*DSA + NE*DSAF - NEO*DSBF - RF*B
       DST = NET*DSA + NE*DSAT - NEO*DSBT - (RT - 3.0)*B
       SF = CR*(-NI*RF       + NEF*SE + NE*SEF + SIF + DSF)/AVM
       ST = CR*( NI*(1.5-RT) + NET*SE + NE*SET + SIT + DST)/AVM
       S = CR*(SE*NE + DSA*NE - DSB*NEO + B + (1.5*TL - DL + 2.5
      :              - LOG(CEN))*NI + SI)/AVM
-* internal energy, in erg/g
+! internal energy, in erg/g
       U = TCR*(UE*NE + DUA*NE - DUB*NEO + 1.5*NI + ZH2T*H2 + 0.75*B
      :               + TI*UI)/AVM
-* other thermodynamic quantities
+! other thermodynamic quantities
       Q = PT*SF - PF*ST
       CP = -Q/PF
       GRADA = SF/Q
       GAMMA = Q/(RT*SF-RF*ST)
       ZT = SQRT(ABS((NE*REF/WF + NZZ)/NI))
-* TST ought to be zero, IF all the above programming is correct
+! TST ought to be zero, IF all the above programming is correct
       TST = SF/CR - P*(RT*PF-RF*PT)/(TCR*RHO)
-*** END OF THERMODYNAMIC CALCULATION. BEGINNING OF TABLE-BASED CALCULATIONS
+! END OF THERMODYNAMIC CALCULATION. BEGINNING OF TABLE-BASED CALCULATIONS
       FR = RL/CLN10
       TF = TL/CLN10
-* Opacity tables from Alexander & Ferguson (1994; molecular), Itoh (1983;
-* electron conduction) and Iglesias & Rogers (1992; the rest)
-C      XF = 2.0*X + Y + 1.0
-C RJS -- Attempt at estimating molecular opacities
-C RJS 14/7/07 - Compute pressures for HG, HI and H2
+! Opacity tables from Alexander & Ferguson (1994; molecular), Itoh (1983;
+! electron conduction) and Iglesias & Rogers (1992; the rest)
+!      XF = 2.0*X + Y + 1.0
+! RJS -- Attempt at estimating molecular opacities
+! RJS 14/7/07 - Compute pressures for HG, HI and H2
       IF (T.LT.1d4.AND.IMO.EQ.1) THEN
-C Low T's cause trouble...
+! Low T's cause trouble...
             TFAKE = DMAX1(1d3,T)
             PHG = RHO*HG*(CR*TFAKE)
             PHI = RHO*HI*(CR*TFAKE)       ! Note that P(ressure)HI spells PHI!!!!
@@ -279,7 +279,7 @@ C Low T's cause trouble...
             PC = RHO*NA(3)*(CR*TFAKE)
             PN = RHO*NA(4)*(CR*TFAKE)
             PO = RHO*NA(5)*(CR*TFAKE)
-C Compute dissociation coefficients - from Rossi & Maciel '83
+! Compute dissociation coefficients - from Rossi & Maciel '83
             THETA = 5040d0/TFAKE
             TH2 = THETA*THETA
             TH3 = TH2*THETA
@@ -296,7 +296,7 @@ C Compute dissociation coefficients - from Rossi & Maciel '83
      :                           + 1.9546d-4*TH4)
             DKH2O = 1d1**(2.5315d1-1.0343d1*THETA+1.0807d-1*TH2-8.7408d-3*TH3
      :                           + 2.9465d-4*TH4)
-C Iterate computation of these things
+! Iterate computation of these things
             PsubN = PN
             PsubC = PC
             PsubO = PO
@@ -333,40 +333,40 @@ C Iterate computation of these things
                   IF (ILOOP.GT.5000) THEN
                         WRITE (*,*) "Convergence failed", T, TFAKE, deltaC, deltaN, deltaO
                   ELSE
-                        GOTO 10
+                        GO TO 10
                   END IF
             END IF
-C Compute molecular partial pressures
+! Compute molecular partial pressures
             PCO = PsubC*PsubO/DKCO
             PC2 = PsubC*PsubC/DKC2
             PN2 = PsubN*PsubN/DKN2
             PCN = PsubC*PsubN/DKCN
             POH = PsubO*PHG/DKOH
             PH2O = PHG*PHG*PsubO/(DKOH*DKH2O)
-C Compute number abundances from pressures - note these are number fractions
+! Compute number abundances from pressures - note these are number fractions
             NCO = PCO/(CR*TFAKE*RHO)
             NC2 = PC2/(CR*TFAKE*RHO)
             NN2 = PN2/(CR*TFAKE*RHO)
             NCN = PCN/(CR*TFAKE*RHO)
             NOH = POH/(CR*TFAKE*RHO)
             NH2O = PH2O/(CR*TFAKE*RHO)
-C Fits to opacity as a function of temp:
-C CN per molecule - Scalo & Ulrich 1975
+! Fits to opacity as a function of temp:
+! CN per molecule - Scalo & Ulrich 1975
             CAMU = 1.6605402D-24
             FKCN = 1d1**(-19.12+2.22479*THETA-2.8069*TH2+0.76000*TH3-0.078384*TH4)
-C Assume C2 as opaque as CN
+! Assume C2 as opaque as CN
             FKC2 = FKCN*NC2/(CAMU)
             FKCN = FKCN*NCN/(CAMU)
-C CO, OH and H2O from Keeley 1970
+! CO, OH and H2O from Keeley 1970
             FKCO = 2.75d-26*NCO/CAMU
             FKOH = 17*(NOH/CAMU)*(1.4d-21*(T/1d4)**6d0)/(0.1+(T/1d4)**6d0)
-C H2O, second term modIFied as in Marigo 2002
+! H2O, second term modIFied as in Marigo 2002
             FKH2O = (2.6d-27/(4.23d-4 + (T/1d4)**4d0))
      :                                + (9.72d-18*DEXP(-3.2552/(T/1d4))
      :                                / (1+3.78d3*(T/1d4)**1d1))
             FKH2O = 18*NH2O*FKH2O/CAMU
-C Note that I have been unable to reproduce Marigo's plots with this, CN seems
-C about right though and that's the important one
+! Note that I have been unable to reproduce Marigo's plots with this, CN seems
+! about right though and that's the important one
             FKTOT = FKCO+FKC2+FKCN+FKOH+FKH2O
       END IF
 
@@ -400,7 +400,7 @@ C about right though and that's the important one
                   XU = 1.0 - XT
 
                   IF (IOP.EQ.0) THEN
-*     linear interpolation in opacity table
+!     linear interpolation in opacity table
                         TT = 20.0*(TF - 2.95)
                         JT = MAX(1, MIN(126, INT(TT)))
                         TT = TT - JT
@@ -422,13 +422,13 @@ C about right though and that's the important one
      &                                          + RU*CS(JR,JT,K))
                         END DO
                   ELSE
-*     bicubic spline interpolation
+!     bicubic spline interpolation
                         CALL OPACTY(JX,TF,FR,FKL,FKH)
                   END IF
 
                   FK = XT*10D0**FKH + XU*10D0**FKL
                   CH = 4D0*CC*PR/(FK*RHO*RHO*CP*T)
-*     Neutrino loss rates from Itoh et al (1983-1992)
+!     Neutrino loss rates from Itoh et al (1983-1992)
                   EN = 0.0
 
                   IF (TF .GE. 7.0 .AND. FR .GE. 0.0) THEN
@@ -450,7 +450,7 @@ C about right though and that's the important one
       ELSE
 !! DO MY NEW OPACITY STUFF - JJ 5/11/02
             fT=LOG10(EXP(TL))
-C RJS - note fR is now log rho/(T6^3) not log rho as it was above
+! RJS - note fR is now log rho/(T6^3) not log rho as it was above
             fR=LOG10(RHO)-3d0*(fT-6d0)
             fX = NA(1)*AM(1)/AVM
             fY = NA(2)*AM(2)/AVM
@@ -543,8 +543,8 @@ C RJS - note fR is now log rho/(T6^3) not log rho as it was above
                               tkappa(im+1,in+1) = FK
                         END DO
                   END DO
-C RJS 19/09/05
-C Fudge to keep things inside the array - I have no idea what effect this has...
+! RJS 19/09/05
+! Fudge to keep things inside the array - I have no idea what effect this has...
                   IF (iC.GT.7) THEN
                         iC = 7
                   END IF
@@ -561,10 +561,10 @@ C Fudge to keep things inside the array - I have no idea what effect this has...
             END IF
 
             CH = 4D0*CC*PR/(FK*RHO*RHO*CP*T)
-C     Restore FR to log rho
+!     Restore FR to log rho
             FR = RL/CLN10
             TF = TL/CLN10
-* Neutrino loss rates from Itoh et al (1983-1992)
+! Neutrino loss rates from Itoh et al (1983-1992)
             EN = 0.0
 
             IF (TF .GE. 7.0 .AND. FR .GE. 0.0) THEN
@@ -583,7 +583,7 @@ C     Restore FR to log rho
                   EN = -10.0D0**ENP - NZZ*10.0D0**ENB
             END IF
       END IF
-C Add molecular opacities to tabulated ones
+! Add molecular opacities to tabulated ones
       IF (T.LT.1d4.AND.IMO.EQ.1) THEN
             FK = FKTOT + FK
       END IF

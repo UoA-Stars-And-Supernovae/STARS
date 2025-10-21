@@ -13,13 +13,13 @@
       COMMON /STAT3 / F(4,4,127,90,10),TFM(127),FRM(90),
      :                FKLM(6),FKHM(6)
 
-*
-* Calculate a bicubic spline interpolation fit for the temperature
-* and density opacity fit.  Do not stop if the input lies outside the
-* array but rather use the previous result.
-*
-* Check that we are in the table.
-*
+!
+! Calculate a bicubic spline interpolation fit for the temperature
+! and density opacity fit.  Do not stop if the input lies outside the
+! array but rather use the previous result.
+!
+! Check that we are in the table.
+!
       IF((TF.LT.TFM(1)).OR.(TF.GE.TFM(MT)).OR.(FR.LT.FRM(1)).OR.(FR.GE.FRM(MR))) THEN
             FKL = FKLO
             FKH = FKHO
@@ -28,16 +28,16 @@
       ELSE
             FKLO = FKL
             FKHO = FKH
-*
-* Find interval in which target point lies.
-*
+!
+! Find interval in which target point lies.
+!
             I = 1 + (MT-1)*(TF-TFM(1))/(TFM(MT)-TFM(1))
             J = 1 + (MR-1)*(FR-FRM(1))/(FRM(MR)-FRM(1))
             DT = TF-TFM(I)
             DR = FR-FRM(J)
-*
-* Evaluate the splines.
-*
+!
+! Evaluate the splines.
+!
             FKL = F(1,1,I,J,JX) + DR*(F(1,2,I,J,JX)
      &          + DR*(F(1,3,I,J,JX) + DR*F(1,4,I,J,JX)))
      &          + DT*(F(2,1,I,J,JX) + DR*(F(2,2,I,J,JX)
@@ -46,7 +46,7 @@
      &          + DR*(F(3,3,I,J,JX) + DR*F(3,4,I,J,JX)))
      &          + DT*(F(4,1,I,J,JX) + DR*(F(4,2,I,J,JX)
      &          + DR*(F(4,3,I,J,JX) + DR*F(4,4,I,J,JX))))))
-*
+!
             FKH = F(1,1,I,J,JX+1) + DR*(F(1,2,I,J,JX+1)
      &          + DR*(F(1,3,I,J,JX+1) + DR*F(1,4,I,J,JX+1)))
      &          + DT*(F(2,1,I,J,JX+1) + DR*(F(2,2,I,J,JX+1)
