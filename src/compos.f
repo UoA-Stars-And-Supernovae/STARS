@@ -79,18 +79,6 @@
 !            DH(14,K) = 0d0
 !         END IF
 !      END DO
-!      DO 2 J=23,60
-!         DO 2 K = 1, NMESH
-!            IF ( H(J,K) + DH(J,K).GT.1.0D-12) GO TO 2
-!            H(J, K) = 0d0
-!            DH(J, K) = 0d0
-! 2    CONTINUE
-!      DO 3 J=13,22
-!         DO 3 K = 1, NMESH
-!            IF ( H(J,K) + DH(J,K).GT.1.0D-12) GO TO 3
-!            H(J, K) = 0d0
-!            DH(J, K) = 0d0
-! 3    CONTINUE
 ! Deal with problem protons in core
       DO K = 1,NMESH
             IF (H(5,K).EQ.0d0) HNUC(41,K) = 0d0
