@@ -14,7 +14,7 @@
       REAL*8 WTM, BCHSPIN, DD, RLF, X16, VPK, GR, DT1
       REAL*8 MESH, TANH, ZS, R2, X20T, LT, LEDD, DA14
       REAL*8 TRANS, X14T, QQ, PS
-      INTEGER NMAXMSH, K1, IMODE, K2, NE, IOTHER, IVARACC, K
+      INTEGER NMAXMSH, K1, IMODE, K2, NE, ISTAROTHER, IVARACC, K
       INTEGER INE, IVAR, ISTAR, IVMC, IVMS, IMLWR
 
       PARAMETER (NMAXMSH = 2000)
@@ -83,35 +83,35 @@
             IF ( K.EQ.K1+1 ) THEN
 ! next-to-surface boundary conditions for second-order equations
 ! Attempt at variable composition accretion - only if in binary mode
-                  IOTHER = 3 - ISTAR ! This maps 1 -> 2 and 2 -> 3
-                  IF ((HT(24,1,IOTHER).GT.0d0.OR.HT(23,1,ISTAR).LT.0d0).AND.IMODE.EQ.2 .AND. IVARACC.EQ.1) THEN
+                  ISTAROTHER = 3 - ISTAR ! This maps 1 -> 2 and 2 -> 3
+                  IF ((HT(24,1,ISTAROTHER).GT.0d0.OR.HT(23,1,ISTAR).LT.0d0).AND.IMODE.EQ.2 .AND. IVARACC.EQ.1) THEN
 !              If both stars are filling their roche lobes, set the abundance of the accreted material
 !              to the average of the two stars
-!                IF (HT(24,1,IOTHER).GT.0d0.AND.HT(24,1,ISTAR).GT.0d0.AND.IVARACC.EQ.1) THEN
-                        EQU(7) = 0.5*(ACCOMPOS(1,IVAR+1,IOTHER)+ X1(3)) - X1(2)
-                        EQU(8) = 0.5*(ACCOMPOS(5,IVAR+1,IOTHER) + X16(3)) - X16(2)
-                        EQU(9) = 0.5*(ACCOMPOS(2,IVAR+1,IOTHER) + X4(3)) - X4(2)
-                        EQU(10) = 0.5*(ACCOMPOS(3,IVAR+1,IOTHER) + X12(3)) - X12(2)
-                        EQU(11) = 0.5*(ACCOMPOS(6,IVAR+1,IOTHER) + X20(3)) - X20(2)
-                        EQU(12) = 0.5*(ACCOMPOS(4,IVAR+1,IOTHER) + X14(3)) - X14(2)
-                        EQU(14) = 0.5*(ACCOMPOS(7,IVAR+1,IOTHER) + X3(3)) - X3(2)
+!                IF (HT(24,1,ISTAROTHER).GT.0d0.AND.HT(24,1,ISTAR).GT.0d0.AND.IVARACC.EQ.1) THEN
+                        EQU(7) = 0.5*(ACCOMPOS(1,IVAR+1,ISTAROTHER)+ X1(3)) - X1(2)
+                        EQU(8) = 0.5*(ACCOMPOS(5,IVAR+1,ISTAROTHER) + X16(3)) - X16(2)
+                        EQU(9) = 0.5*(ACCOMPOS(2,IVAR+1,ISTAROTHER) + X4(3)) - X4(2)
+                        EQU(10) = 0.5*(ACCOMPOS(3,IVAR+1,ISTAROTHER) + X12(3)) - X12(2)
+                        EQU(11) = 0.5*(ACCOMPOS(6,IVAR+1,ISTAROTHER) + X20(3)) - X20(2)
+                        EQU(12) = 0.5*(ACCOMPOS(4,IVAR+1,ISTAROTHER) + X14(3)) - X14(2)
+                        EQU(14) = 0.5*(ACCOMPOS(7,IVAR+1,ISTAROTHER) + X3(3)) - X3(2)
                 ! SMR + JJE 21 November 2023
 ! The following lines are a more accurate but less stable implementation of the
 ! next to surface boundary condition -- should be used if you want to do thermohaline mixing
 !                SG2 = -(PS(MT(2))+1d-5) !1d-5
-!                EQU(7) = SG2*(X1(3)-X1(2)) + PS(MT(2))*(X1(2)-ACCOMPOS(1,IVAR+1,IOTHER))
+!                EQU(7) = SG2*(X1(3)-X1(2)) + PS(MT(2))*(X1(2)-ACCOMPOS(1,IVAR+1,ISTAROTHER))
 !      :              - X1T(2)
-!                EQU(8) = SG2*(X16(3)-X16(2)) + PS(MT(2))*(X16(2)-ACCOMPOS(5,IVAR+1,IOTHER))
+!                EQU(8) = SG2*(X16(3)-X16(2)) + PS(MT(2))*(X16(2)-ACCOMPOS(5,IVAR+1,ISTAROTHER))
 !      :              - X16T(2)
-!                EQU(9) = SG2*(X4(3)-X4(2)) + PS(MT(2))*(X4(2)-ACCOMPOS(2,IVAR+1,IOTHER))
+!                EQU(9) = SG2*(X4(3)-X4(2)) + PS(MT(2))*(X4(2)-ACCOMPOS(2,IVAR+1,ISTAROTHER))
 !      :              - X4T(2)
-!                EQU(10) = SG2*(X12(3)-X12(2)) + PS(MT(2))*(X12(2)-ACCOMPOS(3,IVAR+1,IOTHER))
+!                EQU(10) = SG2*(X12(3)-X12(2)) + PS(MT(2))*(X12(2)-ACCOMPOS(3,IVAR+1,ISTAROTHER))
 !      :              - X12T(2)
-!                EQU(11) = SG2*(X20(3)-X20(2)) + PS(MT(2))*(X20(2)-ACCOMPOS(6,IVAR+1,IOTHER))
+!                EQU(11) = SG2*(X20(3)-X20(2)) + PS(MT(2))*(X20(2)-ACCOMPOS(6,IVAR+1,ISTAROTHER))
 !      :              - X20T(2)
-!                EQU(12) = SG2*(X14(3)-X14(2)) + PS(MT(2))*(X14(2)-ACCOMPOS(4,IVAR+1,IOTHER))
+!                EQU(12) = SG2*(X14(3)-X14(2)) + PS(MT(2))*(X14(2)-ACCOMPOS(4,IVAR+1,ISTAROTHER))
 !      :              - X14T(2)
-!                EQU(14) = SG2*(X3(3)-X3(2)) + PS(MT(2))*(X3(2)-ACCOMPOS(7,IVAR+1,IOTHER))
+!                EQU(14) = SG2*(X3(3)-X3(2)) + PS(MT(2))*(X3(2)-ACCOMPOS(7,IVAR+1,ISTAROTHER))
 !      :              - X3T(2)
                   ELSE
                         EQU(7) = X1(3) - X1(2)
