@@ -394,7 +394,7 @@
      :1P2E10.3,0PF10.4,7F8.5,F8.3,2F8.4,/,F8.4,12F8.3,5F8.4,/,3F8.4,I6)
 
 ! REMESH optionally rezones the model, e.g. for different no. of meshpoints
-   14 CALL REMESH(NH2, NCH, CH, CO, CC, CNE)
+      CALL REMESH(NH2, NCH, CH, CO, CC, CNE)
 
       DO K=1,NH
             DO J = 1,JOUT
@@ -593,20 +593,20 @@
       END IF
 
       DT = CSECYR*DTY
-!      IF (DT1.EQ.1d0) GO TO 6
-!      IF (IDREDGE.EQ.3) GO TO 6
-      IF ((JP.EQ.1 .AND. DTF.GE.DT1).OR.DTY.LT.6d-5) THEN
-            GO TO 6
-      END IF
-! clear DH in some circumstances
-      WRITE (32,*) "Clearing DH..."
 
-      DO K = 1, NH
-            DO J = 1, 60
-                  DH(J, K) = 0.0D0
+      IF ((JP.EQ.1 .AND. DTF.GE.DT1).OR.DTY.LT.6d-5) THEN
+            CONTINUE
+      ELSE
+! clear DH in some circumstances
+            WRITE (32,*) "Clearing DH..."
+
+            DO K = 1, NH
+                  DO J = 1, 60
+                        DH(J, K) = 0.0D0
+                  END DO
             END DO
-      END DO
-    6 IHOLD = IHOLD + 1
+      END IF
+      IHOLD = IHOLD + 1
 ! CNO equilibrium on the main sequence.
 ! Does this still work???
       IF (ICN .EQ. 1) THEN
@@ -693,29 +693,26 @@
       RETURN
 
 ! End of final output section. Start of emergency restart section
-   32 IF ( IHOLD .LE. 0 ) THEN
-            GO TO 34
+   32 IF ( IHOLD .GT. 0 ) THEN
+            AGE = PR(1)
+            DT = PR(2)
+            M1 = PR(3)
+            EC = PR(4)
+            BM = PR(5)
+            ANG = PR(6)
+            CM = PR(7)
+            MTA = PR(8)
+            MTB = PR(9)
+            TM(1) = PR(10)
+            T0 = PR(11)
+            M0 = PR(12)
+            TC(1) = PR(13)
+            TC(2) = PR(14)
+
+            NMOD = NPR
       END IF
-      AGE = PR(1)
-      DT = PR(2)
-      M1 = PR(3)
-      EC = PR(4)
-      BM = PR(5)
-      ANG = PR(6)
-      CM = PR(7)
-      MTA = PR(8)
-      MTB = PR(9)
-      TM(1) = PR(10)
-      T0 = PR(11)
-      M0 = PR(12)
-      TC(1) = PR(13)
-      TC(2) = PR(14)
-!      DO 11 J = 1,13
-!   11    CT(J+10) = PR(J)
 
-      NMOD = NPR
-
-   34 DT = 0.8*DT
+      DT = 0.8*DT
       IF (DT .LT. 0.01*PR(2)) THEN
             WRITE(*,*) 'DT < 1% of previous DT -- setting to 10% TKH'
 !             STOP
