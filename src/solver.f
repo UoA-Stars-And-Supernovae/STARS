@@ -1,22 +1,3 @@
-!
-!                                          .
-!                                /^\     .
-!                           /\   "V"
-!                          /__\   I      O  o
-!                         //..\\  I     .
-!                         \].`[/  I
-!                         /l\/j\  (]    .  O
-!                        /. ~~ ,\/I          .
-!                        \\L__j^\/I       o
-!                         \/--v}  I     o   .
-!                         |    |  I   _________
-!                         |    |  I c(`       ')o
-!                         |    l  I   \.     ,/
-!                       _/j  L l\_!  _//^---^\\_
-!
-!                           Here be wizard.
-!
-!
       SUBROUTINE SOLVER(NOC, ITER, JTER, ERR, IE, NWRT5)
 
       IMPLICIT NONE
@@ -28,7 +9,7 @@
       REAL*8 AT, EPS, ERT, S, EQ, F7
       REAL*8 DH0, SNAFU, DT2, DMIN1, DEL, VLEP, DHNUC, ERRPR
       REAL*8 DD, ERR, D, VLHC, SOLV, DT1, GE, H
-      REAL*8 DMAX1, FACSGMIN, TOTMC, STAR
+      REAL*8 DMAX1, FACSGMIN, TOTMC, STAR, TSERR
       INTEGER JIN, N12, J2, NB, N8, KMAX, NE2, IH
       INTEGER KK, N14, K1, MWT, KMESH, N5, IN, N10
       INTEGER N6, NE3, I4, IA, K2, MIXFUD, KTER, MM
@@ -53,36 +34,37 @@
       COMMON /MESH  / TRC1,TRC2,DD,DT1,DT2,MWT,MWTS,IVMC,IVMS
       COMMON /ERRORS/ SNAFUS, SNAFUNMOD
       COMMON /MISC  / NMOD
+      COMMON /MISC2 / TSERR
       DIMENSION MK(60), ERT(60), IE(100)
       LOGICAL REDUCE
 
       REDUCE = .FALSE.
-! EG-style mixing convergence trick
+C EG-style mixing convergence trick
 
       IF (NOC.EQ.1.AND.ISGFAC.EQ.1) THEN
             FACSG = FACSGMIN
       ELSE
             FACSG = 1d0
       END IF
-! 1/9/09 RJS -- the following section of code has been removed. It was originally there
-! to stop problems that occurred during matrix inversion due to the use of some elements
-! from previous iterations (i.e. the nucleosynthesis). This massively slowed the code in
-! non-nucleosynthesis mode, and no longer seems to be a problem. If you find you need it,
-! add it back in again :)
-! Clear C and S
-!        DO J = 1, 51
-!           DO I = 1,51
-!              DO K = 1,NMESH+1 !MAXMSH+1
-!                 C(K,I,J) = 0d0
-!              END DO
-!           END DO
-!        END DO
-!        DO J = 1,151
-!           DO I = 1,50
-!              S(I,J) = 0d0
-!           END DO
-!        END DO
-! Replace loop with written out stuff
+C 1/9/09 RJS -- the following section of code has been removed. It was originally there
+C to stop problems that occurred during matrix inversion due to the use of some elements
+C from previous iterations (i.e. the nucleosynthesis). This massively slowed the code in
+C non-nucleosynthesis mode, and no longer seems to be a problem. If you find you need it,
+C add it back in again :)
+C Clear C and S
+C        DO J = 1, 51
+C           DO I = 1,51
+C              DO K = 1,NMESH+1 !MAXMSH+1
+C                 C(K,I,J) = 0d0
+C              END DO
+C           END DO
+C        END DO
+C        DO J = 1,151
+C           DO I = 1,50
+C              S(I,J) = 0d0
+C           END DO
+C        END DO
+C Replace loop with written out stuff
       NE1 = IE(1)
       NE2 = IE(2)
       NE3 = IE(3)
@@ -124,12 +106,12 @@
       N16 = N13 + NEV
       N14 = N16 + 1
       NE4 = NE3 + NE2
-! SURFACE IS AT K1'TH MESHPOINT, CENTRE AT K2'TH
+C SURFACE IS AT K1'TH MESHPOINT, CENTRE AT K2'TH
       K1 = 1 + 0.01D0*J1*(NMESH-1)
       K2 = NMESH - 0.01D0*J2*(NMESH-1)
       KMESH = K2 - K1 + 1
 
-! DETERMINE 'TYPICAL' VALUES FOR EACH  VARIABLE
+C DETERMINE 'TYPICAL' VALUES FOR EACH  VARIABLE
       IF (NOC.LE.1) THEN
             DO J = 1, NV
                   L = ID(J)
@@ -151,7 +133,7 @@
             ELSE IF (ISTAR.EQ.2) THEN
                   WRITE(32,*) "Star 2 nucleosynthesis"
             END IF
-! Scale minor elements relative to most abundant
+C Scale minor elements relative to most abundant
             DO J = 1,NV
                   IF (J.LE.30) THEN
                         L = ID(J)
@@ -162,7 +144,7 @@
                   ER(L) = 1d-8
                   ER(1) = 1d0
                   ER(2) = 1d0
-!            ER(28) = 1d0
+C            ER(28) = 1d0
                   DO K = K1, K2
                         ER(L) = DMAX1(ER(L), DABS(HNUC(L+50*(ISTAR-1),K)))
                   END DO
@@ -170,15 +152,15 @@
       END IF
 
       MM = 2 - MIN0(1, NE4)
-! BEGIN ITERATIVE LOOP
+C BEGIN ITERATIVE LOOP
 
  600  CONTINUE ! TODO: Remove
 
       DO KTER = 1, ITER
-!          D = 0.0D0
+C          D = 0.0D0
             K = K1
             KH = IH
-! EVALUATE FUNCTIONS AT SURFACE MESHPOINT
+C EVALUATE FUNCTIONS AT SURFACE MESHPOINT
             CALL DIFRNS(K, NOC, ITER, N15, NE, 60+NEV)
             CALL DIVIDE(N15, N6, NE, N7, N8, K)
 
@@ -187,7 +169,7 @@
             IF ( K.GT.K2 ) THEN
                   GO TO 100
             END IF
-! DITTO NEXT-TO-SURFACE, ELIMINATING SOME UNKNOWNS
+C DITTO NEXT-TO-SURFACE, ELIMINATING SOME UNKNOWNS
             CALL DIFRNS(K, NOC, ITER, 1, NE, 30)
             CALL ELIMN8(N2, NE, N3, N15, N4, N5, K-1)
             CALL DIVIDE(1, N4, NE, N7, N8, K)
@@ -200,7 +182,7 @@
                   IF ( K.EQ.K1+3 .OR. K.EQ.JH-1 .OR. K.EQ.JH+2 .OR. K.EQ.K2-1 ) THEN
                         KH = IH - KH
                   END IF
-! DITTO REMAINING MESHPOINTS
+C DITTO REMAINING MESHPOINTS
                   CALL DIFRNS(K, NOC, ITER, 1, NE, 30)
                   CALL ELIMN8(1, NE4, NB, N15, N1, NE, K-2)
                   CALL ELIMN8(N1, NE4, NE, 1, N4, N5, K-1)
@@ -214,9 +196,9 @@
             CALL ELIMN8(N2, N16, N3, N15, N4, N5, K-2)
             CALL ELIMN8(N4, N16, N5, 1, N8, N9, K-1)
             CALL ELIMN8(N6, N16, N7, N15, N8, N9, K-1)
-! SOLVE FOR CORRECTIONS AT CENTRAL MESHPOINT
+C SOLVE FOR CORRECTIONS AT CENTRAL MESHPOINT
             CALL DIVIDE(1, N8, N16, N11, N12, K)
-! BY BACK-SUBSTITUTION FIND CORRECTIONS THROUGHOUT
+C BY BACK-SUBSTITUTION FIND CORRECTIONS THROUGHOUT
             NN = 1
 
  60         CONTINUE
@@ -245,7 +227,7 @@
             END IF
 
             DO K = K1, K2
-! Put corrections into first column
+C Put corrections into first column
                   IF ( NEV.NE.0 ) THEN
                         DO I = N2, NV
                               C(K, I, 1) = C(K2+1, I-NB, N14)
@@ -275,7 +257,7 @@
             ERR = 0.0D0
             ERMAX = 0.0D0
             DO J = 1, NV
-! ESTIMATE ACCURACY OF ITERATION
+C ESTIMATE ACCURACY OF ITERATION
                   VX = 0.0D0
 
                   DO K = K1, K2
@@ -303,9 +285,9 @@
             END DO
 
             ERR = ERR/(NV*KMESH)
-!
-! Extra code to reduce FAC when in difficulty.
-!
+*
+* Extra code to reduce FAC when in difficulty.
+*
             IF (KTER .GT. 3 .AND. ERR .GE. 0.99D0*ERRPR) THEN
                   REDUCE = .TRUE.
             END IF
@@ -343,7 +325,7 @@
 
 99002       FORMAT (1X, I2, 2F7.2, 12(I4,F7.4))
 99003       FORMAT (1X, I2, 2F7.2, 12(I4,F7.4),3(/,17X,12(I4,F7.4)))
-! RJS 10/11/02 - Added lines to print out reason for failure
+C RJS 10/11/02 - Added lines to print out reason for failure
             IF ((KTER.LT.6).OR.ITER.GT.30) THEN !NOC.GE.2.AND.
                   IF (ERR.GE.1d-1) THEN
                         ERR = 1d-2
@@ -362,7 +344,7 @@
                   WRITE(32,*) "ERMAX tolerance exceeded in variable ", JMAX
                   WRITE(32,*) "at meshpoint ", KMAX, " ERMAX=", ERMAX
             END IF
-! NaN trap
+C NaN trap
             IF (ERR.NE.ERR) THEN
                   IF (NMOD.NE.SNAFUNMOD) THEN
                         ! Reset snafu counter -- we snafu'd on a new model
@@ -374,18 +356,18 @@
 
 99004             FORMAT(A, I6)
 
-                  IF (SNAFUS.GT.50) THEN
+                  IF (SNAFUS.GT.40) THEN ! JLG lowered SNAFU limit from 50 to 40 to avoid some models getting stuck at the end of their runs. 30-04-25
                         WRITE(*,*) 'Too many SNAFUs... aborting on model number ', NMOD
                         STOP
                   END IF
 
-                  IF (DD.GT.0.1) THEN
+                  IF (DD.GT.1) THEN ! JLG changed DD limit from 0.1 to 1 to prevent medium resolution model's DD from dropping too low to evolve some models quickly. 31-03-25
                         DD = DD / 2.0
                   END IF
 
 99005             FORMAT(A, I2, A)
 
-                  WRITE(32,*) "ERR has become NaN (SNAFU), restarting. ", SNAFUS, "/50."
+                  WRITE(32,*) "ERR has become NaN (SNAFU), restarting. ", SNAFUS, "/40."
 
                   ERR = 1d1
             END IF
@@ -397,7 +379,7 @@
             END IF
 
             IE(9) = IH
-! APPLY CORRECTIONS, SCALED DOWN IF TOO LARGE
+C APPLY CORRECTIONS, SCALED DOWN IF TOO LARGE
             IF (NOC.LE.1) THEN
                   DO I = 1, NV
                         J = ID(I)
@@ -418,9 +400,9 @@
                         END DO
                   END DO
             END IF
-!
-! Don't let the error get too large.
-!
+*
+* Don't let the error get too large.
+*
             JTER = KTER
 
             IF (ERR.LT.EPS.AND.FACSG.NE.1d0) THEN
@@ -428,19 +410,21 @@
                   FACSG = DMIN1(1d0,FACSG)
                   WRITE(32,*) "Error too large -- boosting mixing", FACSG
                   ERR = 1d-3
-! Yes, I know I shouldn't do this, but haven't worked out another way yet
+C Yes, I know I shouldn't do this, but haven't worked out another way yet
                   GO TO 600
             END IF
-! Sort out neutrons once convergence ok
+C Sort out neutrons once convergence ok
             IF (ERR.LT.EPS.AND.NOC.GE.2) THEN
                   CALL NEUTRON(ISTAR)
             END IF
+            
+            TSERR = ERR
 
             IF (ERR .LT. EPS .OR. ERR.GE.1d-1 .OR. ERMAX.GE.1D1) THEN
                   RETURN
             END IF
  200        ERRPR = ERR
-! CONTINUE ITERATING IF NOT YET ACCURATE ENOUGH
+C CONTINUE ITERATING IF NOT YET ACCURATE ENOUGH
       END DO
 
       RETURN

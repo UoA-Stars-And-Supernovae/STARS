@@ -42,7 +42,8 @@
       REAL*8 RAT, RPO, MIXL, OSPIN, PWT, XNE1, BREAK, EQ
       REAL*8 BC3, AP, LQ, R3A, CC, ANG, M0
       REAL*8 OF, GTMA, D, RPN, RCD, ATDATA, AMASS, DMAX1
-      REAL*8 CHI, RGNE, STAR, MIXV, RBP, WT, LEDD
+      REAL*8 CHI, RGNE, STAR, MIXV, RBP, WT, LEDD, ACCDAT1, ACCDAT2
+      REAL*8 SX, OVRFLW1
       INTEGER ITH, IMODE, IB, IX, ISGTH, NMESH, ISGFAC, ION
       INTEGER ISTAR, INF, JIN, JW, IZ, IZZ, K1, IONISE
       INTEGER IAGB, KICZ, K, IBC, KBICZ, INERTI, ICL, IML
@@ -57,18 +58,18 @@
      :     IMO, IDIFF
       COMMON /SODDS / ALPHA, RML, CMG, CSI, CFE, CT(10), AGE, DT, M1,
      :  EC, BM, ANG, CM, MTA, MTB, TM(2), T0, M0, TC(2), OS, AC, RCD,
-     :  RMG, RHL, XF, DR, AK1 ,RMT, AK2, ITH, IX, IY, IZ, IB, ISX(45),
+     :  RMG, RHL, XF, DR, AK1, RMT, AK2, ITH, IX, IY, IZ, IB, ISX(45),
      :  TRB
       COMMON /ATDATA/ DH2(4), CCHI(26,9), OMG(27), AMASS(10), BN(10), IZZ(10)
-! extra common for mesh-spacing
+* extra common for mesh-spacing
       COMMON /PMESH / PMH(2), PME(2), IAGB
       COMMON /STAT2 / AP, ARHO, U, P, RHO, FK, T, SF, ST, ZT, GRADA, CP,
      :                CHI, QP, PR, PG, PF, PT, EN, RPP, R33, R34, RBE, RBP,
      :                RPC, RPN, RPO, R3A, RAC, RAN, RAO, RANE, RCC, RCO,
      :                ROO, RGNE, RGMG, RCCG, RPNG, EX, ENX, EXX(3), AAWT,
      :                AWT, WR(14)
-! NB - if new variables are added, will need to change the WI(n) numbers in the
-! rest of this subroutine. RJS 5/7/06
+C NB - if new variables are added, will need to change the WI(n) numbers in the
+C rest of this subroutine. RJS 5/7/06
       COMMON /INF   / AF, AT, VX16, AM, VX1, VQK, AR, L, VX4, VX12,
      :                VX20, VX14, HORB, HSPIN, VX3, WI(45)
       COMMON /DINF  / DAF, DAT, DX16, DAM, DX1, V1(3), DX4, DX12, DX20,
@@ -86,7 +87,7 @@
       COMMON /WT    / PWT,SIG,MK,MT2,LQP,LKP
       COMMON /MIX   / KBICZ,KICZ
       COMMON /MASLOS/ AIJ(6,5),baseN
-      COMMON /ACCRET/ ACCOMPOS(7,31, 2)
+      COMMON /ACCDAT/ ACCDAT1(6), ACCOMPOS(7,31, 2), ACCDAT2(7)
       COMMON /EVMODE/ IMODE
       COMMON /INERTI/ VI(2)
       COMMON /MONTAG/ MIXV, MIXL
@@ -94,13 +95,15 @@
       COMMON /IONISE/ MSTORE(8,5), MSTORE2(5)
       COMMON /DIFFUS/ D(10), A12(10)
       COMMON /JJEFIX/ PMHfixed(2)
+      COMMON /OVRFLW/ HP, SX(45,MAXMSH+1), OVRFLW1
       DIMENSION XSPEC(6), DDMIX(10), MUXX(6)
 
       CBRT(VX) = DEXP(DLOG(VX)/3.0D0)
       PS(VX) = 0.5D0*(VX+DABS(VX))
       RLOBE(VX) = 0.49D0*VX*VX/(0.6D0*VX*VX+DLOG(1.0D0+VX)) ! VX = q^1/3
+      
       M = DEXP(AM)
-! Check for age of star and also timestep and stop if either too large - JJE - 2/5/2021
+c Check for age of star and also timestep and stop if either too large - JJE - 2/5/2021
       IF(AGE.GE.1d15) THEN
             WRITE(*,*) "Age of star beyond 1000 TYrs - Stopping - ", AGE
             STOP
@@ -110,18 +113,18 @@
             WRITE(*,*) "DT in years is over 1 Tyrs - stopping", DT/CSECYR
             STOP
       ENDIF
-! Spin period to equns - this isn't the best way of doing this...
+C Spin period to equns - this isn't the best way of doing this...
       BCHSPIN = HSPIN
-! Compute binary mass if in binary mode
+C Compute binary mass if in binary mode
       IF (IMODE.EQ.2) THEN
             BM = M + DEXP(WI(4))
       END IF
       VM3 = CBRT(M)
-! Pierre's mass mod.
+C Pierre's mass mod.
       MT = (M - DEXP(AM-DAM))/DT
-!      MT = M*DAM/DT
+C      MT = M*DAM/DT
       MT2 = MT
-! set up the composition variables
+C set up the composition variables
       XH = VX1
       XHE = VX4
       XC = VX12
@@ -132,29 +135,27 @@
       XSI = CSI*ZS
       XFE = CFE*ZS
       XHE3 = VX3
-! Put everything else in Mg24.
+* Put everything else in Mg24.
       XMG = 1.0D0 - XH - XHE - XC - XO - XNE - XN - XSI - XFE - XHE3
       XMG = DMAX1(XMG, 0.0D0)
-! following if N14 is a variable rather than Ne20:
-!      XNE = 1.0D0 - XH - XHE - XC - XN - XO - XMG - XSI - XFE
-!      IF (XNE .LT. 0.0D0) XNE = 0.0D0
+* following if N14 is a variable rather than Ne20:
+C      XNE = 1.0D0 - XH - XHE - XC - XN - XO - XMG - XSI - XFE
+C      IF (XNE .LT. 0.0D0) XNE = 0.0D0
       CALL STATEL (I, AF, AT, ISTAR)
 
       R = DEXP(AR)
       R2 = R*R
       R2M = 2.0D0/(PI4*RHO*R)
-! pressure gradient equation; gravity corrected for corotation
-! ANGMOM is the orbital angular momentum
+C pressure gradient equation; gravity corrected for corotation
+C ANGMOM is the orbital angular momentum
       GRAV = 1.0D11*CG*M/R2
-      SILLYM = DMAX1(M,0.95D0*TM(ISTAR))
       IF (IB.NE.1) THEN
             FDT = AGE*3.1557D7+DT-T0
             M1 = M0-PS(-FDT)*MTA+PS(FDT)*MTB
       END IF
 
-      SEP = BM*(ANG/(SILLYM*(BM-SILLYM)))**2
-! Angular momentum in G=1 units, according to RPC
-! Replacing old separation with new one based on eigenvalue HORB
+C Angular momentum in G=1 units, according to RPC
+C Replacing old separation with new one based on eigenvalue HORB
       IF (ISTAR.EQ.2) THEN
             HORB = WI(13)
       END IF
@@ -164,10 +165,10 @@
       ELSE
             SEP = BM*(HORB/(TM(1)*(BM - TM(1))))**2.0
       END IF
-!     GRAV = GRAV - GRAV*BM*R*R2/(1.5D0*M*SEP**3)
-! gravity corrected for rotation
+*     GRAV = GRAV - GRAV*BM*R*R2/(1.5D0*M*SEP**3)
+C gravity corrected for rotation
       OSPIN = (H(14+15*(ISTAR - 1),1) + DH(14+15*(ISTAR - 1),1))/VI(ISTAR)
-! Need to mess about with units to get this right
+C Need to mess about with units to get this right
       OSPIN = OSPIN*SQRT(CG) ! now in s^-1
       GRAV = GRAV - 1d11*2.0/3.0*OSPIN**2.0*R
 
@@ -180,12 +181,12 @@
       END IF
 
       APM = -1.0D11*GRAV/(PI4*R2*P)
-! temperature gradient equation
+C temperature gradient equation
       GRADR = 1.0D11*FK*P*L/(4.0D0*PI4*CC*GRAV*R2*PR)
       DG = GRADR - GRADA
       S2 = GRADA*CP*T
       HP = P/(GRAV*RHO)
-! mixing-length theory
+C mixing-length theory
       W0 = 0.5D0*S2*(ALPHA*ALPHA*HP/(9.0D0*CHI))**2
       W2 = 546.75D0*W0*DMAX1(0.0D0,DG) + 73.0D0
       W3 = CBRT(W2+DSQRT(W2*W2+12167.0D0))
@@ -198,7 +199,7 @@
       IF (DG.LT.0d0) THEN
             MIXV = 0d0
       END IF
-! if GRADR < GRADA, we get WCV = 0 and GRADT = GRADR
+C if GRADR < GRADA, we get WCV = 0 and GRADT = GRADR
       IF (KBICZ.GT.600.AND.K.GT.KBICZ.AND.IAGB.EQ.1) THEN
             WCV = 0d0
       END IF
@@ -206,9 +207,9 @@
       GRADT = GRADR-4.0D0*HP*WCV**3/(ALPHA*S2*CHI)
       GTMA = GRADT - GRADA
       ATM = GRADT*APM
-! Old MSF 2000
-      IOLD = 0 ! Uhhhhhh....
-      IF (IOLD.EQ.1 .OR. IMODE.EQ.1) THEN
+C Old MSF 2000
+      IOLD = 0
+      IF (IOLD.EQ.1) THEN ! IMODE=1 no longer uses the old function - JG 04-04-25
             CT1 = 1.0D1**(1.0D1*CT(1)) !!! should change input format !!!
 
             VP = CT(4)*AP + CT(5)*LOG((P+CT(9))/(P+CT1))
@@ -228,8 +229,8 @@
                   !this is a JJ fix to avoid problems when removing hydrogen envelope
             END IF
 
-!           CT(5) = 0.15
-!           CT(2) = 0.0
+C            CT(5) = 0.15
+C            CT(2) = 0.0
 
             VP = CT(4)*AP + CT(5)*LOG(P+CP3) +   CT(2)*LOG(P+CP1)
      &                  + CT(2)*LOG(P+CP2)
@@ -242,7 +243,7 @@
 
       VT = CT(7)*DLOG(T/(T+CT10))
       VTT = CT(7)*CT10/(T+CT10)
-! mesh spacing equation, with modified pressure, temperature gradient equations
+C mesh spacing equation, with modified pressure, temperature gradient equations
 
       IF (IAGB.EQ.1) THEN
             CP1 = CT(1)*PME(ISTAR)
@@ -258,7 +259,7 @@
             VTT = CT(7)*CT10/(T+CT10)
       END IF
 
-! VR and VM must go to zero at centre like r**2, m**(2/3)
+C VR and VM must go to zero at centre like r**2, m**(2/3)
       VM = CT(6)*CBRT(TM(ISTAR)*TM(ISTAR))
       VMM = VM + VM3*VM3
       VM = DLOG(VM/VMM)
@@ -267,7 +268,7 @@
       R21 = (3D0*M/(PI4*RHO))**(2D0/3D0)
       VR1 = -CT(3)*DLOG(R21/CT(8)+1.0D0)
       VRR = -CT(3)/(R2+CT(8))
-! Q is the quantity that the meshpoints should be at equal intervals of
+C Q is the quantity that the meshpoints should be at equal intervals of
       Q = VP + VT + VM + VR
       QK = VQK
       QM = VPP*APM + VTT*ATM + VMM + VRR*R2M
@@ -278,16 +279,16 @@
       VRK = VRR*R2M*MK
       WT = 1D-7*R2*CHI*DT/(VRK*VRK)
       PWT = WT
-! energy equation
+C energy equation
       VL = L
       EN = EN + ENX
-! assume thermal eq. in central region if timestep small
-!      ITHC = ITH
-!      IF(K.GT.19*NMESH/20 .AND. DT .LT. 1D-1*CSECYR) ITHC = 0
-!      LK = (EX + EN + EC - ITHC*T*(SF*DAF+ST*DAT)/DT)*MK
-!      LQ = ITHC*CP*T*APM*MK
-! weight by a function of WT that drops from 1 to 0 for WT between 10^10
-! and 10^9
+*** assume thermal eq. in central region if timestep small
+*      ITHC = ITH
+*      IF(K.GT.19*NMESH/20 .AND. DT .LT. 1D-1*CSECYR) ITHC = 0
+*      LK = (EX + EN + EC - ITHC*T*(SF*DAF+ST*DAT)/DT)*MK
+*      LQ = ITHC*CP*T*APM*MK
+*** weight by a function of WT that drops from 1 to 0 for WT between 10^10
+*** and 10^9
       IF (K.GT.39*NMESH/40) THEN
             AWT = 2D-16*R2*CHI*DT/(R2M*MK)**2
             AWT = 2D-15*R2*CHI*DT/(R2M*MK)**2
@@ -303,46 +304,46 @@
       LQ = ITH*CP*T*APM*MK
       LQP = CP*T*APM*GTMA
       L1 = M*(EX + EN + EC - ITH*T*(SF*DAF+ST*DAT)/DT)
-! radius equation
+C radius equation
       R2K = MK/(0.5D0*PI4*RHO*R)
-! composition equations
-! simplified to exclude reactions involving Mg24
-! hydrogen equation with MS baryon correction when ICN = 1
+C composition equations
+* simplified to exclude reactions involving Mg24
+C hydrogen equation with MS baryon correction when ICN = 1
       X1 = VX1
-!      X1T = (2.0*IX*((1-ICN)*RPP + RPC + RPNG + (1-2*ICN)*(RPN + RPO))
+*      X1T = (2.0*IX*((1-ICN)*RPP + RPC + RPNG + (1-2*ICN)*(RPN + RPO))
       X1T = (IX*((1-ICN)*RPP*3 + RPC*2 + RPNG*2 - R33*2 + R34 + 2*(1-2*ICN)*(RPN + RPO))
      :                         + DX1/DT)*MK
-!     x1t = (-5d-7*(0.76d0-x1)/csecyr + dx1/dt)*mk
-! helium equation
+*     x1t = (-5d-7*(0.76d0-x1)/csecyr + dx1/dt)*mk
+C helium equation
       X4 = VX4
-!      X4T = (4.0*(-IX*(0.5*RPP + RPN + RPO)*(1-ICN)
+*      X4T = (4.0*(-IX*(0.5*RPP + RPN + RPO)*(1-ICN)
       X4T = (4.0*(-IX*(RPN + RPO + R33 +R34)*(1-ICN)
-!     :     + IY*(3.0*R3A + RAC + 1.5*RAN + RAO + RANE)
-!     :     - IZ*(RCC + RCO + 2.0*ROO + RGNE + RGMG)) + DX4/DT)*MK
+*     :     + IY*(3.0*R3A + RAC + 1.5*RAN + RAO + RANE)
+*     :     - IZ*(RCC + RCO + 2.0*ROO + RGNE + RGMG)) + DX4/DT)*MK
      :                     + IY*(3.0*R3A + RAC + 1.5*RAN + RAO)
      :                     - IZ*(RCC + RGNE)) + DX4/DT)*MK
-!     x4t = (5d-7*(0.76-x1)/csecyr + dx4/dt)*mk
-! carbon equation
+*     x4t = (5d-7*(0.76-x1)/csecyr + dx4/dt)*mk
+C carbon equation
       X12 = VX12
       X12T = (12.0*(IX*(RPC - RPN) - IY*(R3A - RAC)
-!     :            + IZ*(2.0*(RCC + RCCG) + RCO)) + DX12/DT)*MK
+C     :            + IZ*(2.0*(RCC + RCCG) + RCO)) + DX12/DT)*MK
      :                      + IZ*2.0*RCC) + DX12/DT)*MK
-! nitrogen equation
+C nitrogen equation
       X14 = VX14
       X14T = (14.0*(IX*(RPN + RPNG - RPC - RPO) + IY*RAN) + DX14/DT)*MK
-! oxygen equation
+C oxygen equation
       X16 = VX16
       X16T = (16.0*(IX*(RPO - RPNG) - IY*(RAC - RAO)
-!     :            + IZ*(RCO + 2.0*ROO - RGNE)) + DX16/DT)*MK
+*     :            + IZ*(RCO + 2.0*ROO - RGNE)) + DX16/DT)*MK
      :                      - IZ*RGNE) + DX16/DT)*MK
-! neon equation
+C neon equation
       X20 = VX20
-!      X20T = (20.0*(IY*(RANE - RAN - RAO) + IZ*(RGNE - RGMG - RCC))
+*      X20T = (20.0*(IY*(RANE - RAN - RAO) + IZ*(RGNE - RGMG - RCC))
       X20T = (20.0*(-IY*(RAN + RAO) + IZ*(RGNE - RCC)) + DX20/DT)*MK
-! He3 equation
+C He3 equation
       X3 = VX3
       X3T = (3.0*(-IX*RPP+IX*(2d0*R33+R34))+DX3/DT)*MK
-! fudged convective diffusion coefficient: OS > 0 gives overshooting
+C fudged convective diffusion coefficient: OS > 0 gives overshooting
       B = PR/PG
       AMAP=0.1D0/DABS(APM*M)
       EG = DG+OS/(2.5D0+B*(2.0D1+1.6D1*B))/(AMAP+1.0D0)
@@ -357,7 +358,7 @@
       END IF
 
       SIG = SG
-! modified diffusion coefficient according to MLT
+C modified diffusion coefficient according to MLT
       SGMLT = (WL*1.0D-22*(PI4*RHO*R2)**2)/(3.0*MK)
       VG = UG/GRADR
 
@@ -374,10 +375,10 @@
       IF (KBICZ.GT.600.AND.K.GT.KBICZ.AND.IAGB.EQ.1) THEN
             SG = 0d0
       END IF
-! Mixing fudge
+C Mixing fudge
       SG = FACSG*SG
-! Compute mean molecular weight, inc. for partial ionisation
-! Should have IOP equal to 5
+C Compute mean molecular weight, inc. for partial ionisation
+C Should have IOP equal to 5
       XH1 = H(5+15*(ISTAR - 1),K)
       XHE1 =  H(9+15*(ISTAR - 1),K)
       XC1 =  H(10+15*(ISTAR - 1),K)
@@ -399,7 +400,7 @@
             DO JJ = 1, IZZ(II)
                   MUX = MUX + JJ*MSTORE(JJ,II)/MSTORE2(II)
             END DO
-! Store mu of each species
+C Store mu of each species
             MUXX(II) = 1/(MUX/AMASS(II))
 
             IF (II.EQ.2) THEN
@@ -407,7 +408,7 @@
             END IF
 
             LKP = LKP + MUX*XSPEC(II)/AMASS(II)
-! pretend He3 is like He4...
+C pretend He3 is like He4...
             IF (II.EQ.2) THEN
                   LKP = LKP + MUX*XSPEC(6)/AMASS(10)
             END IF
@@ -416,15 +417,15 @@
       LKP = 1/LKP
       MU = LKP
       MUREAL = MU
-! diffusion requires the use of the actual mu, not one based on full
-! ionisation. Note that it is the actual mu that is passed to printb
-! Need to test what this does to the TH boundary output stuff...
+C diffusion requires the use of the actual mu, not one based on full
+C ionisation. Note that it is the actual mu that is passed to printb
+C Need to test what this does to the TH boundary output stuff...
       IF (IDIFF.EQ.1) THEN
-! Paquette diffusion stuff
+C Paquette diffusion stuff
             CALL DIFFUSION(RHO,T)
 
             DO II = 1, 10
-! can't diffuse through H if we don't have any...
+C can't diffuse through H if we don't have any...
                   IF (XH.LT.0.1) THEN
                         D(II) = 0d0
                   END IF
@@ -475,14 +476,14 @@
             MU = 1.0/(2.0*XH1 + 0.75*XHE1 + 7.0/12.0*XC1 + 8.0/14.0*XN1 + 9.0/16.0*XO1
      :                        + 11.0/20.0*XNE1 + XHE31)
             ! + 13.0/24.0*XMG + 15.0/28.0*XSI + 27.0/56.0*XFE)
-! Full implicit mu -- is much less stable!
-!           MU = 1.0/(2.0*XH + 0.75*XHE + 7.0/12.0*XC + 8.0/14.0*XN + 9.0/16.0*XO
-!     :                      + 11.0/20.0*XNE + XHE3) ! + 13.0/24.0*XMG + 15.0/28.0*XSI + 27.0/56.0*XFE)
+C Full implicit mu -- is much less stable!
+C           MU = 1.0/(2.0*XH + 0.75*XHE + 7.0/12.0*XC + 8.0/14.0*XN + 9.0/16.0*XO
+C     :                      + 11.0/20.0*XNE + XHE3) ! + 13.0/24.0*XMG + 15.0/28.0*XSI + 27.0/56.0*XFE)
             CHI1 = 4.0D0*CC*PR/(FK*RHO*RHO*CP*T)
             DTH = 3.0D0*CHI1/(MU*(-GTMA)*APM*MK)
             DTH = DMAX1(0d0,DTH)
             SGTH = SGTHFAC*DTH*1.0D-22*(PI4*R2*RHO)**2/MK
-!     IF (XHE31.LT.1d-12.AND.K.LT.400) SGTH = 0d0
+C     IF (XHE31.LT.1d-12.AND.K.LT.400) SGTH = 0d0
             IF (K.LE.4) THEN
                   SGTH = 0d0
             END IF
@@ -491,8 +492,8 @@
       END IF
 
       MT2 = SGTH
-! the outermost 25 meshpoints are always mixed, even if not convective;
-!      IF ( K.LT.5 ) SG = TC(ISTAR)/(QM*QK)
+C the outermost 25 meshpoints are always mixed, even if not convective;
+C      IF ( K.LT.5 ) SG = TC(ISTAR)/(QM*QK)
       IF ( K.LT.0.03*NMESH ) THEN
             SG = 1d2*TC(ISTAR)/(QM*QK)
       END IF
@@ -501,7 +502,7 @@
       END IF
 
       IF ( I.LE.0 ) THEN
-! sundry numbers for PRINTB, FUNCS2
+C sundry numbers for PRINTB, FUNCS2
             ETH = -T*(SF*DAF+ST*DAT)/DT + CP*T*APM*GTMA*MT
             EGR = 1.0D22*CG*M/R - U
             LEDD = PI4*CC*CG*M/FK
@@ -512,30 +513,31 @@
             DO J = 1,14
                   HT(4+J, K, ISTAR) = XW(J)
             END DO
-! Store thermohaline stuff
+C Store thermohaline stuff
             HT(19, K, ISTAR) = SGTH
             HT(20, K, ISTAR) = MU
-! Store temp and ln f
+C Store temp and ln f
             HT(21, K, ISTAR) = AF
             HT(22, K, ISTAR) = AT
-! HT(23-24,K) are for mass loss, computed in massloss.f
-! Store diffusion coeff related stuff
+C HT(23-24,K) are for mass loss, computed in massloss.f
+C Store diffusion coeff related stuff
             HT(25, K, ISTAR) = GRAV/(CR(1)*T)
             HT(26, K, ISTAR) = 1.0D-11*(PI4*RHO*R2)
             HT(27, K, ISTAR) = MUREAL
             HT(28, K, ISTAR) = ATM
       END IF
-! Calc RLF for printb - only if I=-1
+C Calc RLF for printb - only if I=-1
       IF (K.EQ.1 .AND. I.EQ.-1) THEN
-! surface boundary conditions
+C surface boundary conditions
             IF (IMODE.EQ.2) THEN
                   BM = TM(1) + TM(2)
             END IF
 
             RAT = M/(BM-M)
             RLF = AR - DLOG(SEP*RLOBE(CBRT(RAT)))
-            IF (AGE.LT.1d4) THEN
-                  RLF = -1d-1
+C Updated to vary with primary mass and for age condition to match massloss - JLG 17/09/2025
+            IF (AGE.LT.1d3) THEN
+                  RLF = -1d1/(M/MSUN)**2 ! -1d-1
             END IF
       END IF
 

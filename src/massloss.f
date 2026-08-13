@@ -1,22 +1,22 @@
-!
-! ░▒▓██████████████▓▒░ ░▒▓██████▓▒░ ░▒▓███████▓▒░▒▓███████▓▒░░▒▓█▓▒░      ░▒▓██████▓▒░ ░▒▓███████▓▒░▒▓███████▓▒░
-! ░▒▓█▓▒░░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░     ░▒▓█▓▒░       ░▒▓█▓▒░     ░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░     ░▒▓█▓▒░
-! ░▒▓█▓▒░░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░     ░▒▓█▓▒░       ░▒▓█▓▒░     ░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░     ░▒▓█▓▒░
-! ░▒▓█▓▒░░▒▓█▓▒░░▒▓█▓▒░▒▓████████▓▒░░▒▓██████▓▒░░▒▓██████▓▒░ ░▒▓█▓▒░     ░▒▓█▓▒░░▒▓█▓▒░░▒▓██████▓▒░░▒▓██████▓▒░
-! ░▒▓█▓▒░░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░      ░▒▓█▓▒░     ░▒▓█▓▒░░▒▓█▓▒░     ░▒▓█▓▒░░▒▓█▓▒░      ░▒▓█▓▒░     ░▒▓█▓▒░
-! ░▒▓█▓▒░░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░      ░▒▓█▓▒░     ░▒▓█▓▒░░▒▓█▓▒░     ░▒▓█▓▒░░▒▓█▓▒░      ░▒▓█▓▒░     ░▒▓█▓▒░
-! ░▒▓█▓▒░░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░▒▓███████▓▒░▒▓███████▓▒░ ░▒▓████████▓▒░▒▓██████▓▒░░▒▓███████▓▒░▒▓███████▓▒░
-!
-!     The following ML routines are currently implemented:
-!           IML = 0: No mass loss
-!           IML = 1: Reimers
-!           IML = 2: Blocker
-!           IML = 3: Vassiladis & Wood
-!           IML = 4: de Jager, Vink (broken)
-!           IML = 5: de Jager, Vink
-!           IML = 6: de Jager, Vink (slowly turning on WR rates)
-!           IML = 7: de Jager, Vink (no WR rates)
-!           IML = 9: Eldridge (evolve to target mass loss; ZAMS only)
+C
+C ░▒▓██████████████▓▒░ ░▒▓██████▓▒░ ░▒▓███████▓▒░▒▓███████▓▒░░▒▓█▓▒░      ░▒▓██████▓▒░ ░▒▓███████▓▒░▒▓███████▓▒░
+C ░▒▓█▓▒░░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░     ░▒▓█▓▒░       ░▒▓█▓▒░     ░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░     ░▒▓█▓▒░
+C ░▒▓█▓▒░░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░     ░▒▓█▓▒░       ░▒▓█▓▒░     ░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░     ░▒▓█▓▒░
+C ░▒▓█▓▒░░▒▓█▓▒░░▒▓█▓▒░▒▓████████▓▒░░▒▓██████▓▒░░▒▓██████▓▒░ ░▒▓█▓▒░     ░▒▓█▓▒░░▒▓█▓▒░░▒▓██████▓▒░░▒▓██████▓▒░
+C ░▒▓█▓▒░░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░      ░▒▓█▓▒░     ░▒▓█▓▒░░▒▓█▓▒░     ░▒▓█▓▒░░▒▓█▓▒░      ░▒▓█▓▒░     ░▒▓█▓▒░
+C ░▒▓█▓▒░░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░      ░▒▓█▓▒░     ░▒▓█▓▒░░▒▓█▓▒░     ░▒▓█▓▒░░▒▓█▓▒░      ░▒▓█▓▒░     ░▒▓█▓▒░
+C ░▒▓█▓▒░░▒▓█▓▒░░▒▓█▓▒░▒▓█▓▒░░▒▓█▓▒░▒▓███████▓▒░▒▓███████▓▒░ ░▒▓████████▓▒░▒▓██████▓▒░░▒▓███████▓▒░▒▓███████▓▒░
+C
+C     The following ML routines are currently implemented:
+C           IML = 0: No mass loss
+C           IML = 1: Reimers
+C           IML = 2: Blocker
+C           IML = 3: Vassiladis & Wood
+C           IML = 4: de Jager, Vink (broken)
+C           IML = 5: de Jager, Vink
+C           IML = 6: de Jager, Vink (slowly turning on WR rates)
+C           IML = 7: de Jager, Vink (no WR rates)
+C           IML = 9: Eldridge (evolve to target mass loss; ZAMS only)
 
       SUBROUTINE MASSLOSS(I, ML1, ML2, BCHORB, BCHSPIN1, BCHSPIN2)
 
@@ -35,7 +35,7 @@
       REAL*8 CT, M1, MASLOS, ZML2, AIJ, MENV, FCONV, AK2
       REAL*8 CR, E2, PI4, GT, GRADT, CSI, WINDS, DR
       REAL*8 HORB, LSUN, OSC, A, XHE, STATUS, PEROID, RE
-      REAL*8 EVMODE, FAKEWIND, BCHORB, CBRT, CEE, RAT, TM, STEFBOLTZ
+      REAL*8 EVMODE, RLOFML, BCHORB, CBRT, CEE, RAT, TM, STEFBOLTZ
       REAL*8 EPS, DINF, VI, VEXP, LE, DACOS, TKH, OSPIN
       REAL*8 T, OORB, ENVELOPE, DKT, XF, OP, ALPHA, EQ
       REAL*8 DLOG10, CD, CM, DH0, RML, T0, ZML1
@@ -48,7 +48,9 @@
       REAL*8 BCHSPIN1, EC, R2O, DMOMINER, TF, VROT2, MSUN, HTF
       REAL*8 ACCLIMIT, SURFXHE, LOG10, ZS, RMT, XC, LT
       REAL*8 LEDD, TRANS, DG, SODDS, WINDACC, PS, DEXP, AK1
-      REAL*8 QQ, AC, COREXH
+      REAL*8 QQ, AC, COREXH, RMLEDD, RLOFACC, TSERR, ACCQ, WINDRMLEDD, RLOFRMLEDD
+      REAL*8 F3, KOLBML
+      REAL*8 RLFcheck1, RLFcheck2
 
       INTEGER JIN, J2, JW, IZ, ITH, IML, IRS1, IMODE
       INTEGER IMO, ICEPR, ISX, IB, ICN, IX, ICE, IOP
@@ -57,6 +59,7 @@
       INTEGER INERTI, ICL, N2, ICEP, ISTAR, IVMC, ISTAROTHER, IACC
       INTEGER INF, IDET, IVMS, IVARACC, IMLWR
       INTEGER MAXMSH
+      INTEGER WINDMODE, RLOFMODE, RMTMODE
 
       PARAMETER (MAXMSH = 2000)
 
@@ -73,155 +76,150 @@
       COMMON /OP    / ZS, LEDD, MM, DG, GRADT, ETH, RRLF, EGR, RR, Q
       COMMON /MASLOS/ AIJ(6,5), baseN
       COMMON /CNSTS / CPI, PI4, CLN10, CA, CB, CC, CD, CG, CR(2), CEVB,
-     &                CEN, CPL, CMEVMU, CSECYR, LSUN, MSUN, RSUN,
-     &                TSUNYR, STEFBOLTZ
+     &                CEN, CPL, CMEVMU, CSECYR, LSUN, MSUN, RSUN, TSUNYR,
+     &                STEFBOLTZ
       COMMON /EVMODE/ IMODE
-      COMMON /CEE   / MHC(2), MENVC(2), DSEP, ICE, ICEP, ALPHACE
+      COMMON /CEE   / MHC(2), MENVC(2), SEP, DSEP, ICE, ICEP, ALPHACE
       COMMON /MESH  / TRC1,TRC2,DD,DT1,DT2,MWT,MWTS,IVMC,IVMS
       COMMON /INERTI/ VI(2)
       COMMON /ANGMOM/ VROT1, VROT2, FMAC, FAM, IRAM, IRS1, IRS2
-      COMMON /WINDS / WINDML(2), FAKEWIND(2), BE
+      COMMON /ACCDAT/ MT(2), ML(2), WINDML(2), WINDACC(2), RLOFML(2),
+     :                RLOFACC(2), BE, WINDRMLEDD, RLOFRMLEDD
       COMMON /TIDES / MENV(2), RENV(2)
 
       COMMON /ZAMS  / TKH(2)
       COMMON /STATUS/ IDET, IMERGE
       COMMON /MISC  / NMOD
       COMMON /VARACC/ IVARACC, IMLWR
+      COMMON /ACCMOD/ WINDMODE, RLOFMODE, RMTMODE
 
       COMMON /COREAB/ COREXH(2)
+      COMMON /JJTIME/ RLFcheck1,RLFcheck2 !!!JJE's new timestep check - 11/12/2023
 
-      DIMENSION T(2), AM(2), M(2), MT(2), AR(2), R(2), DAR(2), L(2),
-     :     XH(2), XHE(2), XC(2), XO(2), HSPIN(2), DHSPIN(2), ML(2),
-     :     RAT(2), RLF(2), DAM(2), WINDACC(2), MOMINER(2),
-     :     BCHSPIN(2), DMOMINER(2), HSPINDT(2), R2O(2), TF(2), HTF(2),
-     :     HSTF(2), OSPIN(2), ACCLIMIT(2), OSC(2), CNTRXH(2)
+      DIMENSION T(2), AM(2), M(2), AR(2), R(2), DAR(2), L(2), XH(2),
+     :     XHE(2), XC(2), XO(2), HSPIN(2), DHSPIN(2),! ML(2),
+     :     RAT(2), RLF(2), DAM(2), MOMINER(2),
+     :     BCHSPIN(2), DMOMINER(2), HSPINDT(2), R2O(2), TF(2), HTF(2), HSTF(2),
+     :     OSPIN(2), ACCLIMIT(2), OSC(2), CNTRXH(2)
 
       CBRT(VX) = DEXP(DLOG(VX)/3.0D0)
       PS(VX) = 0.5D0*(VX+DABS(VX))
       RLOBE(VX) = 0.49D0*VX*VX/(0.6D0*VX*VX+DLOG(1.0D0+VX))
 
 
-! Set important variables into convenient pairs and calculate other
-! necessary quantities
+C Set important variables into convenient pairs and calculate other
+C necessary quantities
       DO ISTAR = 1,IMODE
-            T(ISTAR) = DEXP(VIN(2+15*(ISTAR - 1)))                      ! Temperature
-            AM(ISTAR) = VIN(4+15*(ISTAR - 1))                           ! Log of mass
-            DAM(ISTAR) = DVIN(4+15*(ISTAR - 1))                         ! Change in log of mass from last iteration
-            M(ISTAR) = DEXP(AM(ISTAR))                                  ! Mass
-            MT(ISTAR) = (M(ISTAR) - DEXP(AM(ISTAR) - DAM(ISTAR)))/DT    ! Change in mass
-            AR(ISTAR) = VIN(7+15*(ISTAR - 1))                           ! Log of radius
-            R(ISTAR) = DEXP(AR(ISTAR))                                  ! Radius
-            DAR(ISTAR) = DVIN(7+15*(ISTAR - 1))                         ! change in log radius
-            L(ISTAR) = VIN(8+15*(ISTAR - 1))                            ! Luminosity
-            XH(ISTAR) = VIN(5+15*(ISTAR - 1))                           ! Hydrogen abundance
-            CNTRXH(ISTAR) = H(5+15*(ISTAR - 1), NMESH)                  ! Central hydrogen abundance
-            XHE(ISTAR) = VIN(9+15*(ISTAR - 1))                          ! Helium abundance
-            XC(ISTAR) = VIN(10+15*(ISTAR - 1))                          ! Carbon abundance
-            XO(ISTAR) = VIN(3+15*(ISTAR - 1))                           ! Oxygen abundance
-            HSPIN(ISTAR) = VIN(14+15*(ISTAR - 1))                       ! spin angular momentum
-            DHSPIN(ISTAR) = DVIN(14+15*(ISTAR - 1))                     ! change in spin angular momentum
+            T(ISTAR) = DEXP(VIN(2+15*(ISTAR - 1)))
+            AM(ISTAR) = VIN(4+15*(ISTAR - 1))
+            DAM(ISTAR) = DVIN(4+15*(ISTAR - 1))
+            M(ISTAR) = DEXP(AM(ISTAR))
+            MT(ISTAR) = (M(ISTAR) - DEXP(AM(ISTAR) - DAM(ISTAR)))/DT
+            AR(ISTAR) = VIN(7+15*(ISTAR - 1))
+            R(ISTAR) = DEXP(AR(ISTAR))
+            DAR(ISTAR) = DVIN(7+15*(ISTAR - 1))
+            L(ISTAR) = VIN(8+15*(ISTAR - 1))
+            XH(ISTAR) = VIN(5+15*(ISTAR - 1))
+            CNTRXH(ISTAR) = H(5+15*(ISTAR - 1), NMESH)
+            XHE(ISTAR) = VIN(9+15*(ISTAR - 1))
+            XC(ISTAR) = VIN(10+15*(ISTAR - 1))
+            XO(ISTAR) = VIN(3+15*(ISTAR - 1))
+            HSPIN(ISTAR) = VIN(14+15*(ISTAR - 1))
+            DHSPIN(ISTAR) = DVIN(14+15*(ISTAR - 1))
       END DO
 
-      HORB = VIN(13)                                                    ! orbital angular momentum
-      DHORB = DVIN(13)                                                  ! change in orbital angular momentum
+      HORB = VIN(13)
+      DHORB = DVIN(13)
 
-! Work out the total mass
       IF (IMODE.EQ.2) THEN
          BM = M(1) + M(2)
       ELSE
          M(2) = BM - M(1)
       END IF
 
-! Kepler's Third Law for separation
       SEP = (M(1)+M(2))*(HORB/(M(1)*M(2)))**2.0
-! Orbital angular velocity
+C Orbital angular velocity
       OORB = HORB*BM/(M(1)*M(2)*SEP**2.0)
-! surface boundary conditions
+C surface boundary conditions
       DO ISTAR = 1, IMODE
             IF (ISTAR.EQ.1) THEN
                   ISTAROTHER = 2
             ELSE
                   ISTAROTHER = 1
             END IF
-
-            RAT(ISTAR) = M(ISTAR)/M(ISTAROTHER)                         ! Mass ratio
-            RLF(ISTAR) = AR(ISTAR) - DLOG(SEP*RLOBE(CBRT(RAT(ISTAR))))  ! Roche lobe overflux
-! Fudge to avoid pre-MS RLOF
+            RAT(ISTAR) = M(ISTAR)/M(ISTAROTHER)
+            RLF(ISTAR) = AR(ISTAR) - DLOG(SEP*RLOBE(CBRT(RAT(ISTAR))))
+C FUDGE TO AVOID PRE-MS RLOF -- Is this still needed with the new version of RLOF?
+C Updated to vary with primary mass - JLG 05/06/2025
             IF (AGE.LT.1d3) THEN
-                  RLF(ISTAR) = -1d-1
+                  RLF(ISTAR) = -1d1/(M(1)/MSUN)**2 ! -1d-1
             END IF
-! Save RLF data for use in funcs2
+            IF(ISTAR.EQ.1) RLFcheck1=RLF(ISTAR)     !JJE addition to fixed problems of RLFing in funcs1+massloss
+            IF(ISTAR.EQ.2) RLFcheck2=RLF(ISTAR)     !JJE addition to fixed problems of RLFing in funcs1+massloss
+C Save RLF data for use in funcs2
             HT(24, 1, ISTAR) = RLF(ISTAR)
-! Different surface mass bc for *1 or *2 of binary
+C Different surface mass bc for *1 or *2 of binary
             IF (IB.EQ.1) THEN
-! Select mass loss - RJS 24/6/03
+C Select mass loss - RJS 24/6/03
                   IF (IML(ISTAR).EQ.0) THEN
                         BC1 = 0d0
                   ELSE IF (IML(ISTAR).EQ.1) THEN
                         BC1 = RML*L(ISTAR)*R(ISTAR)/M(ISTAR)
                   ELSE IF (IML(ISTAR).EQ.2) THEN
                         BC1 = RML*L(ISTAR)*R(ISTAR)/M(ISTAR)
-! Convert Reimers to Blocker mass loss
-! need to sort out how to do M_ZAMS = 1.5
-                        BC1 = 4.83d-9*(1.5d0)**(-2.1)
-     :                      * (L(ISTAR)/LSUN)**2.7*BC1
+C Convert Reimers to Blocker mass loss - need to sort out how to do M_ZAMS = 1.5
+                        BC1 = 4.83d-9*(1.5d0)**(-2.1)*(L(ISTAR)/LSUN)**2.7*BC1
                   ELSE IF (IML(ISTAR).EQ.3) THEN
-                        PERIOD = -2.07 + 1.94*DLOG10(1.4577*R(ISTAR))
-     :                         - 0.9*DLOG10(M(ISTAR)/2.0)
-
-                        PERIOD = 10**PERIOD
-                        BC1 = 10**(-11.4 + 0.0123*PERIOD)               ! eqn(2) of V&W....
+                        PERIOD = -2.07 + 1.94*DLOG10(1.4577*R(ISTAR)) - 0.9*DLOG10(M(ISTAR)/2.0)
+                        PEROID = 10**PERIOD
+                        BC1 = 10**(-11.4 + 0.0123*PERIOD)
                         BC1 = MSUN/CSECYR * BC1
                         WIND = BC1
-! Superwind, limited to vexp = 15 km/s for P -> 500 days
-! and capped from below at 3 km/s
-! See eqn(3) of V&W 1993
-                        VEXP = DMAX1(3.0d0, DMIN1(15d0,
-     :                                            -13.5d0+5.6d-2*PERIOD))
+C Superwind, limited to vexp = 15 kms^-1 for P=>500 days
+C            VEXP = DMAX1(15d0,-13.5d0+5.6d-2*PERIOD)
+                        VEXP = DMAX1(3.0d0,DMIN1(15d0,-13.5d0+5.6d-2*PERIOD))
                         SWIND = L(ISTAR)*1d26/(CC*1d-2*VEXP*1d3)
-
+C            SWIND = 2d-12*CSECYR/(MSUN*1d30)*SWIND
                         SWIND = SWIND/(MSUN*1d30)
-
                         BC1 = DMIN1(BC1,SWIND)
                   ELSE IF (IML(ISTAR).EQ.4) THEN
-! Different surface mass bc for *1 or *2 of binary
-! Stuff taken from thesis of L.Dray 2003
-                        COHe = (XC(ISTAR)/3.0+XO(ISTAR)/4.0)/XHE(ISTAR)
-                        SURFXH = XH(ISTAR)
-                        SURFXHe = XHE(ISTAR)/4.0                        ! Surely we can do this better
-
-! Pre-WR: de Jager 1998
-                        ZML1 = (LOG10(T(ISTAR))-4.05d0)/0.75d0
-                        ZML2 = (LOG10(L(ISTAR)/LSUN)-4.6d0)/2.1d0
-                        BC1 = 0d0
-
-                        DO n2 = 0,5
-                              DO i2 = 0,n2
+C Different surface mass bc for *1 or *2 of binary
+c Stuff taken from thesis of L.Dray 2003
+                        COHe=(XC(ISTAR)/3.0+XO(ISTAR)/4.0)/XHE(ISTAR)
+                        SURFXH=XH(ISTAR)
+                        SURFXHe=XHE(ISTAR)/4.0
+c                       IF (XHE.lt.0.1d0) THEN
+c                             IF (PME.lt.3d18) THEN
+c                                   CP3 = CT(9)*3d18
+c                             END IF
+c                       END IF
+c*****NL***************************************
+cc     c     pre-WR: de Jager 1998
+                        zml1=(LOG10(T(ISTAR))-4.05d0)/0.75d0
+                        zml2=(LOG10(L(ISTAR)/LSUN)-4.6d0)/2.1d0
+                        BC1=0d0
+                        DO n2=0,5
+                              DO i2=0,n2
                                     j2 = n2-i2
-! RJS 16/12/05 - prevent array out of bounds
+C RJS 16/12/05 - prevent array out of bounds
                                     IF (J2+1.LE.5) THEN
-                                          BC1 = BC1 - AIJ(i2+1,j2+1)
-     :                                              * dcos(i2*dacos(ZML1)) ! Construct base ML rate
-     :                                              * dcos(j2*dacos(ZML2)) ! from Chebyshev polynomials
+                                          BC1=BC1-AIJ(i2+1,j2+1)*dcos(i2*dacos(zml1))*dcos(j2*dacos(zml2))
                                     END IF
                               END DO
                         END DO
-
                         BC1 = (SQRT(ZS*50d0))*(10d0**BC1)/CSECYR
-
-                        IF (ZML1.GE.1d0.OR.ZML2.GE.1d0) THEN
-                              BC1 = 0d0
+                        IF (zml1.GE.1d0.OR.zml2.GE.1d0) THEN
+                              BC1 = 0d0 !-5d90
                         END IF
-
-                        IF (ZML1.LE.-1d0.OR.ZML2.LE.-1d0) THEN
-                              BC1 = 0d0
+                        IF (zml1.LE.-1d0.OR.zml2.LE.-1d0) THEN
+                              BC1 = 0d0 !-5d90
                         END IF
                         BC1 = 2.0*BC1*MSUN
-! RJS 9/6/06 - Added some bits to make smooth transitions between WR mass loss
+C RJS 9/6/06 - Added some bits to make smooth transitions between WR mass loss
                         BCPREWR = BC1
-! WOLF RAYET MASS-LOSS
-! When XH(surface)<0.4 and log T > 4.0 the star is in the WNL phase:
-! Use a constant rate of: 8e-5 M(sun) yr^-1
+c     !!!!WOLF RAYET MASS-LOSS!!!!!
+CWhen XH(surface)<0.4 and log T > 4.0 the star is in the WNL phase:
+CUse a constant rate of: 8e-5 M(sun) yr^-1
                         BCWNL = 8d-5*MSUN/CSECYR
 
                         IF (SURFXH.LT.0.4.AND.LOG10(T(ISTAR)).GT.3.9) THEN
@@ -237,33 +235,34 @@
                         IF (SURFXH.LT.3d-3.AND.LOG10(T(ISTAR)).GT.4.0) THEN
                               BC1 = 5d2*(BCWNL - BCWC)*(SURFXH - 1d-3) + BCWC
                         END IF
-! When XH(surface)<1e-3 and log T > 4.0 the star is in the WNE, WC or WO phase:
-! For WNE use: 1.0e-7 (M(WR)/M(sun))**2.5 M(sun) yr^-1
+CWhen XH(surface)<1e-3 and log T > 4.0 the star is in the WNE,WC or WO
+Cphase:
+CFor WNE use: 1.0e-7 (M(WR)/M(sun))**2.5 M(sun) yr^-1
                         IF (SURFXH.LT.1d-3.AND.LOG10(T(ISTAR)).GT.4.0) THEN
                               BC1 = 1d-7*(M(ISTAR)/MSUN)**2.5*MSUN/CSECYR
                               IF (COHe.GT.3d-2) THEN
                                     BC1 = 0.6d-7*(M(ISTAR)/MSUN)**2.5*MSUN/CSECYR
                               END IF
                         END IF
-! For WC/WO use: 0.6e-7 (M(WR)/M(sun))**2.5 M(sun) yr^-1
-! Stars become WC when (C+O)/He > 3e-2
+CFor WC/WO use: 0.6e-7 (M(WR)/M(sun))**2.5 M(sun) yr^-1
+CStars become WC when (C+O)/He > 3e-2
                   ELSE IF (IML(ISTAR).EQ.5) THEN
-! This is the same as IML 4 but changing so that it fixes a few bugs
+C - so this is the same as IML 4 but changing so that it fixes a few bugs
                         COHe = (XC(ISTAR)/3.0+XO(ISTAR)/4.0)/XHE(ISTAR)
                         SURFXH = XH(ISTAR)
                         SURFXHe = XHE(ISTAR)/4.0
-!     pre-WR: de Jager 1988
-                        ZML1 = (LOG10(T(ISTAR))-4.05d0)/0.75d0
-                        ZML2 = (LOG10(L(ISTAR)/LSUN)-4.6d0)/2.1d0
+cc     c     pre-WR: de Jager 1988
+                        zml1 = (LOG10(T(ISTAR))-4.05d0)/0.75d0
+                        zml2 = (LOG10(L(ISTAR)/LSUN)-4.6d0)/2.1d0
 
-                        IF (ZML2.GE.1d0) THEN
-                              ZML2 = 1d0                                ! if more luminous that bounds, set to max
+                        IF (zml2.GE.1d0) THEN
+                              zml2 = 1d0 !if more luminous that bounds, set to max
                         END IF
-                        IF (ZML1.GE.1d0) THEN
-                              ZML1 = 1d0                                ! if more hot that bounds, set to max
+                        IF (zml1.GE.1d0) THEN
+                              zml1 = 1d0 !if more hot that bounds, set to max
                         END IF
-                        IF (ZML1.LE.-1d0) THEN
-                              ZML1 = -1d0                               ! if more cool that bounds, set to max
+                        IF (zml1.LE.-1d0) THEN
+                              zml1 = -1d0 !if more cool that bounds, set to max
                         END IF
 
                         BC1 = 0d0
@@ -271,33 +270,31 @@
                         DO n2=0,5
                               DO i2=0,n2
                                     j2 = n2-i2
-! prevent array out of bounds
+C prevent array out of bounds
                                     IF (J2+1.LE.5) THEN
-                                          BC1 = BC1-AIJ(i2+1,j2+1)
-     :                                        * dcos(i2*dacos(ZML1))    ! Chebyshev polynomial construction
-     :                                        * dcos(j2*dacos(ZML2))
+                                          BC1 = BC1-AIJ(i2+1,j2+1)*dcos(i2*dacos(zml1))*dcos(j2*dacos(zml2))
                                     END IF
                               END DO
                         END DO
 
                         BC1 = (SQRT(ZS*50d0))*(10d0**BC1)*MSUN/CSECYR
 
-                        IF(ZML2.LE.-1d0) THEN
-                              BC1 = 0d0                                 ! When the star becomes too faint -- no mass loss
+                        IF(zml2.LE.-1d0) THEN
+                              BC1=0d0 !so when the star becomes too faint no mass loss
                         END IF
 
                         BCPREWR1 = BC1
 
-! Vink et al. 2001 rates for OB stars - taken from JJE's code
+C Vink et al. 2001 rates for OB stars - taken from JJE's code
                         RVIN=(ZS*50d0)**0.13d0
-! RMVA is for hot side of stability jump  27500 - 50000 K
+C RMVA is for hot side of stability jump  27500 - 50000 K
                         RMVA = -6.697+2.194*LOG10(L(ISTAR)/(LSUN*1d5))-1.313*LOG10(M(ISTAR)/(MSUN*30d0))
      :                         - 1.226*LOG10(RVIN*2.6/2.0)+0.933*LOG10(T(ISTAR)/4d4)-10.92*(LOG10(T(ISTAR)/4d4))**2
      :                         + 0.85*LOG10(50d0*ZS)
-! RMVB is for cool side of jump  12500 - 22500 K
+C RMVB is for cool side of jump  12500 - 22500 K
                         RMVB = -6.688+2.210*LOG10(L(ISTAR)/(LSUN*1d5))-1.339*LOG10(M(ISTAR)/(MSUN*30d0))
      :                         - 1.601*LOG10(RVIN*1.3/2.0)+1.07*LOG10(T(ISTAR)/2d4)+0.85*LOG10(50d0*ZS)
-! Am I missing an MSUN out of all this? I think so...
+C Am I missing an MSUN out of all this? I think so...
                         IF(T(ISTAR).LE.5d4.AND.T(ISTAR).GT.2.75d4) THEN
                               BC1 =(10d0**RMVA)*MSUN/CSECYR
                         END IF
@@ -307,72 +304,63 @@
                         END IF
 
                         IF(T(ISTAR).GT.2.25d4.AND.T(ISTAR).LE.2.75d4) THEN
-                              BC1 = ((T(ISTAR)-2.25d4)*(10d0**RMVA)
-     :                            + (2.75d4-T(ISTAR))*(10d0**RMVB))*MSUN/(CSECYR*5d3)
+                              BC1 = ((T(ISTAR)-2.25d4)*(10d0**RMVA)+(2.75d4-T(ISTAR))*(10d0**RMVB))*MSUN/(CSECYR*5d3)
                         END IF
 
                         IF(T(ISTAR).LT.1.25d4.AND.T(ISTAR).GE.1d4) THEN
-                              BC1 = ((T(ISTAR)-1d4)*(10d0**RMVB)*MSUN/CSECYR
-     :                            + (1.25d4-T(ISTAR))*BCPREWR1)/2.5d3
+                              BC1 = ((T(ISTAR)-1d4)*(10d0**RMVB)*MSUN/CSECYR+(1.25d4-T(ISTAR))*BCPREWR1)/2.5d3
                         END IF
 
                         IF(T(ISTAR).GT.5d4.AND.T(ISTAR).LT.6d4) THEN
-                              BC1=((6d4-T(ISTAR))*(10d0**RMVA)*MSUN/CSECYR
-     :                            + (T(ISTAR)-5d4)*(BCPREWR1))/1d4
+                              BC1=((6d4-T(ISTAR))*(10d0**RMVA)*MSUN/CSECYR+(T(ISTAR)-5d4)*(BCPREWR1))/1d4
                         END IF
 
                         BCPREWR = BC1
-! Note this smooths out the bistability jump... RJS
-! When XH(surface)<0.4 and log T > 4.0 the star is in the WNL phase:
-                        BCWNL = -13.6 + 1.63*LOG10(L(ISTAR)/LSUN)
-     :                        + 2.22*LOG10(XHE(ISTAR))
-! Now has metallicity scaling
-                        BCWNL = ((ZS*50d0)**0.5d0)
-     :                        * (10.0**BCWNL)*MSUN/CSECYR
+C Note this smooths out the bistability jump... RJS
+CWhen XH(surface)<0.4 and log T > 4.0 the star is in the WNL phase:
+                        BCWNL = -13.6 + 1.63*LOG10(L(ISTAR)/LSUN)+2.22*LOG10(XHE(ISTAR))
+C Now has metallicity scaling
+                        BCWNL = ((ZS*50d0)**0.5d0)*(10.0**BCWNL)*MSUN/CSECYR
 
                         IF (SURFXH.LT.0.4.AND.LOG10(T(ISTAR)).GT.3.9) THEN
-                              BC1 = 1d1*(BCWNL - BCPREWR)
-     :                            * (LOG10(T(ISTAR)) - 3.9) + BCPREWR
+                              BC1 = 1d1*(BCWNL - BCPREWR)*(LOG10(T(ISTAR)) - 3.9) + BCPREWR
                         END IF
 
                         IF (SURFXH.LT.0.4.AND.LOG10(T(ISTAR)).GE.4.0) THEN
                               BC1 = BCWNL
                         END IF
-!When XH(surface)<1e-3 and log T > 4.0 the star is in the WNE,WC or WO
-!phase:
-                        BCWC = -8.3 + 0.84*LOG10(L(ISTAR)/LSUN)
-     :                       + 2.04*LOG10(XHE(ISTAR))
-     :                       + 1.04*LOG10(1d0-XHE(ISTAR))
-! Also now metallicity scaled
+CWhen XH(surface)<1e-3 and log T > 4.0 the star is in the WNE,WC or WO
+Cphase:
+                        BCWC = -8.3 + 0.84*LOG10(L(ISTAR)/LSUN) + 2.04*LOG10(XHE(ISTAR)) +
+     :                         1.04*LOG10(1d0-XHE(ISTAR))
+C Also now metallicity scaled
                         BCWC = ((ZS/0.02)**0.5d0)*(10.0**BCWC)*MSUN/CSECYR
                         IF (SURFXH.LT.1d-3.AND.LOG10(T(ISTAR)).GE.4.0) THEN
-!     WC rate
+C     WC rate
                               IF (COHe.GT.2d-2) THEN
                                     BC1 = 1d2*(BCWC-BCWNL)*(COHe - 2d-2) + BCWNL
                               END IF
                               IF (COHe.GT.3d-2) THEN
                                     BC1 = BCWC
                               END IF
+C               IF (COHe.GT.1d0) BC1 = 1.9d-5*MSUN/CSECYR
                         END IF
                   ELSE IF (IML(ISTAR).EQ.6) THEN
-!     Slow WR ML rates (should be a parameter in data?)
+C - slow WR ML rates (should be a parameter in data?)
                         COHe = (XC(ISTAR)/3.0+XO(ISTAR)/4.0)/XHE(ISTAR)
                         SURFXH = XH(ISTAR)
                         SURFXHe = XHE(ISTAR)/4.0
-!     pre-WR: de Jager 1988
-                        ZML1 = (LOG10(T(ISTAR))-4.05d0)/0.75d0
-                        ZML2 = (LOG10(L(ISTAR)/LSUN)-4.6d0)/2.1d0
-
-                        IF (ZML2.GE.1d0) THEN
-                              ZML2 = 1d0                                ! if more luminous that bounds, set to max
+cc     c     pre-WR: de Jager 1988
+                        zml1 = (LOG10(T(ISTAR))-4.05d0)/0.75d0
+                        zml2 = (LOG10(L(ISTAR)/LSUN)-4.6d0)/2.1d0
+                        IF (zml2.GE.1d0) THEN
+                              zml2=1d0 !if more luminous that bounds, set to max
                         END IF
-
-                        IF (ZML1.GE.1d0) THEN
-                              ZML1 = 1d0                                ! if more hot that bounds, set to max
+                        IF (zml1.GE.1d0) THEN
+                              zml1=1d0 !if more hot that bounds, set to max
                         END IF
-
-                        IF (ZML1.LE.-1d0) THEN
-                              ZML1 = -1d0                               ! if more cool that bounds, set to max
+                        IF (zml1.LE.-1d0) THEN
+                              zml1=-1d0 !if more cool that bounds, set to max
                         END IF
 
                         BC1 = 0d0
@@ -380,32 +368,31 @@
                         DO n2=0,5
                               DO i2=0,n2
                                     j2=n2-i2
+C prevent array out of bounds
                                     IF (J2+1.LE.5) THEN
-                                          BC1=BC1-AIJ(i2+1,j2+1)
-     :                                       * dcos(i2*dacos(ZML1))
-     :                                       * dcos(j2*dacos(ZML2))
+                                          BC1=BC1-AIJ(i2+1,j2+1)*dcos(i2*dacos(zml1))
+     :                                         *dcos(j2*dacos(zml2))
                                     END IF
                               END DO
                         END DO
 
                         BC1 = (SQRT(ZS*50d0))*(10d0**BC1)*MSUN/CSECYR
-
-                        IF (ZML2.LE.-1d0) THEN
-                              BC1 = 0d0 ! When the star becomes too faint - no mass loss
+                        IF (zml2.LE.-1d0) THEN
+                              BC1 = 0d0 !so when the star becomes too faint no mass loss
                         END IF
 
                         BCPREWR1 = BC1
 
-! Vink et al. 2001 rates for OB stars - taken from JJE's code
+C Vink et al. 2001 rates for OB stars - taken from JJE's code
                         RVIN=(ZS*50d0)**0.13d0
-! RMVA is for hot side of stability jump  27500 - 50000 K
+C RMVA is for hot side of stability jump  27500 - 50000 K
                         RMVA = -6.697+2.194*LOG10(L(ISTAR)/(LSUN*1d5))-1.313*LOG10(M(ISTAR)/(MSUN*30d0))
      :                         - 1.226*LOG10(RVIN*2.6/2.0)+0.933*LOG10(T(ISTAR)/4d4)-10.92*(LOG10(T(ISTAR)/4d4))**2
      :                         + 0.85*LOG10(50d0*ZS)
-! RMVB is for cool side of jump  12500 - 22500 K
+C RMVB is for cool side of jump  12500 - 22500 K
                         RMVB = -6.688+2.210*LOG10(L(ISTAR)/(LSUN*1d5))-1.339*LOG10(M(ISTAR)/(MSUN*30d0))
      :                         - 1.601*LOG10(RVIN*1.3/2.0)+1.07*LOG10(T(ISTAR)/2d4)+0.85*LOG10(50d0*ZS)
-! Am I missing an MSUN out of all this? I think so...
+C Am I missing an MSUN out of all this? I think so...
                         IF(T(ISTAR).LE.5d4.AND.T(ISTAR).GT.2.75d4) THEN
                               BC1 = (10d0**RMVA)*MSUN/CSECYR
                         END IF
@@ -415,75 +402,67 @@
                         END IF
 
                         IF (T(ISTAR).GT.2.25d4.AND.T(ISTAR).LE.2.75d4) THEN
-                              BC1 = ((T(ISTAR)-2.25d4)*(10d0**RMVA)
-     :                            + (2.75d4-T(ISTAR))*(10d0**RMVB))*MSUN/(CSECYR*5d3)
+                              BC1 = ((T(ISTAR)-2.25d4)*(10d0**RMVA)+(2.75d4-T(ISTAR))*(10d0**RMVB))*MSUN/(CSECYR*5d3)
                         END IF
 
                         IF (T(ISTAR).LT.1.25d4.AND.T(ISTAR).GE.1d4) THEN
-                              BC1 = ((T(ISTAR)-1d4)*(10d0**RMVB)*MSUN/CSECYR
-     :                            + (1.25d4-T(ISTAR))*BCPREWR1)/2.5d3
+                              BC1 = ((T(ISTAR)-1d4)*(10d0**RMVB)*MSUN/CSECYR+(1.25d4-T(ISTAR))*BCPREWR1)/2.5d3
                         END IF
 
                         IF (T(ISTAR).GT.5d4.AND.T(ISTAR).LT.6d4) THEN
-                              BC1 = ((6d4-T(ISTAR))*(10d0**RMVA)*MSUN/CSECYR
-     :                            + (T(ISTAR)-5d4)*(BCPREWR1))/1d4
+                              BC1 = ((6d4-T(ISTAR))*(10d0**RMVA)*MSUN/CSECYR+(T(ISTAR)-5d4)*(BCPREWR1))/1d4
                         END IF
 
                         IF (ISTAR.EQ.1) THEN
                               BCPREWR = BC1
-!     Note this smooths out the bistability jump... RJS
-!     When XH(surface)<0.4 and log T > 4.0 the star is in the WNL phase:
+C     Note this smooths out the bistability jump... RJS
+C     When XH(surface)<0.4 and log T > 4.0 the star is in the WNL phase:
                               BCWNL = -13.6 + 1.63*LOG10(L(ISTAR)/LSUN)+2.22*LOG10(XHE(ISTAR))
-!     Now has metallicity scaling
+C     Now has metallicity scaling
                               BCWNL = ((ZS*50d0)**0.5d0)*(10.0**BCWNL)*MSUN/CSECYR
-
-                              ! Account for composition turning on
                               IF(SURFXH.LE.0.42.AND.SURFXH.GT.0.40) THEN
                                     BCWNL = (BCWNL-BCPREWR)*(0.42-SURFXH)*5d1 + BCPREWR
                               END IF
-
+                              !!!^^^^^^^Jan new bit to account for composition turning on
                               IF (SURFXH.LE.0.42.AND.LOG10(T(ISTAR)).GT.3.9) THEN
                                     BC1 = 1d1*(BCWNL - BCPREWR)*(LOG10(T(ISTAR)) - 3.9) + BCPREWR
                               END IF
-
                               IF (SURFXH.LE.0.42.AND.LOG10(T(ISTAR)).GE.4.0) THEN
                                     BC1 = BCWNL
                               END IF
-!     When XH(surface)<1e-3 and log T > 4.0 the star is in the WNE, WC or WO
-!     phase:
-                              BCWC = -8.3 + 0.84*LOG10(L(ISTAR)/LSUN)
-     :                             + 2.04*LOG10(XHE(ISTAR))
-     :                             + 1.04*LOG10(1d0-XHE(ISTAR))
-!     Also now metallicity scaled
+C     When XH(surface)<1e-3 and log T > 4.0 the star is in the WNE,WC or WO
+C     phase:
+                              BCWC = -8.3 + 0.84*LOG10(L(ISTAR)/LSUN) + 2.04*LOG10(XHE(ISTAR)) +
+     :                                1.04*LOG10(1d0-XHE(ISTAR))
+C     Also now metallicity scaled
                               BCWC = ((ZS/0.02)**0.5d0)*(10.0**BCWC)*MSUN/CSECYR
-
                               IF (SURFXH.LT.1d-3.AND.LOG10(T(ISTAR)).GE.4.0) THEN
-!     WC rate
+C     WC rate
                                     IF (COHe.GT.2d-2) THEN
                                           BC1 = 1d2*(BCWC-BCWNL)*(COHe - 2d-2) + BCWNL
                                     END IF
-
                                     IF (COHe.GT.3d-2) THEN
                                           BC1 = BCWC
                                     END IF
+C     IF (COHe.GT.1d0) BC1 = 1.9d-5*MSUN/CSECYR
                               END IF
                         END IF
                   ELSE IF (IML(ISTAR).EQ.7) THEN
-! - so this is the same as IML 4 but changing so that it fixes a few bugs
+C - so this is the same as IML 4 but changing so that it fixes a few bugs
                         COHe = (XC(ISTAR)/3.0+XO(ISTAR)/4.0)/XHE(ISTAR)
                         SURFXH = XH(ISTAR)
                         SURFXHe = XHE(ISTAR)/4.0
-!     pre-WR: de Jager 1988
-                        ZML1 = (LOG10(T(ISTAR))-4.05d0)/0.75d0
-                        ZML2 = (LOG10(L(ISTAR)/LSUN)-4.6d0)/2.1d0
-                        IF (ZML2.GE.1d0) THEN
-                              ZML2 = 1d0 !if more luminous that bounds, set to max
+cc     c     pre-WR: de Jager 1988
+                        zml1 = (LOG10(T(ISTAR))-4.05d0)/0.75d0
+                        zml2 = (LOG10(L(ISTAR)/LSUN)-4.6d0)/2.1d0
+                        IF (zml2.GE.1d0) THEN
+                              zml2 = 1d0 !if more luminous that bounds, set to max
                         END IF
-                        IF (ZML1.GE.1d0) THEN
-                              ZML1 = 1d0 !if more hot that bounds, set to max
+                        IF (zml1.GE.1d0) THEN
+                              zml1 = 1d0 !if more hot that bounds, set to max
                         END IF
-                        IF (ZML1.LE.-1d0) THEN
-                              ZML1 = -1d0 !if more cool that bounds, set to max
+                        IF (zml1.LE.-1d0) THEN
+                              zml1 = -1d0 !if more cool that bounds, set to max
                         END IF
 
                         BC1 = 0d0
@@ -491,33 +470,31 @@
                         DO n2=0,5
                               DO i2=0,n2
                                  j2=n2-i2
-! prevent array out of bounds
+C prevent array out of bounds
                                  IF (J2+1.LE.5) THEN
-                                    BC1 = BC1-AIJ(i2+1,j2+1)
-     :                                  * dcos(i2*dacos(ZML1))
-     :                                  * dcos(j2*dacos(ZML2))
+                                    BC1=BC1-AIJ(i2+1,j2+1)*dcos(i2*dacos(zml1))
+     :                                   *dcos(j2*dacos(zml2))
                                  END IF
                               END DO
                         END DO
 
                         BC1 = (SQRT(ZS*50d0))*(10d0**BC1)*MSUN/CSECYR
-
-                        IF (ZML2.le.-1d0) THEN
+                        IF (zml2.le.-1d0) THEN
                               BC1 = 0d0 !so when the star becomes too faint no mass loss
                         END IF
 
                         BCPREWR1 = BC1
 
-! Vink et al. 2001 rates for OB stars - taken from JJE's code
+C Vink et al. 2001 rates for OB stars - taken from JJE's code
                         RVIN = (ZS*50d0)**0.13d0
-! RMVA is for hot side of stability jump  27500 - 50000 K
+C RMVA is for hot side of stability jump  27500 - 50000 K
                         RMVA = -6.697+2.194*LOG10(L(ISTAR)/(LSUN*1d5))-1.313*LOG10(M(ISTAR)/(MSUN*30d0))
      :                         - 1.226*LOG10(RVIN*2.6/2.0)+0.933*LOG10(T(ISTAR)/4d4)-10.92*(LOG10(T(ISTAR)/4d4))**2
      :                         + 0.85*LOG10(50d0*ZS)
-! RMVB is for cool side of jump  12500 - 22500 K
+C RMVB is for cool side of jump  12500 - 22500 K
                         RMVB = -6.688+2.210*LOG10(L(ISTAR)/(LSUN*1d5))-1.339*LOG10(M(ISTAR)/(MSUN*30d0))
      :                         - 1.601*LOG10(RVIN*1.3/2.0)+1.07*LOG10(T(ISTAR)/2d4)+0.85*LOG10(50d0*ZS)
-! Am I missing an MSUN out of all this? I think so...
+C Am I missing an MSUN out of all this? I think so...
                         IF(T(ISTAR).LE.5d4.AND.T(ISTAR).GT.2.75d4) THEN
                               BC1 =(10d0**RMVA)*MSUN/CSECYR
                         END IF
@@ -535,25 +512,25 @@
                         IF(T(ISTAR).GT.5d4.AND.T(ISTAR).LT.6d4) THEN
                               BC1 = ((6d4-T(ISTAR))*(10d0**RMVA)*MSUN/CSECYR+(T(ISTAR)-5d4)*(BCPREWR1))/1d4
                         END IF
-!     Switch on IML=6 if we are getting close to WR temperature with Hydrogen-exhausted core
+C     Switch on IML=6 if we are getting close to WR temperature with Hydrogen-exhausted core
                         IF(COREXH(ISTAR).LT.1d-5 .AND. LOG10(T(ISTAR)).GE.4.0) THEN
-                              WRITE(*,*) 'High temp, core hydrogen exhaustion. Switching to IML=6'
+                              write (*,*) 'High temp, core hydrogen exhaustion. Switching to IML=6'
                               IML(ISTAR) = 6
                         END IF
-!     Evolve to get to target mass
+C     New mass loss to get to target mass by JJE - 2/5/2021
                   ELSE IF (IML(ISTAR).EQ.9) THEN
-!     mass loss rate is from target mass - current mass limited to 10% of thermal timesvale
-!     note - the funny constants around RML are because the value is modified to code units in printa.f, the simplest
-!     way to adjust the code is therefore to undo it here in this line without modifying the rest of the code to not to this when IML=9
+C mass loss rate is from target mass - current mass limited to 10% of thermal timesvale
+C note - the funny constants around RML are because the value is modified to code units in printa.f, the simplest way to adjust the code is therefore to undo it here in this line without modifying the rest of the code to not to this when IML=9
                         BC1 = 0.1d0*(M(ISTAR)/MSUN-RML*2.5d12*CSECYR*RSUN*LSUN/(MSUN**2d0))*MSUN/CSECYR/TKH(ISTAR)
                   END IF
 
-!     Save wind mass loss for orbital angular momentum calculation
-!     Enhance wind mass loss by 1/(1-Omega/Omega_crit)
+C Save wind mass loss for orbital angular momentum calculation
+C Enhance wind mass loss by 1/(1-Omega/Omega_crit)
                   OSPIN(ISTAR) = HSPIN(ISTAR)/VI(ISTAR)*SQRT(CG)
-                  OCRIT = DSQRT(6.67d-11*(M(ISTAR)*1d30)/((1d9*R(ISTAR))**3.0))
+                  OCRIT = DSQRT(6.67d-11*(M(ISTAR)*1d30)/((1d9*R(ISTAR))**3.0))     ! Sean to check if right
                   OSC(ISTAR) = OSPIN(ISTAR)/OCRIT
-                  BC1 = BC1/(1-OSC(ISTAR)/0.8)
+            ! BC1 = BC1/DMAX1(1d-2,(1-OSC(ISTAR)/0.8))
+                  BC1 = BC1/(1-OSC(ISTAR)/0.8) ! Changed after conversation with M. Briel on 14/06/23 -- otherwise when it gets weird when the radius of the primary gets close to the separation -- hypothesized this was due to tidal effects but it wasn't.
                   WINDML(ISTAR) = BC1
             END IF
             ML(ISTAR) = BC1
@@ -569,9 +546,9 @@
          IDET = 0 ! Detatched binary, no stars filling RLs
       END IF
 
-! Now decide on what the BC really is - needs to be outside the loop to know about
-! both Roche Lobes
-!     --------------------------- Evaluate CE --------------------------
+C Now decide on what the BC really is - needs to be outside the loop to know about
+C both Roche Lobes
+C     -------------------------- Evaluate CEE --------------------------
       IF (IMODE.EQ.2 .AND. ICEP.GT.0) THEN
 11157       FORMAT (A, I1, A, I1, A)
             DO ISTAR=1,IMODE
@@ -601,22 +578,22 @@
                         IF (ICEPR.EQ.1) THEN
                               WRITE(*,11157) " Common Envelope from star ", IDONOR, " to ", IACC, " ENDING."
                               DT1 = DT1 * 100
-!                             DD = DD * 10
+C                             DD = DD * 10
                         END IF
                   END IF
 
                   IF (ICE.EQ.1) THEN
-!                       IF (IDET .EQ. 2) THEN
-!                      ! Contact binary during CEE -- merger likely -- kill it!
-!                             IMERGE = 1
-!                             CALL PRINTA(0, NMOD, IT1, IT2, 0) ! Force a modout write - for both?
-!                             WRITE(*,*) "System merger -- terminating! Modout saved"
-!                             STOP ! as a proxy for doing a merger
-!                       END IF
+C                       IF (IDET .EQ. 2) THEN
+C                      ! Contact binary during CEE -- merger likely -- kill it!
+C                             IMERGE = 1
+C                             CALL PRINTA(0, NMOD, IT1, IT2, 0) ! Force a modout write - for both?
+C                             WRITE(*,*) "System merger -- terminating! Modout saved"
+C                             STOP ! as a proxy for doing a merger
+C                       END IF
                         IF (ICEPR .EQ. 0) THEN
                               WRITE(*,11157) " Common Envelope from star ", IDONOR, " to ", IACC, " STARTING."
                               DT1 = DT1 / 100
-!                             DD = DD / 10
+C                             DD = DD / 10
                         END IF
                         IF (ICEP.EQ.0) THEN
                               DSEP = 0d0
@@ -627,36 +604,42 @@
                   END IF
             END DO
       END IF
-!     -------------------------- CEE Finished --------------------------
+C     -------------------------- CEE Finished --------------------------
 
-      FAKEWIND(1) = 0d0
-      FAKEWIND(2) = 0d0
+      RLOFML(1) = 0d0
+      RLOFML(2) = 0d0
+      RLOFACC(1) = 0d0
+      RLOFACC(2) = 0d0
+      RLOFRMLEDD = 0d0
 
-      MASSLIMIT = 1d-2
+      MASSLIMIT = 1d-2 !2.5d-4
+C Set limit for mass accretion at M/kelvin-helmholtz timescale
 
-!     Set limit for mass accretion at M/kelvin-helmholtz timescale
       DO ISTAR = 1,IMODE
             ACCLIMIT(ISTAR) = M(ISTAR)/TKH(ISTAR)*DMAX1(0d0,(1-OSC(ISTAR)/0.8))
       END DO
-!     Fakewind deals with mass-loss in CE systems - will interfer with normal evolution
+C RLOFML deals with mass-loss in CE systems - will interfer with normal evolution
       DO ISTAR=1,IMODE
             IF (ISTAR.EQ.1) THEN
                   ISTAROTHER = 2
             ELSE
                   ISTAROTHER = 1
             END IF
+            
+C JLG adding RMT controls -- 19/08/2025
+            IF (AGE.LE.1d3) THEN
+                  RLOFML(ISTAR) = 0d0
+            END IF
 
-            ML(ISTAR) = ML(ISTAR) - RMG*M(ISTAR) + MT(ISTAR)
-     :                + DMIN1(RMT*((M(ISTAR)/MSUN)**2d0)
-     :                           *((PS(RLF(ISTAR)))**3d0),
-     :                        MASSLIMIT*MSUN/CSECYR)
+            IF (AGE.GT.1d3) THEN ! Only allow RLOF if pre-MS RLOF fudge not active
+                  CALL OVERFLOW(RMTMODE, RLOFML(1), M(1), M(2), RLF, RMT)
+            END IF
+
+            ML(ISTAR) = ML(ISTAR) - RMG*M(ISTAR) + MT(ISTAR) + RLOFML(ISTAR)
 
             IF (IMODE.EQ.2) THEN
-! Add (1-omega/omega_crit) to reduce accretion rate
-                  ML(ISTAR) = ML(ISTAR) - DMIN1(FMAC*DMIN1(RMT*((M(ISTAROTHER)/MSUN)**2d0)
-     :                                                        *((PS(RLF(ISTAROTHER)))**3d0),
-     :                                                     MASSLIMIT*MSUN/CSECYR),
-     :                                          ACCLIMIT(ISTAR)*MSUN/CSECYR)
+C Add (1-omega/omega_crit) to reduce accretion rate
+                  ML(ISTAR) = ML(ISTAR) - DMIN1(FMAC*DMIN1(RMT*((M(ISTAROTHER)/MSUN)**2d0)*((PS(RLF(ISTAROTHER)))**3d0), MASSLIMIT*MSUN/CSECYR), ACCLIMIT(ISTAR)*MSUN/CSECYR)
             END IF
       END DO
 
@@ -665,23 +648,41 @@
             DT1 = 0.10
       END IF
 
-      FAKEWIND(1) = DMAX1(0d0, DMIN1(RMT*(PS(RLF(1)))**3, MASSLIMIT*MSUN/CSECYR) -
-     :                         DMIN1(FMAC*RMT*(PS(RLF(1)))**3.0, ACCLIMIT(2)*MSUN/CSECYR))
+C      RLOFML(1) = DMAX1(0d0, DMIN1(RMT*(PS(RLF(1)))**3, MASSLIMIT*MSUN/CSECYR) -
+C     :     DMIN1(FMAC*RMT*(PS(RLF(1)))**3.0,ACCLIMIT(1)*MSUN/CSECYR))
+C     :                         DMIN1(FMAC*RMT*(PS(RLF(1)))**3.0, ACCLIMIT(2)*MSUN/CSECYR))
 
-!     Should ACCLIMIT be the other star? I think so...
-!     Fakewind is supposed to be total mass lost by star one minus mass accreted by 2
-
-      FAKEWIND(2) = DMAX1(0d0, DMIN1(RMT*(PS(RLF(2)))**3, MASSLIMIT*MSUN/CSECYR) -
+      IF (RLOFMODE.GT.0) THEN ! Allows mass transfer in RLOF to be controlled by data file - JLG 23-04-25
+C     If RLOF accretion enabled, set all RLOFML to be accreted - JLG 14-07-25
+            RLOFACC(2) = RLOFML(1)
+            IF (RLOFMODE.EQ.1) THEN
+                  RLOFACC(2) = FMAC * RLOFACC(2)  ! If RLOF set to Eddington limited, first reduce accretion rate by accretion fraction
+                  RLOFRMLEDD=(0.1*RLOFACC(2)*(7.31d14))/(M(2)/MSUN) ! Find accretion luminosity in terms of the Eddington luminosity
+                  IF (RLOFRMLEDD.GT.1d0) THEN
+                        RLOFACC(2) = RLOFACC(2) * (1d0/RLOFRMLEDD) ! Reduce accretion rate to Eddington rate if rate would otherwise exceed Eddington
+                  END IF
+            END IF
+      END IF ! Otherwise, RLOFACC is 0 and accretion is fully non-conservative.
+      
+C Should ACCLIMIT be the other star? I think so...
+C RLOFML is supposed to be total mass lost by star one minus mass accreted by 2
+      RLOFML(2) = DMAX1(0d0, DMIN1(RMT*(PS(RLF(2)))**3, MASSLIMIT*MSUN/CSECYR) -
+C     :     DMIN1(FMAC*RMT*(PS(RLF(2)))**3.0,ACCLIMIT(2)*MSUN/CSECYR))
      :                         DMIN1(FMAC*RMT*(PS(RLF(2)))**3.0, ACCLIMIT(1)*MSUN/CSECYR))
-
-! Ignore wind accretion if RLOF occurs
+     
+      RLOFML(1) = RLOFML(1) - RLOFACC(2) ! Reduce mass lost from the binary by mass accreted onto the secondary - JLG 14-07-25
+     
+C Ignore wind accretion if RLOF occurs
       WINDACC(1) = 0d0
       WINDACC(2) = 0d0
+      MTACC = 0d0
+      WINDRMLEDD = 0d0
 
       IF ((PS(RLF(1)))**3.0.EQ.0d0.AND.(PS(RLF(2))).EQ.0d0) THEN
-!           This assumes you're only changing the mass by winds with no RLF
-!           Wind accretion from Hurley et al. 2002
-!           Accrete material from the greater mass loser
+
+C This assumes you're only changing the mass by winds with no RLF
+C Wind accretion from Hurley et al. 2002, modified by JLG (23-04-25) to include Eddington limit
+C Accrete material from the greater mass loser
             IF (WINDML(1).GT.WINDML(2)) THEN
                   IDONOR = 1
                   IACC = 2
@@ -691,21 +692,33 @@
             END IF
 
             VORB2 = CG*BM/SEP
-!     BetaW depends on spectral type = 7 for O-type stars
+C BetaW depends on spectral type = 7 for O-type stars -Jan added varying betaw! 22-02-2025
             BETAW = 7.0
-            VESC2 = 2.0*BETAW*CG*M(IDONOR)/R(IDONOR)
-            V2 = VORB2/VESC2
-!     Have assumed a circular orbit - with alpha_w = 3/2
-            MTACC = (CG*M(IACC)/VESC2)**2.0*(3.0/(4.0*SEP**2.0))/(1+V2)**(3.0/2.0)
-            MTACC = MTACC*WINDML(IDONOR)
-            MTACC = DMIN1(MTACC,0.8*WINDML(IDONOR))
-            WINDACC(IACC) = MTACC
-            ML(IACC) = ML(IACC) - MTACC
+
+CCC Jan edit 22-02-25
+            IF(T(IDONOR).LE.33d3) BETAW= (7d0*( T(IDONOR)-1d4)+0.5*(33d3-T(IDONOR)))/23d3
+            IF(T(IDONOR).LE.1d4) BETAW=0.5d0
+            IF(T(IDONOR).LE.6d3) BETAW=((6d3-T(IDONOR))*0.125d0+(T(IDONOR)-2.3d3)*0.5d0)/(3.7d3)                 
+            IF(T(IDONOR).LE.2.3d3) BETAW=0.125
+            
+CCC         
+            IF (WINDMODE.GT.0) THEN ! Allows wind accretion only when enabled by data file - JLG 23-04-25
+                  VESC2 = 2.0*BETAW*CG*M(IDONOR)/R(IDONOR)
+                  V2 = VORB2/VESC2
+C Have assumed a circular orbit - with alpha_w = 3/2
+                  MTACC = (CG*M(IACC)/VESC2)**2.0*(3.0/(4.0*SEP**2.0))/(1+V2)**(3.0/2.0) ! Calculates accreted fraction of donor wind
+                  WINDACC(IACC) = DMIN1(MTACC,0.8)*WINDML(IDONOR) ! Applies equation 10 from Hurley et al. 2002 and calculates wind accretion rate
+                  IF (WINDMODE.EQ.1) THEN ! WINDMODE 1 applies Eddington accretion limit to wind (Not sure if this works as intended yet)
+                        WINDRMLEDD = (0.1*WINDACC(IACC)*(7.31d14))/(M(IACC)/MSUN) !!!this calculates the the accretion luminosity in terms of the Eddington luminosity
+                        IF (WINDRMLEDD.GT.1d0) THEN
+                              WINDACC(IACC) = WINDACC(IACC) * (1/WINDRMLEDD)
+                        END IF
+                  END IF
+            END IF
+            WINDML(IDONOR) = WINDML(IDONOR) - WINDACC(IACC)
       END IF
-
-!     Store WINDML + WINDACC for use in determining when variable composition accretion
-!     is needed - only if sum of one of them is -ve. Only do this if there's no RLOF
-
+C Store WINDML + WINDACC for use in determining when variable composition accretion
+C is needed - only if sum of one of them is -ve. Only do this if there's no RLOF
       IF ((PS(RLF(1)))**3.0.EQ.0d0.AND.(PS(RLF(2))).EQ.0d0) THEN
             HT(23,1,1) = 0d0 !WINDML(1) - WINDACC(1)
             HT(23,1,2) = 0d0 !WINDML(2) - WINDACC(2)
@@ -713,65 +726,88 @@
             HT(23,1,1) = 0d0
             HT(23,1,2) = 0d0
       END IF
+C Fudge CE stuff
+C     IF(RLF(1).GT.0d0) THEN
+C           ML(1) = 1d-2*MSUN/CSECYR + ML(1)
+C           WINDML(1) = 1d-2*MSUN/CSECYR
+C           IF (M(2)/MSUN.LT.17) THEN
+C                 ML(2) = -5d-3*MSUN/CSECYR + ML(2)
+C           END IF
+C     END IF
 
+! ML(ISTAR) = BC1 - RMG*M + MT + MIN(RMT*(PS(RLF))^3, 1e-2) - MIN(FMAC*MIN(RMT*(PS(RLF))^3, 1e-2)), M/TKH*MAX(0, 1-osc/0.8)) - MTACC(Bondi-Hoyle)
       ML1 = ML(1)
       ML2 = ML(2)
-
-! Tidal friction stuff. From Hut (1981), using Zahn (1977) for frictional timescale
+C Tidal friction stuff. From Hut (1981), using Zahn (1977) for frictional timescale
       DO ISTAR = 1,IMODE
-!           Alternative tidal prescription from Hurley, Pols & Tout (2002)
-!           Based off Bondi-Hoyle accretion
-!           Convective envelope stars
-!           Convective turnover time
+C TF in years
+C         TF(ISTAR) = 3.5*(M(ISTAR)/MSUN*(R(ISTAR)/RSUN)**2.0
+C     :        /(L(ISTAR)/LSUN))**1.0/3.0*CSECYR
+C         DkT = 0.1/(R(ISTAR)**3.0/(CG*M(ISTAR)*TF(ISTAR)))
+            QQ = 1/RAT(ISTAR)
+            FQ = QQ*(1+QQ)
+            RADSEP = R(ISTAR)/SEP
+C RJS 14/1/08
+C Alternative tidal prescription from Hurley, Pols & Tout (2002)
+C Based off Bondi-Hoyle accretion
+C Convective envelope stars
+C Convective turnover time
             ME = DMAX1(0d0,M(ISTAR) - MENV(ISTAR))
             RE = DMAX1(0d0,R(ISTAR) - RENV(ISTAR))
             TCONV = ME*RE*(R(ISTAR) - 0.5*RE)
             TCONV = 0.4311*(TCONV/(3d0*L(ISTAR)))**(1d0/3d0)*CSECYR
             TCONV = DMAX1(TCONV,1d0)
-
-!           Tidal pumping timescale
+C Tidal pumping timescale
             PID = 1d0/DABS(OORB - OSPIN(ISTAR))/SQRT(CG)
-!           Numerical factor supressing tide
+C Numerical factor supressing tide
             FCONV = DMIN1(1d0,(0.5d0*PID/TCONV)**2d0) ! check units match, should be ok now...
-!           Form of k/T
+C Form of k/T
             DkT = (2d0/21d0)*(FCONV/TCONV)*(ME/M(ISTAR))
-!           Dynamical tide with radiative damping, also from HPT 2002
-!           Don't understand their formula, but from eq 28 & 41
+C Dynamical tide with radiative damping, also from HPT 2002
+C Don't understand their formula, but from eq 28 & 41
             DkTR = SQRT(CG*M(ISTAR)/R(ISTAR)**3d0)*(1d0+QQ)**(5d0/6d0)
-!           This is a fit to tabulated data for MS stars from Zahn '75 -- how valid is it
-!           for different metallicities or non-MS stars?
+C This is a fit to tabulated data for MS stars from Zahn '75 -- how valid is it
+C for different metallicities or non-MS stars?
             E2 = 1.592d-9*(M(ISTAR)/MSUN)**2.84d0
             DkTR = DkTR*E2*RADSEP**(5d0/2d0)
-
+C           write (*,*) DkT, DkTR
             DkT = DkT + DkTR
-!           HTF is rate of change of orbital angular momentum
-!           Neglecting eccentricity - for now...
+C HTF is rate of change of orbital angular momentum
+C Neglecting eccentricity - for now...
             OSPIN(ISTAR) = HSPIN(ISTAR)/VI(ISTAR)
             HTF(ISTAR) = -3.0*DKT*FQ*RADSEP**8.0*HORB*(1 - (OSPIN(ISTAR)/OORB))
-!           Spin angular momentum - HSTF.
+C Spin angular momentum - HSTF.
             HSTF(ISTAR) = 3.0*DKT*QQ**2.0*RADSEP**6.0*M(ISTAR)*R(ISTAR)**2.0 * OORB*(1 - (OSPIN(ISTAR)/OORB))
       END DO
-
       IF (AGE.LT.1d3) THEN
             HTF(1) = 0d0
             HTF(2) = 0d0
             HSTF(1) = 0d0
             HSTF(2) = 0d0
       END IF
-
-!     Boundary condition for orbit
-!     Evolution of orbital Ang. Mom. from Hurley et al (2002)
+C      IF (RLF(1).GT.0d0) THEN
+C      IF (R(1)/SEP.GT.0.45) THEN
+C         FACAM = DMAX1(0d0, (0.55 - (R(1)/SEP))/0.1)
+C         HTF(1) = 0d0
+C         HTF(2) = 0d0
+C         HSTF(1) = 0d0
+C         HSTF(2) = 0d0
+C      END IF
+C Boundary condition for orbit
+C Evolution of orbital Ang. Mom. from Hurley et al (2002)
       IF (IMODE.EQ.2) THEN
-            BCHORB = DHORB/DT + (HORB/BM)*((WINDML(1)+FAKEWIND(1))*M(2)/M(1) - WINDACC(1)
-     :                                   + (WINDML(2)+FAKEWIND(2))*M(1)/M(2) - WINDACC(2))
-     :                        - HTF(1) - HTF(2)
+            BCHORB = DHORB/DT + (HORB/BM)*((WINDML(1)+RLOFML(1))*M(2)/M(1) - WINDACC(1)
+C     :        + (WINDML(2)+RLOFML(2))*M(2)/M(1) - WINDACC(2)) - HTF(1) - HTF(2)
+     :               + (WINDML(2)+RLOFML(2))*M(1)/M(2) - WINDACC(2)) - HTF(1) - HTF(2)
       ELSE
-            BCHORB = DHORB/DT + HORB/BM*((WINDML(1)+FAKEWIND(1))*M(2)/M(1)) - HTF(1)
+            BCHORB = DHORB/DT + HORB/BM*((WINDML(1)+RLOFML(1))*M(2)/M(1)) - HTF(1)
       END IF
+C     IF (RLF(1).GT.0d0) THEN
+C           BCHORB = DHORB/DT + 1.5*HORB*WINDML(1)/(M(1)+M(2))
+C     END IF
 
-!     Boundary condition for spin period
-!     Assuming solid body rotation
-
+C Boundary condition for spin period
+C Assuming solid body rotation
       R2O(1) = HSPIN(1)/VI(1)*R(1)**2.0
       R2O(2) = HSPIN(2)/VI(2)*R(2)**2.0
 
@@ -781,10 +817,10 @@
             ELSE
                   ISTAROTHER = 1
             END IF
-!           Assume mass lost/gained as a shell - hence factor of 2/3. Assume mu_w = 1
-!           Loss from star
-!           This has to be made consistent with mass loss & accretion limits above
-
+C Assume mass lost/gained as a shell - hence factor of 2/3. Assume mu_w = 1
+C Loss from star
+C This has to be made consistent with mass loss & accretion limits above
+C           HSPINDT(ISTAR) = 2.0/3.0*(WINDML(ISTAR) + RMT*(PS(RLF(ISTAR)))**3)*R2O(ISTAR)
             HSPINDT(ISTAR) = 2.0/3.0*(WINDML(ISTAR)/DMAX1(1d-2, (1-OSC(ISTAR)/0.8))
      :                       + DMIN1(RMT*(PS(RLF(ISTAR)))**3,
      :                               MASSLIMIT*MSUN/CSECYR))*R2O(ISTAR)
@@ -803,5 +839,5 @@
       BCHSPIN2 = BCHSPIN(2)
 
       RETURN
-
+      
       END

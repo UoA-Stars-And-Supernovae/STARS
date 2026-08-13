@@ -30,7 +30,7 @@
       REAL*8 FMAC, ANGMOM, CPI, EC, CHI, FACSGMIN, MESH, TOTMC
       REAL*8 VROT2, MSUN, F6, VMH, AUXIN, ZS, RMT
       REAL*8 AGE2, LT, LEDD, CBASE, WW, SODDS, QQ, DEXP
-      REAL*8 AK1, VMC, AC
+      REAL*8 AK1, VMC, AC, SEP, TSERR, OVERFLOWRLF
       INTEGER NH, JIN, JR, NT1, IZ, IML, IMODE, IRS1
       INTEGER JT, I5, NDATA, JP, IEND, NSV, NP, IMO
       INTEGER NMONT, IAGB, NT3, NT4, ISX, NH2, IT1, IHOLD
@@ -41,9 +41,12 @@
       INTEGER IB2, ISGFAC, J, I6, NPR, ION, I, NMOD2
       INTEGER ISTART, KS, NNMOD, KPR, ICL, ICEP, IAM, IVMC
       INTEGER IDREDGE, INF, IDET, IVMS, NCSX, IMLWR
+      INTEGER WINDMODE, RLOFMODE, RMTMODE
 
       REAL*8 MAT(4,141),Xcompos(3,305),COcompos(8)
       CHARACTER(len=20) MLSchemes(10)
+      CHARACTER(len=30) accretion_schemes(3)
+      CHARACTER(len=15) RLOF_schemes(5) 
 
       INTEGER MAXMSH
 
@@ -58,7 +61,7 @@
      :     IMO, IDIFF
       COMMON /SODDS / ALPHA, RML, CMG, CSI, CFE, CT(10), AGE, DT, M1,
      :  EC, BM, ANG, CM, MTA, MTB, TM(2), T0, M0, TC(2), OS, AC, RCD,
-     :  RMG, RHL, XF, DR, AK1 ,RMT, AK2, IZ(4), IB, ISX(45),
+     :  RMG, RHL, XF, DR, AK1, RMT, AK2, IZ(4), IB, ISX(45),
      :  TRB
       COMMON /STAT1 / CSX(10), CS(90, 127, 10), HAT(23320), NCSX
       COMMON /OP    / ZS, LEDD, VM, GR, GRAD, ETH, RLF, EGR, R, QQ
@@ -69,22 +72,23 @@
      &                RSUN, TSUNYR
       COMMON /YUK1  / PX(34), WMH, WMHE, VMH, VME, VMC, VMG, BE, VLH,
      :                VLE, VLC, VLN, VLT, MCB(12),WWW(100)
-      COMMON /CEE   / MHC(2), MENVC(2), DSEP, ICE, ICEP, ALPHACE
+      COMMON /CEE   / MHC(2), MENVC(2), SEP, DSEP, ICE, ICEP, ALPHACE
       COMMON /VARACC/ IVARACC, IMLWR
       COMMON /OPDAT / cbase,obase,opT(141),opR(31),fZ
       COMMON /XOPDAT/ opac(4,4,141,31,5)
       COMMON /COPDAT/ opacCO(4,4,141,31,305)
       COMMON /EVMODE/ IMODE
       COMMON /MIXFUD/ SGTHFAC, FACSGMIN, FACSG, ISGFAC
-! extra common for mesh-spacing
+C extra common for mesh-spacing
       COMMON /PMESH / PMH(2), PME(2), IAGB
-! first guess of pressure at H, He-burning shell (should be in input file!)
-!      data pmh, pme /1.0e17, 7.5e19/
-!
-! Extra COMMON for main-sequence evolution.
-!
+C first guess of pressure at H, He-burning shell (should be in input file!)
+C      data pmh, pme /1.0e17, 7.5e19/
+C
+C Extra COMMON for main-sequence evolution.
+C
       COMMON /ZAMS  / TKH(2), MZAMS(2)
       COMMON /MESH  / TRC1,TRC2,DD,DT1,DT2,MWT,MWTS,IVMC,IVMS
+      COMMON /MESH2 / DTF, DELTA
       COMMON /DHBLOC/ IDREDGE
       COMMON /DTCONT/ VLHP(2), VLEP(2), VLCP(2), RLFP(2), TOTMP(2), VLHC(2),
      :     VLEC(2), VLCC(2), RLFC(2), TOTMC(2)
@@ -92,9 +96,13 @@
       COMMON /DIFCOE/ DC(50,4,3), DCD(50,4)
       COMMON /STATUS/ IDET, IMERGE
       COMMON /MISC  / NMOD
+      COMMON /MISC2 / TSERR
       COMMON /JJTIME/ RLFcheck1,RLFcheck2
       !!!JJE's new timestep check - 11/12/2023
-
+      
+      COMMON /ACCMOD/ WINDMODE, RLOFMODE, RMTMODE ! JLG accretion model controls - 19/08/2025
+      COMMON /CHECK / OVERFLOWRLF
+      
       CBRT(VX) = DEXP(DLOG(VX)/3.0D0)
       RLOBE(VX) = 0.49D0*VX*VX/(0.6D0*VX*VX+DLOG(1.0D0+VX))
 
@@ -103,8 +111,10 @@
       DATA MLSchemes /"None", "Reimers", "Blocker", "V&W", "deJager-broken",
      :                "deJager", "deJager-slow", "deJager-None", "<not implemented>",
      :                "Eldridge"/
+      DATA RLOF_schemes /"Hurley", "Claeys", "Hurley & Ritter", "Claeys & Ritter", "Kolb & Ritter"/
+      DATA accretion_schemes /"No accretion", "Eddington limited accretion", "Fully conservative accretion"/
 
-! Here we define some data format blocks.
+C Here we define some data format blocks.
 99002 FORMAT (1P, 50E15.8, 0P)                                                 ! modin file
 99003 FORMAT (12I4,/,12I4,/,7I4,/,1P,5E8.1,0P,/,2(10I3,/,3(30I3,/)),3(15I      ! data file
      :3,/), 9F5.2, 1P, 3E8.1,
@@ -112,13 +122,14 @@
      : ,/, I2,F6.1,I2,F6.1, 1X, F4.2, I2, I2, 2(1X, E8.2),
      :/,I2,E8.1,E8.1, I5,
      :/,I2,F4.1,
-     :/,I2,I2)
+     :/,I2,I2,
+     :/,I2,I2, I2)
 99004 FORMAT (1X, 10F7.3)                                                       ! phys02.dat
 99005 FORMAT (1X, 1P, 2E14.6, E17.9, 3E14.6, 0P, 4I6, 1P, 2E11.3)               ! modin (first line only)
       IF ( IEND.NE.-1 ) GO TO 30                                                ! Go to almost EOF if IEND (passed parameter) is -1
-! Initialize physical constants
+C Initialize physical constants
       CALL CONSTS
-! Read opacity, nuclear reaction and neutrino loss rate data
+C Read opacity, nuclear reaction and neutrino loss rate data
       READ (11,'(I4)') NCSX                                                     ! Read in phys02.dat.
       READ (11,99004) CSX
 
@@ -129,19 +140,19 @@
       READ (11,99004) HAT
       READ (13,99004) RATEN                                                     ! Read in nrate.dat
 
-! RJS 18/4/08 - read in spline coefficients for diffusion
+C RJS 18/4/08 - read in spline coefficients for diffusion
 99006 FORMAT (E12.5,3(1X,E12.5))                                                ! Read in splinecoefficients.dat
       DO K = 1,3
             DO I = 1,50
                   READ (14,99006) (DC(I,J,K),J=1,4)
             END DO
       END DO
-! d-coefficients
+C d-coefficients
       DO I = 1,50
             READ (14,99006) (DCD(I,J),J=1,4)
       END DO
       DO J = 1, 60
-!      CT(J) = 0.0D0
+C      CT(J) = 0.0D0
             DO K = 1,MAXMSH
                   H(J, K) = 0.0D0
                   DH(J, K) = 0.0D0
@@ -153,7 +164,7 @@
             ST(J) = J
       END DO
 
-! Read in data
+C Read in data
       READ(1,99003) NH2,IT1,IT2,JIN,JOUT,NCH,JP,IZ,IMODE,                     ! Reading in the file "data"
      :ICL,ION,IAM,IOP,IBC,INUC,ICN,IML(1),IML(2),ISGTH,IMO,IDIFF,
      :NT1,NT2,NT3,NT4,NT5,NSV,NMONT,
@@ -164,18 +175,20 @@
      :IVMC, TRC1, IVMS, TRC2, MWTS, IAGB, ISGFAC, FACSGMIN, SGTHFAC,
      :ISTART, HKH, GFF, NNMOD,
      :ICEP, ALPHACE,
-     :IVARACC, IMLWR
+     :IVARACC, IMLWR,
+     :WINDMODE, RLOFMODE, RMTMODE
 
-! Idiot proofing -- otherwise the logic in solver will fail
+C Idiot proofing -- otherwise the logic in solver will fail
       FACSGMIN = DMIN1(1d0, FACSGMIN)                                           ! Constrain FACSGMIN (thermohaline mixing reduction factor)
 
-! Read first line of modin
+C Read first line of modin
       READ(30, 99005) SM, DTY, AGE, PER, BMS, EC,NH,NP,NMOD,IB,PMH(1),PME(1)  ! This is the first line of modin
 
 26400 FORMAT(A, I2)
 26401 FORMAT(A, I2, 3A)
+26402 FORMAT(A, I2, 3A, 1P, E8.2)
 
-! Adjust parameters if we are doing an evolution run
+C Adjust parameters if we are doing an evolution run
       IF (ISTART.EQ.1) THEN
             WRITE(*,*) "Age, DT, NMOD overriden"
             DTY = 3e7/(SM**2d0) * HKH
@@ -184,11 +197,10 @@
             WRITE(*,26400) "NMOD has been set to: ", NMOD
        END IF
 
-!        WRITE (*,'(I2,F4.1)') ICEP, ALPHACE
+C        WRITE (*,'(I2,F4.1)') ICEP, ALPHACE
 
 
-      DO ISTAR = 1,IMODE
-            WRITE(32+20*(ISTAR-1),99003) NH2,IT1,IT2,JIN,JOUT,NCH,JP,IZ,IMODE,                    ! Output the data file block to out
+      WRITE(32,99003) NH2,IT1,IT2,JIN,JOUT,NCH,JP,IZ,IMODE,                    ! Output the data file block to out
      :ICL,ION,IAM,IOP,IBC,INUC,ICN,IML(1),IML(2), ISGTH, IMO, IDIFF,
      :NT1,NT2,NT3,NT4,NT5,NSV,NMONT,
      :EP,DT3,DD,ID,ISX,DT1,DT2,CT,ZS,ALPHA,CH,CC,CN,CO,
@@ -198,17 +210,17 @@
      :IVMC, TRC1, IVMS, TRC2, MWTS, IAGB, ISGFAC, FACSGMIN, SGTHFAC,
      :ISTART, HKH, GFF, NNMOD,
      :ICEP, ALPHACE,
-     :IVARACC, IMLWR
+     :IVARACC, IMLWR,
+     :WINDMODE, RLOFMODE, RMTMODE
 
-            WRITE(32+20*(ISTAR-1), 99005)
-            WRITE(32+20*(ISTAR-1), 99005) SM, DTY, AGE, PER, BMS, EC,NH,NP,NMOD,IB,PMH(1),PME(1)
-      END DO
+      WRITE(32, 99005)
+      WRITE(32, 99005) SM, DTY, AGE, PER, BMS, EC,NH,NP,NMOD,IB,PMH(1),PME(1)
 
-! Convert RML from eta to coefficient required
+C Convert RML from eta to coefficient required
       RML = 4d-13*RML                                                           ! Okay so this line puts us into "Eggleton" units kinda for ML.
-!
-! Create the spline interpolation data.
-!
+C
+C Create the spline interpolation data.
+C
       IF (IOP .EQ. 1) THEN
             CALL OPSPLN
       END IF
@@ -218,16 +230,22 @@
       WRITE(*,26401) 'Selection for massloss (*1) is:', IML(1), ' (', trim(MLSchemes(IML(1)+1)), ')'
       WRITE(*,26401) 'Selection for massloss (*2) is:', IML(2), ' (', trim(MLSchemes(IML(2)+1)), ')'
       WRITE(*,26400) 'Common Envelope prescription is: ', ICEP
-
+      WRITE(*,26401) 'Selection for wind accretion is:', WINDMODE, ' (', trim(accretion_schemes(WINDMODE+1)), ')'
+      WRITE(*,26401) 'Selection for RLOF accretion is:', RLOFMODE, ' (', trim(accretion_schemes(RLOFMODE+1)), ')'
+      IF (RMTMODE.LE.1) THEN
+            WRITE(*,26402) 'Selection for RLOF mass loss is:', RMTMODE, ' (', trim(RLOF_schemes(RMTMODE+1)), '), RMT = ', RMT
+      ELSE
+            WRITE(*,26401) 'Selection for RLOF mass loss is:', RMTMODE, ' (', trim(RLOF_schemes(RMTMODE+1)), ')'
+      END IF
       IF(IML(1).EQ.9) THEN
             WRITE(*,*) 'Mass-loss targeting enabled!'
             WRITE(*,*) 'Target mass is:', RML/4d-13
       END IF
 
       fZ=ZS
-! READ IN NEW OPACITY DATA and SETUP STUFF - JJ 4/11/02
-!     Read in Opal Data
-!     Setup format statements
+C READ IN NEW OPACITY DATA and SETUP STUFF - JJ 4/11/02
+C     Read in Opal Data
+C     Setup format statements
 99042 FORMAT (F5.2, 31F7.3)
 99043 FORMAT (5F7.3)
 99045 FORMAT (3F7.3)
@@ -240,28 +258,28 @@
             DO J=1,31
                   opR(J)=-8d0+0.5d0*(J-1)
             END DO
-!     Load in CO tables and setup splines
+C     Load in CO tables and setup splines
             WRITE(*,*) 'Reading in Variable tables and setting up splines'
-!         OPEN(10,FILE='COtables',STATUS='unknown',ACCESS='SEQUENTIAL')
+C         OPEN(10,FILE='COtables',STATUS='unknown',ACCESS='SEQUENTIAL')
             DO K=1,305
                   READ(10,99045) b3,b1,b2
-!            write (*,*) K,b3
+C            write (*,*) K,b3
                   DO I=1,141
                         READ(10,99042) temp,(opacCO(1,1,I,J,K),J=1,31)
                   END DO
             END DO
-!         CLOSE(10)
+C         CLOSE(10)
             cbase=b2*0.173  !CC       - Changed by SMR (4/6/21) to allow for different CO abundances
             obase=b2*0.482  !CO
-!     Bit to add in variable molecular bits from old paper in Marigo
-!     Setup composition matrix
+C     Bit to add in variable molecular bits from old paper in Marigo
+C     Setup composition matrix
             IF (IOP.eq.4.or.IOP.eq.6) THEN
                   WRITE(*,*) "IOP selection not available"
             END IF
-!     Setup CO spline tables
+C     Setup CO spline tables
             DO K=1,305
-!            write(*,*) K
-!     Construct splines in T direciton
+C            write(*,*) K
+C     Construct splines in T direciton
                   DO J=1,31
                         DO I=1,141
                               MAT(1,I)=opacCO(1,1,I,J,K)
@@ -275,7 +293,7 @@
                               opacCO(4,1,I,J,K)=MAT(4,I)
                         END DO
                   END DO
-!     Construct splines in R direction
+C     Construct splines in R direction
                   DO I=1,140
                         DO IC=1,4
                               DO J=1,31
@@ -300,21 +318,21 @@
       END IF
       !! END of new opac tables bit - JJ - 4/11/02
 
-!
-! If IAM=0, use integer atomic weights
-!
+C
+C If IAM=0, use integer atomic weights
+C
       IF (IAM.EQ.0) THEN
             DO J = 1, 9
                   AM(J) = BN(J)
             END DO
       END IF
 
-! Read the initial model
+C Read the initial model
       DO  K = 1, NH
             READ(30, 99002) (H(J,K), J=1, JIN)
       END DO
 
-! If available, read initial (last converged) changes
+C If available, read initial (last converged) changes
       DO K = 1, NH
             READ(30, 99002, END = 61, ERR = 61) (DH(J,K), J=1, JIN)
             DO 15 J = 1,JIN
@@ -323,7 +341,7 @@
             END DO
  61   CONTINUE
 
-! Read in first line of star 2 - most of this gets ignored
+C Read in first line of star 2 - most of this gets ignored
       IF (IMODE.EQ.2) THEN
             READ(50, 99005) SM2, DTY2, AGE2, PER2, BMS2, EC2,NNH2,NP2,NMOD2,IB2,PMH(2),PME(2)
 
@@ -332,7 +350,7 @@
             END DO
       END IF
 
-! Attempt to read in nucleosynthesis input - but don't worry if it doesn't exist.
+C Attempt to read in nucleosynthesis input - but don't worry if it doesn't exist.
       DO J = 1, 100
             DO K = 1, NH
                   HNUC(J,K) = 0d0
@@ -340,21 +358,21 @@
             END DO
       END DO
 
-! Star 1 nucleosynthesis data
+C Star 1 nucleosynthesis data
       READ(31, 99005, ERR = 12, END = 12)
       DO K = 1, NH
             READ(31, 99002, ERR = 12, END = 12) (HNUC(J,K), J=1, 50)
       END DO
 
       IF (IMODE.EQ.2) THEN
-! Star 2 nucleosynthesis data
+C Star 2 nucleosynthesis data
             READ(51, 99005, ERR = 12, END = 12)
             DO K = 1, NH
                   READ(51, 99002, ERR = 12, END = 12) (HNUC(J,K), J=51, 100)
             END DO
       END IF
 
-! Convert some things to `cgs' units: 10**11 cm, 10**33 gm, 10**33 erg/s
+C Convert some things to `cgs' units: 10**11 cm, 10**33 gm, 10**33 erg/s
    12 DT = CSECYR*DTY
       TM(1) = MSUN*SM
       TM(2) = MSUN*SM2
@@ -364,12 +382,12 @@
 
       RMG = RMG/CSECYR
       RMT = MSUN*RMT/CSECYR
-!       WF = DSQRT(1.0D0+DEXP(H(1,1)))
-!       PSI = 2.0D0*(WF-DLOG(WF+1.0D0))+H(1,1)
-!       RMT = MSUN*(10**(PSI+10)*TM(1)**2)/CSECYR
+C       WF = DSQRT(1.0D0+DEXP(H(1,1)))
+C       PSI = 2.0D0*(WF-DLOG(WF+1.0D0))+H(1,1)
+C       RMT = MSUN*(10**(PSI+10)*TM(1)**2)/CSECYR
       RML = RML*MSUN**2/LSUN/RSUN/CSECYR
 
-! Optionally, re-initialise mass
+C Optionally, re-initialise mass
       IF (NCH.GE.1) THEN
             H(4,1) = DLOG(TM(1))
             HPR(4,1) = DLOG(TM(1))
@@ -393,28 +411,28 @@
   102 FORMAT(2(F8.4,1PE16.9,4E10.3,0P7F8.5,F8.3,2F8.4,/),3F8.4,F10.4,
      :1P2E10.3,0PF10.4,7F8.5,F8.3,2F8.4,/,F8.4,12F8.3,5F8.4,/,3F8.4,I6)
 
-! REMESH optionally rezones the model, e.g. for different no. of meshpoints
-      CALL REMESH(NH2, NCH, CH, CO, CC, CNE)
+C REMESH optionally rezones the model, e.g. for different no. of meshpoints
+   14 CALL REMESH(NH2, NCH, CH, CO, CC, CNE)
 
       DO K=1,NH
             DO J = 1,JOUT
                   HPR(J,K) = H(J,K)
             END DO
-! Store nucleosynthesis
+C Store nucleosynthesis
             DO J=1,100
                   HNUCPR(J,K) = HNUC(J,K)
             END DO
       END DO
-! COMPOS puts composition variables to zero if they are very small
+C COMPOS puts composition variables to zero if they are very small
       CALL COMPOS
       CALL PRINTB(DTY, PER, NT1, NT2, NT3, NT4, NMONT, NMOD, IEND)
 
-!
-! If initial timestep is negative calculate DT as a fraction of the
-! Kelvin-Helmholtz timescale and scale mass loss to evolve up the main
-! sequence.
-!
-! Does this still work??? I never use it...
+C
+C If initial timestep is negative calculate DT as a fraction of the
+C Kelvin-Helmholtz timescale and scale mass loss to evolve up the main
+C sequence.
+C
+C Does this still work??? I never use it...
       IF (ICN .EQ. 1) THEN
             DT = CSECYR*5D0*TKH(ISTAR)/(SM*SM)
             RMG = CLN10/(DT*2D2)
@@ -425,7 +443,7 @@
       CLOSE (20)
       CLOSE (25)
 
-! Store certain previous values, for possible emergency restart
+C Store certain previous values, for possible emergency restart
       PR(1) = AGE
       PR(2) = DT
       PR(3) = M1
@@ -440,19 +458,19 @@
       PR(12) = M0
       PR(13) = TC(1)
       PR(14) = TC(2)
-!      DO 16 J = 1,13
-!   16    PR(J) = CT(J+10)
+C      DO 16 J = 1,13
+C   16    PR(J) = CT(J+10)
 
       NPR = NMOD
       KPR = KS
 
       GO TO 40
-! Almost end of initial input section. Start of regular update section
+C Almost end of initial input section. Start of regular update section
    30 IF ( IEND.NE.0 ) GO TO 31
 
       CALL COMPOS
 
-! Store certain previous values, for possible emergency restart
+C Store certain previous values, for possible emergency restart
       PR(1) = AGE
       PR(2) = DT
       PR(3) = M1
@@ -467,13 +485,13 @@
       PR(12) = M0
       PR(13) =  TC(1)
       PR(14) = TC(2)
-!      DO 10 J = 1,13
-!   10    PR(J) = CT(J+10)
+C      DO 10 J = 1,13
+C   10    PR(J) = CT(J+10)
       NPR = NMOD
       KPR = KS
 
-! PRINTB prints out every NT2'th meshpoint of every NT1'th model; NT3
-! `pages' per printed model; also 4-line summary for every NT4'th model
+C PRINTB prints out every NT2'th meshpoint of every NT1'th model; NT3
+C `pages' per printed model; also 4-line summary for every NT4'th model
       DTY = DT/CSECYR
       AGE = AGE + DTY
       NMOD = NMOD + 1
@@ -483,10 +501,10 @@
 
       ANG = ANG/(1.0D0 + RHL*DTY)
       EC = EC*(1.0D0 + DTY*ECT)/(1.0D0 - DTY*ECA*EC)
-!     TRB = TRB*(1.0D0 + DTY*ECT)
+C     TRB = TRB*(1.0D0 + DTY*ECT)
 
-! FUDGE TO DEAL WITH KS outside range. THIS ***WILL*** SCREW UP BINARIES!
-! This is no longer used, so I don't care whether it works or not. RJS
+C FUDGE TO DEAL WITH KS outside range. THIS ***WILL*** SCREW UP BINARIES!
+C This is no longer used, so I don't care whether it works or not. RJS
       KS = 1
       IF (AGE.GT.ST(KS+1)) THEN
             KS = KS+1
@@ -496,11 +514,19 @@
             WRITE(*,*) 'IB=2 and (ST(KS+2)=0 or RLF>0) -- stopping'
             STOP
       END IF
+
+C Kills pseudo-binary model if common enevlope begins - JLG 05/06/2025      
+      IF (IMODE.EQ.1.AND.R/RSUN.GE.SEP) THEN
+            WRITE(*,*) "Common envelop starting, aborting on model", NMOD
+            STOP
+      END IF
+
+      
       DELTA = 0.0D0
 
       DO K = 1, NH
             DO J = 1, 30 !60
-! Don't use L, HORB in delta
+C Don't use L, HORB in delta
                   IF (J.NE.8 .AND. J.NE.23 .AND. J.NE.13 .AND. J.NE.28 .AND. J.NE.14 .AND. J.NE.29) THEN
                         DELTA = DELTA + DABS(DH(J,K))
                   END IF
@@ -515,20 +541,21 @@
                   DELTA = DELTA + AC*DABS(DH(8,K)/HPR(8,1))
             END IF
       END DO
-! Update nucleosynthesis matrix
+C Update nucleosynthesis matrix
       DO K = 1, NHf
             DO J=1,100
                   HNUCPR(J, K) = HNUC(J, K)
                   DHNUCPR(J, K) = DHNUC(J, K)
                   HNUC(J, K) = HNUC(J, K) + DHNUC(J, K)
-! Blank DHNUC each time
-!            DHNUC(J,K) = 0d0
+C Blank DHNUC each time
+C            DHNUC(J,K) = 0d0
             END DO
       END DO
 
       WRITE(32,*) "DELTA =", DELTA, " DD = ", DD
+      CALL FLUSH(32)
 
-      DTF = DMIN1 (DT2, DD/DELTA)
+      DTF = DMIN1(DT2, DD/DELTA)
 
       DTF1 = DTF
       DTF2 = DTF
@@ -538,44 +565,47 @@
             CNTRXH(ISTAR) = H(5+15*(ISTAR - 1), NMESH)
       END DO
 
-      IF(RLFcheck1.GE.-1d-2) THEN   ! Slow down the timestep near RLOF - 11/12/2023
-            DTF1 = DMAX1(ABS(RLFcheck1)*1d2 * DD/DELTA,0.05*DD/DELTA)
+      IF (RMTMODE.NE.4) THEN  ! Only if Kolb & Ritter not selected -- it performs better without timestep controls - JLG 02/12/2025
+            IF(RLFcheck1.GE.-1d-2) THEN   ! Slow down the timestep near RLOF - 11/12/2023
+                  DTF1 = DMAX1(1d2*ABS(RLFcheck1),5d-2)
+                  DTF1 = DTF1 * DD/DELTA
 
-            IF(RLFcheck1.GE.5d-4) THEN
-                  DTF1 = DMIN1(ABS(RLFcheck1)*1d2 *(RLFcheck1*2d3)**3d0* DD/DELTA ,0.5*DD/DELTA)
+                  IF(RLFcheck1.GE.5d-4) THEN
+                        DTF1 = DMIN1(1d2*ABS(RLFcheck1)*(RLFcheck1*2d3)**3d0,5d-1)
+                        DTF1 = DTF1 * DD/DELTA
+                  END IF
             END IF
 
-            DTF1 = DMIN1(1.01, DTF1)
-      ENDIF
+            IF(RLF.GE.-1d-2) THEN
+                  DTF2 = DMAX1(1d2*ABS(RLF),5d-2)
+                  DTF2 = DTF2 * DD/DELTA
 
-      IF(RLF.GE.-1d-2) THEN
-            DTF2 = DMAX1(ABS(RLF)*1d2 * DD/DELTA,0.05*DD/DELTA)
-
-            IF(RLF.GE.5d-4) THEN
-                  DTF2 = DMIN1(ABS(RLF)*1d2 *(RLF*2d3)**3d0 * DD/DELTA, 0.5*DD/DELTA)
+                  IF(RLF.GE.5d-4) THEN
+                        DTF2 = DMIN1(1d2*ABS(RLF)*(RLF*2d3)**3d0,5d-1)
+                        DTF2 = DTF2 * DD/DELTA
+                  END IF
             END IF
 
-            DTF2 = DMIN1(1.01, DTF2)
-      ENDIF
+            DTF = DMIN1(DTF1, DTF2)
+      END IF
 
-      DTF = DMIN1(DTF1, DTF2)
-
-!     IF ( IHOLD .LE. 3 ) DTF = 1.0D0
+C     IF ( IHOLD .LE. 3 ) DTF = 1.0D0
       IF (IHOLD.LE.2) THEN
             DTF = 1.0D0
       END IF
-
+      
+      
       DTY = DMAX1(DT1, DTF)*DTY
-   
+      
       DO ISTAR = 1,IMODE
             IF (IAGB.EQ.1) THEN
-! Reduce timestep if He luminosity is increasing too fast -- useful on AGB
+C Reduce timestep if He luminosity is increasing too fast -- useful on AGB
                   IF ((VLEC(ISTAR) - VLEP(ISTAR))/VLEP(ISTAR).GT.0.05 .AND.
      :                  VLEC(ISTAR).GT.1d3) THEN
                         DTY = 0.8*DTY
                   END IF
             END IF
-! Extra control mechanisms that can be uncommented as necessary - RJS
+C Extra control mechanisms that can be uncommented as necessary - RJS
             IF ((VLHC(ISTAR) - VLHP(ISTAR))/VLHP(ISTAR).GT.0.10) THEN
                   DTY = 0.8*DTY
             END IF
@@ -593,41 +623,41 @@
       END IF
 
       DT = CSECYR*DTY
-
+C      IF (DT1.EQ.1d0) GO TO 6
+C      IF (IDREDGE.EQ.3) GO TO 6
       IF ((JP.EQ.1 .AND. DTF.GE.DT1).OR.DTY.LT.6d-5) THEN
-            CONTINUE
-      ELSE
-! clear DH in some circumstances
-            WRITE (32,*) "Clearing DH..."
-
-            DO K = 1, NH
-                  DO J = 1, 60
-                        DH(J, K) = 0.0D0
-                  END DO
-            END DO
+            GO TO 6
       END IF
-      IHOLD = IHOLD + 1
-! CNO equilibrium on the main sequence.
-! Does this still work???
+C clear DH in some circumstances
+      WRITE (32,*) "Clearing DH..."
+
+      DO K = 1, NH
+            DO J = 1, 60
+                  DH(J, K) = 0.0D0
+            END DO
+      END DO
+    6 IHOLD = IHOLD + 1
+C CNO equilibrium on the main sequence.
+C Does this still work???
       IF (ICN .EQ. 1) THEN
             DT = MSUN*MSUN*CSECYR*5D0*TKH(ISTAR)/(VM*VM)
             RMG = CLN10/(DT*2D2)
       END IF
 
       CALL COMPOS
-! For *2, some factors relating to accretion from *1. Ignored if this is *1
+C For *2, some factors relating to accretion from *1. Ignored if this is *1
  40   CONTINUE
-!   40 T0 = CSECYR*ST(KS+1)
-!      M0 = MSUN*MS(KS+1)
-! RJS added to allow -C compile and run
-!      IF (KS.NE.0) THEN
-!         MTA = MSUN/CSECYR*(MS(KS+1)-MS(KS))/(ST(KS+1)-ST(KS))
-!         MTB = MSUN/CSECYR*(MS(KS+2)-MS(KS+1))/(ST(KS+2)-ST(KS+1))
-!      END IF
+C   40 T0 = CSECYR*ST(KS+1)
+C      M0 = MSUN*MS(KS+1)
+C RJS added to allow -C compile and run
+C      IF (KS.NE.0) THEN
+C         MTA = MSUN/CSECYR*(MS(KS+1)-MS(KS))/(ST(KS+1)-ST(KS))
+C         MTB = MSUN/CSECYR*(MS(KS+2)-MS(KS+1))/(ST(KS+2)-ST(KS+1))
+C      END IF
       IF (MOD(NMOD,NSV).NE.0 .OR. IEND.EQ.-1) THEN
             RETURN
       END IF
-! End of regular update section. Intermediate or final output section
+C End of regular update section. Intermediate or final output section
    31 IF (IEND.EQ.2) THEN
             GO TO 32
       END IF
@@ -645,7 +675,7 @@
       WRITE (34, 99005) SM, DTY, AGE, PER, BMS, EC, NH, NP, NMOD, IB, PMH(1), PME(1)
 
       DO K = 1, NH
-! Need to do this better - at present I'm writing out blanks
+C Need to do this better - at present I'm writing out blanks
             WRITE (34, 99002) (H(J,K), J=1, 15)
       END DO
 
@@ -656,13 +686,13 @@
       CALL FLUSH(34)
 
       IF (IMODE.EQ.2) THEN
-! Write out star 2
+C Write out star 2
             WRITE (54, 99005) SM2, DTY, AGE, PER, BMS, EC,NH,NP,NMOD,IB,PMH(2),PME(2)
             DO K = 1, NH
-! Copy HORB from star 1
+C Copy HORB from star 1
                   H(28,K) = H(13,K)
                   DH(28,K) = H(28,K)
-! Need to do this better - at present I'm writing out blanks
+C Need to do this better - at present I'm writing out blanks
                   WRITE (54, 99002) (H(J,K), J=16, 30)
             END DO
 
@@ -672,7 +702,7 @@
 
             CALL FLUSH(54)
       END IF
-! write out nucleosynthesis files - star 1 first
+C write out nucleosynthesis files - star 1 first
       WRITE (35, 99005) SM, DTY, AGE, PER, BMS, EC,NH,NP,NMOD,IB,PMH(1),PME(1)
 
       DO K = 1, NH
@@ -692,30 +722,33 @@
 
       RETURN
 
-! End of final output section. Start of emergency restart section
-   32 IF ( IHOLD .GT. 0 ) THEN
-            AGE = PR(1)
-            DT = PR(2)
-            M1 = PR(3)
-            EC = PR(4)
-            BM = PR(5)
-            ANG = PR(6)
-            CM = PR(7)
-            MTA = PR(8)
-            MTB = PR(9)
-            TM(1) = PR(10)
-            T0 = PR(11)
-            M0 = PR(12)
-            TC(1) = PR(13)
-            TC(2) = PR(14)
-
-            NMOD = NPR
+C End of final output section. Start of emergency restart section
+   32 IF ( IHOLD .LE. 0 ) THEN
+            GO TO 34
       END IF
+      AGE = PR(1)
+      DT = PR(2)
+      M1 = PR(3)
+      EC = PR(4)
+      BM = PR(5)
+      ANG = PR(6)
+      CM = PR(7)
+      MTA = PR(8)
+      MTB = PR(9)
+      TM(1) = PR(10)
+      T0 = PR(11)
+      M0 = PR(12)
+      TC(1) = PR(13)
+      TC(2) = PR(14)
+C      DO 11 J = 1,13
+C   11    CT(J+10) = PR(J)
 
-      DT = 0.8*DT
+      NMOD = NPR
+
+   34 DT = 0.8*DT
       IF (DT .LT. 0.01*PR(2)) THEN
             WRITE(*,*) 'DT < 1% of previous DT -- setting to 10% TKH'
-!             STOP
+C             STOP
             DT = 3e7/(SM**2d0) * HKH * CSECYR
       END IF
 
@@ -727,7 +760,7 @@
       END DO
 
       DTOLD = DTOLDP
-! Sort out nucleosynthesis for restart
+C Sort out nucleosynthesis for restart
       DO K = 1, NH
             DO J = 1,100
                   DHNUC(J, K) = DHNUCPR(J, K)

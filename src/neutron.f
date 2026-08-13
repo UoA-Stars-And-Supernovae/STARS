@@ -1,5 +1,5 @@
-!     Sorts out where n's get used up - I hope!
-!     NEEDS TO BE OVERHAULED!
+C     Sorts out where n's get used up - I hope!
+C     NEEDS TO BE OVERHAULED!
       SUBROUTINE NEUTRON(ISTAR)
 
       IMPLICIT NONE
@@ -56,25 +56,25 @@
       DO K=1,NMESH
             DO I=1,50
                   IF (I.NE.2.AND.I.NE.41) THEN
-! Don't change proton and neutron fractions - they are dealt with below
+C Don't change proton and neutron fractions - they are dealt with below
                         DHNUC(I+50*(ISTAR-1),K) = DHNUC(I+50*(ISTAR-1),K) -
      :                                            FRAC(I,K)*BARYN(I)*DHNUC(2+50*(ISTAR-1), K)
                   END IF
             END DO
 
             PROTONS(K) = - FRAC(41,K)*BARYN(41)*DHNUC(2+50*(ISTAR-1),K)
-!         DH(53,K) = DH(53,K) + FRAC(41,K)*BARYN(41)*DH(14,K)
+C         DH(53,K) = DH(53,K) + FRAC(41,K)*BARYN(41)*DH(14,K)
             DHNUC(2+50*(ISTAR-1),K) = 0d0
       END DO
-! Sort out remaining protons - RJS 27/8/04
+C Sort out remaining protons - RJS 27/8/04
       DO K=1,NMESH
-! Call to statel to get electron density & no. abundances.
+C Call to statel to get electron density & no. abundances.
             AF = H(1+15*(ISTAR-1),K) + DH(1+15*(ISTAR-1),K)
             AT = H(2+15*(ISTAR-1),K) + DH(2+15*(ISTAR-1),K)
 
             CALL STATEL(0, AF, AT, ISTAR)
-! Blank any -ve abundances. There shouldn't be any anyway...
-! RJS 19/1/04
+C Blank any -ve abundances. There shouldn't be any anyway...
+C RJS 19/1/04
             XA(1) = H(5+15*(ISTAR-1),K) + DH(5+15*(ISTAR-1),K)
             XA(2) = H(9+15*(ISTAR-1),K) + DH(9+15*(ISTAR-1),K)
             XA(3) = H(10+15*(ISTAR-1),K) + DH(10+15*(ISTAR-1),K)
@@ -99,9 +99,9 @@
                   END IF
                   XA2(2) = 0d0
             END DO
-! Pipe excess protons to nucrat as only source of them
+C Pipe excess protons to nucrat as only source of them
             XA2(41) = PROTONS(K)
-! Work out abundances for nucrat2 - RJS
+C Work out abundances for nucrat2 - RJS
             DO I = 1, 50
                   WW2(I) = XA2(I)/BARYN(I)
             END DO
@@ -145,14 +145,14 @@
                   FRAC(25, K) = RPSI29 - RPSI28
                   FRAC(26, K) = RPSI30 - RPSI29
                   FRAC(27, K) = - RPSI30
-! Why didn't I do the major isotopes as well?
+C Why didn't I do the major isotopes as well?
 
                   DO I=1,50
                         FRAC(I,K) = FRAC(I,K)/RATETOT
                         DHNUC(I+50*(ISTAR-1),K) = DHNUC(I+50*(ISTAR-1),K)
      :                                            - FRAC(I,K)*BARYN(I)*PROTONS(K)
                   END DO
-!            DHNUC(41+50*(ISTAR-1),K) = 0d0
+C            DHNUC(41+50*(ISTAR-1),K) = 0d0
             END IF
       END DO
 
