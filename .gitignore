@@ -47,6 +47,10 @@ data*
 plot*
 sprocess*
 sneplot*
+RMT
+accplot
+overflow
+timestep
 bs
 
 # STARS temporary files
