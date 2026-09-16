@@ -20,24 +20,38 @@ Getting ready to pull request
 2. Request review by someone with write access, for both code compliance and correctness.
 3. When ready, you will be asked if your PR is ready for merge, and then we will merge.
 
+Generative AI Policy
+--------------------
+
+The team behind Aotearoa STARS recognise that generative AI tools play an increasingly important role in the development of modern software tools. You are encouraged to use Generative AI programs such as Claude, ChatGPT, Gemini, etc, as long as:
+
+- You disclose your use of it in a pull request so that AI-generated code can be verified and documented
+- You manually verify the implementation of your code
+
+In release notes and journal papers, we document which (if any) features were written by AI for the edification of end users.
+
 Programming: The Zen of Aotearoa STARS
 --------------------------------------
 
-IMPLICIT is the work of the devil. All programs should use IMPLICIT NONE.
 
-We are no longer in the days where variable names were six characters.
-Use full words where possible, or known abbreviations where needed.
-    - DoCEE is acceptable.
-    - DoCommonEnvelopeEvolution is bad.
-    - DoComEnvEvo is worst.
+- **IMPLICIT is the work of the devil.** All programs must use IMPLICIT NONE.
 
-Spaces v. Tabs. Use 6 spaces. Bind TAB to input 6 spaces if you need to.
+- **Variable names.** We are no longer in the days where variable names were six characters. Use full words where possible, or known abbreviations where needed.
 
-Whitespace. One-third whitespace, one-third code, one-third comments.
+    - DoCEE is good.
+    - DoCommonEnvelopeEvolution is fine.
+    - DoComEnvEvo is bad.
 
-Read [GOTO Considered Harmful](https://homepages.cwi.nl/~storm/teaching/reader/Dijkstra68.pdf).
-Don't use GOTO unless *absolutely* necessary, and even then, think twice before use.
+- **Read [GOTO Considered Harmful](https://homepages.cwi.nl/~storm/teaching/reader/Dijkstra68.pdf).** Read it again. Don't use GOTO unless _absolutely_ necessary, and even then, think twice before use.
 
-Consistency is king. Follow the same essence of style as the current code.
-Break consistency at your own peril.
-Fortran declarations (e.g., WRITE, READ etc) should be in UPPERCASE, with no space between it and parentheses.
+- **Spaces v. Tabs,** the ancient debate. Use 6 spaces. Bind TAB to input 6 spaces if you need to.
+
+- **Whitespace.** One-third whitespace, one-third code, one-third comments.
+
+- **Shouting is OK here.** Fortran declarations (e.g., WRITE, READ etc) should be in UPPERCASE, with no space between it and parentheses.
+
+- **Consistency is king.** Follow the same essence of style as the code as at when you receive it. Break consistency at your own peril.
+
+- **Cite 'yo sources.** If you use an equation from a paper, you must include either an ADS link or (preferably) a DOI of the published paper.
+
+- Enforcement of the Zen is an ongoing process.
