@@ -13,7 +13,7 @@
       REAL*8 MCB, DLOG, MISC, OPR, CH, MHC, MIXFUD, WWW
       REAL*8 DT3, STAT1, CO, B3, DT, DHBLOC, HKH, MTB
       REAL*8 DTF, VLN, GRAD, DCD, B1, MS, EGR, ECA
-      REAL*8 VROT1, PMESH, PME, VLCP, RHL, DH, CT, M1
+      REAL*8 VROT1, PMESH, PME, VLCP, RHL, DH, CT, M1, PMC
       REAL*8 VLEC, BEEN, VLCC, WX, EC2, CLEARING, VLC, AK2
       REAL*8 CNE, PI4, RLFP, OPAC, SET, GT, HPR, CSI
       REAL*8 VLH, PER2, DR, CS, DTCONT, LSUN, PPER
@@ -80,7 +80,7 @@
       COMMON /EVMODE/ IMODE
       COMMON /MIXFUD/ SGTHFAC, FACSGMIN, FACSG, ISGFAC
 C extra common for mesh-spacing
-      COMMON /PMESH / PMH(2), PME(2), IAGB
+      COMMON /PMESH / PMH(2), PME(2), PMC(2), IAGB
 C first guess of pressure at H, He-burning shell (should be in input file!)
 C      data pmh, pme /1.0e17, 7.5e19/
 C

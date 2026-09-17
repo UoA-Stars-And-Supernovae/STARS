@@ -28,7 +28,7 @@
       REAL*8 DHBLOC, MTB, WINDML, ZT, SDC, EGR, BE2, PME
       REAL*8 TINTMID, DH, M1, SDS, PI4, E16, LOGG
       REAL*8 CSI, VLH, THBASE, WINDS, DTCONT, ANGULAR, WA1, XFE
-      REAL*8 ST, VMG, XA, TBCE, FL, TKH, PG, PMH
+      REAL*8 ST, VMG, XA, TBCE, FL, TKH, PG, PMH, PMC
       REAL*8 RPP, SX, DH0, T0, STS, RCCG, DEL, YIELD
       REAL*8 CFE, MENVC, HTOT, DT1, MK, EX, WCV, GE
       REAL*8 H, TSUNYR, LOG10, ZS, DSQRT, XC, EXX, GRADA
@@ -54,7 +54,7 @@
       INTEGER JTHB, JZ, I6, NWRT3, ISTAR, INF, IVMS
       INTEGER JIN, IZ, I7, IAGB, KICZ, K
       INTEGER KBICZ, INERTI, ICEP, NMONT, IJ, ISX, NE
-      INTEGER JJTIME, NMOD, NCDATA, I, KME, KHE, JC, IVMC
+      INTEGER JJTIME, NMOD, NCDATA, I, KME, KHE, KMC, JC, IVMC
       INTEGER II, IS, KK, IEND, KCE, JE, IW, IY
       INTEGER NUCMAT, J, IDREDGE, JJ
       INTEGER KCB(12), KMX(3), KEX(12), KENV(2)
@@ -74,7 +74,7 @@
      :  RMG, RHL, XF, DR, AK1 ,RMT, AK2, ITH, IX, IY, IZ, IB, ISX(45),
      :  TRB
 * extra common for mesh-spacing
-      COMMON /PMESH / PMH(2), PME(2), IAGB
+      COMMON /PMESH / PMH(2), PME(2), PMC(2), IAGB
       COMMON /CEE   / MHC(2), MENVC(2), SEP, DSEP, ICE, ICEP, ALPHACE
       COMMON /INF   / Q(60)
       COMMON /DINF  / QD(60)
@@ -361,8 +361,10 @@ C                         VMH = (PX(9)*(XF-SX(10,KK))+SX(9,KK)*(XH-XF))/(XH-SX(1
 C                         KMH = K
 C                         PMH(ISTAR) = (PX(2)*(XF-SX(10,KK))+SX(2,KK)*(XH-XF))/(XH-SX(10,KK))
 C                   END IF
-                  IF (XC.GT.XF.AND.SX(12,KK).LT.XF) THEN
+                  IF (XC.GT.XF.AND.SX(12,KK).LT.XF.AND.K.GT.NMESH/2) THEN
                         VMC = (PX(9)*(XF-SX(12,KK))+SX(9,KK)*(XC-XF))/(XC-SX(12,KK))
+                        KMC = K
+                        PMC(ISTAR) = (PX(2)*(XF-SX(12,KK))+SX(2,KK)*(XC-XF))/(XF-SX(12,KK))
                   END IF
 C N abundance in H-burning ash
                   IF (XH.GT.1d-10.AND.SX(10,KK).LT.1d-10) THEN

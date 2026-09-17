@@ -43,7 +43,7 @@
       REAL*8 BC3, AP, LQ, R3A, CC, ANG, M0
       REAL*8 OF, GTMA, D, RPN, RCD, ATDATA, AMASS, DMAX1
       REAL*8 CHI, RGNE, STAR, MIXV, RBP, WT, LEDD, ACCDAT1, ACCDAT2
-      REAL*8 SX, OVRFLW1
+      REAL*8 SX, OVRFLW1, PMC, CP4, CT2
       INTEGER ITH, IMODE, IB, IX, ISGTH, NMESH, ISGFAC, ION
       INTEGER ISTAR, INF, JIN, JW, IZ, IZZ, K1, IONISE
       INTEGER IAGB, KICZ, K, IBC, KBICZ, INERTI, ICL, IML
@@ -62,7 +62,7 @@
      :  TRB
       COMMON /ATDATA/ DH2(4), CCHI(26,9), OMG(27), AMASS(10), BN(10), IZZ(10)
 * extra common for mesh-spacing
-      COMMON /PMESH / PMH(2), PME(2), IAGB
+      COMMON /PMESH / PMH(2), PME(2), PMC(2), IAGB
       COMMON /STAT2 / AP, ARHO, U, P, RHO, FK, T, SF, ST, ZT, GRADA, CP,
      :                CHI, QP, PR, PG, PF, PT, EN, RPP, R33, R34, RBE, RBP,
      :                RPC, RPN, RPO, R3A, RAC, RAN, RAO, RANE, RCC, RCO,
@@ -209,7 +209,7 @@ C if GRADR < GRADA, we get WCV = 0 and GRADT = GRADR
       ATM = GRADT*APM
 C Old MSF 2000
       IOLD = 0
-      IF (IOLD.EQ.1) THEN ! IMODE=1 no longer uses the old function - JG 04-04-25
+      IF (IOLD.EQ.1) THEN ! IMODE=1 no longer uses the old function - JLG 04/04/25
             CT1 = 1.0D1**(1.0D1*CT(1)) !!! should change input format !!!
 
             VP = CT(4)*AP + CT(5)*LOG((P+CT(9))/(P+CT1))
@@ -221,6 +221,13 @@ C Old MSF 2000
             CP1 = 3.0*PME(ISTAR)
             CP2 = 0.3*PME(ISTAR)
             CP3 = 0.1*PMH(ISTAR)
+            CP4 = 0.1*PMC(ISTAR)
+            
+            ! Added new prefactor to slowly turn off helium term in MSF as core helium fraction falls - JLG 15/09/26
+            CT2 = (CT(2)/2) * (1 - COS(CPI * (SX(11,2) - XF)/(1d0-XF)))
+            IF (SX(11,2).LE.XF) THEN
+                  CT2 = (CT(2)/2) * (1 - COS(CPI * (SX(11,2) - XF)/(0d0 - XF)))
+            END IF
 
             IF (SURFXH.lt.0.15d0) THEN
                   CP3=0.1* PMHfixed(ISTAR)
@@ -232,11 +239,15 @@ C Old MSF 2000
 C            CT(5) = 0.15
 C            CT(2) = 0.0
 
-            VP = CT(4)*AP + CT(5)*LOG(P+CP3) +   CT(2)*LOG(P+CP1)
-     &                  + CT(2)*LOG(P+CP2)
+            VP = CT(4)*AP + CT(5)*LOG(P+CP3)
+     &                    + CT2*LOG(P+CP1)
+     &                    + CT2*LOG(P+CP2)
+C     &                    + 0.1*LOG(P+CP4) ! Carbon term, currently not working (may need to create a smart prefactor like the new Helium prefactor (CT2)
 
-            VPP = CT(4) + CT(5)*P/(P+CP3) + CT(2)*P/(P+CP2)
-     &                  + CT(2)*P/(P+CP1)
+            VPP = CT(4) + CT(5)*P/(P+CP3) 
+     &                  + CT2*P/(P+CP2)
+     &                  + CT2*P/(P+CP1)
+C     &                  + 0.1*P/(P+CP4) ! Carbon term, currently not working (may need to create a smart prefactor like the new Helium prefactor (CT2)
       END IF
 
       CT10 = 2.0D4              !!! fixed, should change input format !!!
