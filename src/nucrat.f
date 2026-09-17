@@ -5,20 +5,19 @@ C     energy and neutrino release
       IMPLICIT NONE
 
       REAL*8 CDUM, T6R, RANE, CAT, N12, RCO, RPNA
-      REAL*8 CNSTS, QRT, ABUND, SQRT, VX, CZB, TT, CRT
-      REAL*8 RHB, R33, N14, W1, AVM, FPNG, CZA, ENX
-      REAL*8 RBE, TL, N20, XB, ABS, ZW, STAT2, CSA
-      REAL*8 WC, DSTR, CLN10, RPNG, DLOG, EXH, N56, CZW
-      REAL*8 CZD, STAT1, ZT, N1, CZC, EXC, N, VZ
-      REAL*8 QNT, RAO, NE, R34, ZB, RCC, PI4, VL
-      REAL*8 EXP, N16, STRN, CSD, ZC, RHO, ROO, CBRT
-      REAL*8 RN, N28, RPO, XA, NCDATA, RRT, N3, RPP
-      REAL*8 EQ, ZD, CSB, CDUM2, RGMG, SCRN, CSC, W2
-      REAL*8 RAN, WB, CXD, N4, RCCG, R3A, WR, CMEVMU
+      REAL*8 QRT, CZB, TT, CRT, RHB, R33, N14, W1
+      REAL*8 AVM, FPNG, CZA, ENX, RBE, TL, N20, XB
+      REAL*8 ZW, CSA, WC, DSTR, CLN10, RPNG, EXH
+      REAL*8 N56, CZW, CZD, ZT, N1, CZC, EXC, N, VX
+      REAL*8 VZ, QNT, RAO, NE, R34, ZB, RCC, PI4
+      REAL*8 VL, N16, STRN, CSD, ZC, RHO, ROO, RN
+      REAL*8 N28, RPO, XA, RRT, N3, RPP, EQ, ZD
+      REAL*8 CSB, CDUM2, RGMG, SCRN, CSC, W2, RAN
+      REAL*8 WB, CXD, N4, RCCG, R3A, WR, CMEVMU
       REAL*8 NZZ, RR, EXHE, ZA, W3, N24, RPN, RPC
       REAL*8 RCCA, CPL, EX, GE, CPI, TF, RAC, RGNE
-      REAL*8 AUXIN, FCCG, RBP, WA, DEXP, TU, NI
-      INTEGER INT, JW, IML, JCSX, IMO, ICN, IOP, IDIFF
+      REAL*8 FCCG, RBP, WA, TU, NI, T9, RAC2, RCC2, CBRT
+      INTEGER JW, IML, JCSX, IMO, ICN, IOP, IDIFF
       INTEGER ISGTH, IT, INUC, IBC, J
       INTEGER ION, I, ICL, LT
 
@@ -90,7 +89,7 @@ C Ionization details for He3 not worked out - RJS
                         END IF
 * weak screening
                         IF (INUC.GE.10) THEN
-                              SCRN = zw*czw(j)
+                              SCRN = ZW*CZW(J)
                         END IF
 
                         RN = EXP(CLN10*(RR + 20.0D0) + SCRN)*1.0D-20
@@ -123,21 +122,21 @@ C Sort out rates
 
       IF(MOD(INUC,10).EQ.1) THEN
 * correct rates to simulate Bahcall (1992) cross sections
-         rpp = rpp*0.9828
-         r33 = r33*0.971
-         r34 = r34*0.987
-         t6r = 10.0**(0.5*tf - 3.0)
-         rbe = 5.54d-9/t6r*(0.936 + 0.004*t6r*t6r)
-         rbp = rbp*0.933
+         RPP = RPP*0.9828
+         R33 = R33*0.971
+         R34 = R34*0.987
+         T6R = 10.0**(0.5*TF - 3.0)
+         RBE = 5.54d-9/T6R*(0.936 + 0.004*T6R*T6R)
+         RBP = RBP*0.933
       ELSE IF (MOD(INUC,10).EQ.2) THEN
 * idem, for Bahcall (1995) cross sections
-         rpp = rpp*0.9557
-         r33 = r33*0.969
-         r34 = r34*0.970
-         t6r = 10.0**(0.5*tf - 3.0)
-         rbe = 5.54d-9/t6r*(0.936 + 0.004*t6r*t6r)
-         rbp = rbp*0.933
-         rpn = rpn*0.991
+         RPP = RPP*0.9557
+         R33 = R33*0.969
+         R34 = R34*0.970
+         T6R = 10.0**(0.5*TF - 3.0)
+         RBE = 5.54d-9/T6R*(0.936 + 0.004*T6R*T6R)
+         RBP = RBP*0.933
+         RPN = RPN*0.991
       END IF
 * Multiply with density and abundances to get rates per baryon per second,
 * note that abundances of He3 and Be7 are not needed in equilibrium
@@ -152,10 +151,27 @@ C Sort out rates
       RPO = RHB*N1*N16*RPO
       R3A = RHB*RHB*N4*N4*N4*R3A/6.0
       RAC = RHB*N4*N12*RAC
+
+C Taken from Jan's nucrat.f, added by JLG 08/09/2026
+      T9 = 10e0**(TF-9d0)
+	  RAC2=1.21d8/(T9**2d0 *(1d0+6.06d-2*T9**(-2d0/3d0))**2d0)*DEXP(-32.12/T9**(1d0/3d0)-(T9/1.7)**2d0)
+     :     +7.4d8*DEXP(-32.12/T9**(1d0/3d0))/(T9**2d0*(1d0+0.47*T9**(-2d0/3d0))**2d0)
+     :     +1.53d4*(1d0+2d6*T9**(1d0/3d0))*DEXP(-38.534/T9**(1d0/3d0))/T9**(2d0/3d0)
+	  IF (RAC.GT.0d0) RAC=RHB*N4*N12*RAC2
+	 
       RAN = RHB*N4*N14*RAN
       RAO = RHB*N4*N16*RAO
       RANE = RHB*N4*N20*RANE
       RCC = RHB*N12*N12*RCC/2.0
+	  
+C Taken from Jan's nucrat.f, added by JLG 08/09/2026
+      RCC2 = RHB*N12*N12/2.0*
+     :     (DEXP(7.63d1+4.97d-2/T9-9.37d1/(T9**(1d0/3d0))-7.60d0*(T9**(1d0/3d0))
+     :     -4.19d-1*T9+2.97d-2*(T9**(5d0/3d0))+3.53d-1*DLOG(T9))
+     :     +DEXP(3.42d-1-2.48d1/T9+3.25d-1/(T9**(1d0/3d0))-3.65d-1*(T9**(1d0/3d0))
+     :     +1.64d-2*T9-7.65d-4*(T9**(5d0/3d0))-1.29d0*DLOG(T9)))
+      IF(RCC.GT.0d0) RCC=RCC2
+
       RCO = RHB*N12*N16*RCO
       ROO = RHB*N16*N16*ROO/2.0
       RGNE = N20*RGNE
