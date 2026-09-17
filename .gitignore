@@ -10,6 +10,7 @@ projects/
 !dat/*
 !modins/*
 !src/*
+model_library/*
 
 # WIP documentation
 docs/
@@ -32,6 +33,7 @@ nohup.out
 *.tex
 !/.gitignore
 *.bak*
+*.gp
 
 # Special diagnosis files
 tokenize
@@ -52,6 +54,9 @@ accplot
 overflow
 timestep
 bs
+
+# Jamie's grid tracking files
+current_z
 
 # STARS temporary files
 fort.*
