@@ -226,7 +226,8 @@ C Old MSF 2000
             ! Added new prefactor to slowly turn off helium term in MSF as core helium fraction falls - JLG 15/09/26
             CT2 = (CT(2)/2) * (1 - COS(CPI * (SX(11,2) - XF)/(1d0-XF)))
             IF (SX(11,2).LE.XF) THEN
-                  CT2 = (CT(2)/2) * (1 - COS(CPI * (SX(11,2) - XF)/(0d0 - XF)))
+                  CT2 = 0d0
+C                  CT2 = (CT(2)/2) * (1 - COS(CPI * (SX(11,2) - XF)/(0d0 - XF)))
             END IF
 
             IF (SURFXH.lt.0.15d0) THEN
