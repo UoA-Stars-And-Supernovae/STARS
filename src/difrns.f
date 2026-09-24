@@ -40,7 +40,7 @@
             IF ( K.GT.K2 .AND. NOC.GE.2 ) THEN
                   GO TO 100
             END IF
-! Redefine previous current mesh point as current previous mesh point
+C REDEFINE PREVIOUS CURRENT MESH POINT AS CURRENT PREVIOUS MESH POINT
             DO J = MM, 2
                   JJ = J + 1
                   DO I = 1, NF
@@ -57,9 +57,9 @@
                   VAR(L) = H(L, K) + DVAR(L)
             END DO
             IF ( NOC.GE.2 ) THEN
-! Call funcs1 to get new values of all physical variables
+C Call funcs1 to get new values of all physical variables
                   IF (IMODE.EQ.2) THEN
-! place star 2 data into INF
+C place star 2 data into INF
                         DO L = 1,15
                               DVAR(L) = DH(L+15, K)
                               VAR(L) = H(L+15, K) + DVAR(L+15)
@@ -67,17 +67,17 @@
                               VAR(L+15) = H(L,K) + DH(L,K)
                         END DO
                         CALL FUNCS1(0, K, K1, K2, 2)
-! Restore VAR stuff
+C Restore VAR stuff 
                         DO L = 1, 30
                               DVAR(L) = DH(L, K)
                               VAR(L) = H(L, K) + DVAR(L)
                         END DO
                   END IF
-! call funcs1 for star 1
+C call funcs1 for star 1
                   CALL FUNCS1(0, K, K1, K2, 1)
-! Call massloss routine to get BC right
+C Call massloss routine to get BC right
                   CALL MASSLOSS(0,BC1,BC2,BC3,BC4,BC5)
-! evaluate nucleosynthesis for this star
+C evaluate nucleosynthesis for this star
                   ISTAR = NOC - 1
 
                   DO L = 1, NV
@@ -99,13 +99,13 @@
 
                   GO TO 100
             ELSE
-! Evaluate argument list of variables and their increments at current mesh point
+C EVALUATE ARGUMENT LIST OF VARIABLES AND THEIR INCREMENTS AT CURRENT ME
                   DO L = 1, NW
                         XD(L) = XD(L+NV)
                   END DO
-! Evaluate and store the required functions of thew independent variables
+C EVALUATE AND STORE THE REQUIRED FUNCTIONS OF THE INDEPENDENT VARIABLES
                   IF (IMODE.EQ.2) THEN
-! place star 2 data into INF
+C place star 2 data into INF
                         DO L = 1,15
                               DVAR(L) = DH(L+15, K)
                               VAR(L) = H(L+15, K) + DVAR(L+15)
@@ -114,20 +114,20 @@
                         END DO
 
                         CALL FUNCS1(0, K, K1, K2, 2)
-! Put output into the latter half of INE
+C Put output into the latter half of INE
                         DO I = 1,51
                               FN1(I+51) = FN1(I)
                         END DO
-! Restore VAR stuff
+C Restore VAR stuff 
                         DO L = 1, 60
                               DVAR(L) = DH(L, K)
                               VAR(L) = H(L, K) + DVAR(L)
                         END DO
                   END IF
-! call funcs1 for star 1
+C call funcs1 for star 1
                   CALL FUNCS1(0, K, K1, K2, 1)
-! call boundary condition if this is surface MP
-! will need to ammend if new things are passed to equns
+C call boundary condition if this is surface MP
+C will need to ammend if new things are passed to equns
                   IF (K.EQ.K1) THEN
                         CALL MASSLOSS(0,BC1,BC2,BC3,BC4,BC5)
                         FN1(1) = BC1
@@ -146,7 +146,7 @@
                   DO I = 1, NF
                         FN2(3, I) = FN1(I)
                   END DO
-! By varying each independent variable in turn, evaluate numeric derivative
+C BY VARYING EACH INDEPENDENT VARIABLE IN TURN, EVALUATE NUMERIC DERIVAT
                   DO L = 1, NV
                         M = ID(L)
                         VX = VAR(M)
@@ -157,9 +157,9 @@
                         DVAR(M) = DVX + DX
 
                         IF (IMODE.EQ.2) THEN
-! Call for star 2
+C Call for star 2
                               DO I = 1,30
-! Store variations to be restored later
+C Store variations to be restored later
                                     TEMPSTORE(I) = VAR(I)
                                     TEMPSTORE(I+30) = DVAR(I)
                               END DO
@@ -170,9 +170,9 @@
                                     VAR(I+15) = TEMPSTORE(I)
                                     DVAR(I+15) = TEMPSTORE(I+30)
                               END DO
-!               IF (K.EQ.199) write (*,*) L, M, ID(L)
+C               IF (K.EQ.199) write (*,*) L, M, ID(L)
                               CALL FUNCS1(M, K, K1, K2, 2)
-!               IF (K.EQ.199) write (*,*) L, M, ID(L)
+C               IF (K.EQ.199) write (*,*) L, M, ID(L)
                               IF ( KH.GE.1 ) THEN
                                     WRITE(24, 99001) VAR, FN1
                               END IF
@@ -180,16 +180,16 @@
                               DO I = 1, 51  !NF
                                     DFN2(3, L, I+51) = FN1(I)
                               END DO
-! Restore order of variations
+C Restore order of variations
                               DO I = 1,30
                                     VAR(I) = TEMPSTORE(I)
                                     DVAR(I) = TEMPSTORE(I+30)
                               END DO
                         END IF
-! Call for star 1
+C Call for star 1
                         CALL FUNCS1(M, K, K1, K2, 1)
-! call boundary condition if this is surface MP
-! will need to ammend if new things are passed to equns
+C call boundary condition if this is surface MP
+C will need to ammend if new things are passed to equns
                         IF (K.EQ.K1) THEN
                               CALL MASSLOSS(M,BC1,BC2,BC3,BC4,BC5)
 
@@ -213,41 +213,41 @@
                   END DO
             END IF
       END IF
-! Evaluate and store the difference relations which are to be satisfied
+C EVALUATE AND STORE THE DIFFERENCE RELATIONS WHICH ARE TO BE SATISFIED
       IF (IMODE.EQ.2) THEN
-! Store FN2 prior to shunting numbers around
+C Store FN2 prior to shunting numbers around
             DO J = 1,3
                   DO I = 1,102
                         FNSTORE(J,I) = FN2(J,I)
                   END DO
             END DO
-! Move star 2 stuff to front of FN2
+C Move star 2 stuff to front of FN2
             DO J = 1,3
                   DO I = 1, 51
                         FN2(J,I) = FN2(J,I+51)
                   END DO
             END DO
-! Call equns1 for star 2
+C Call equns1 for star 2
             CALL EQUNS1(K, K1, K2, 2, 0)
-! Store output in latter half of OUTE
+C Store output in latter half of OUTE
             DO I = 1,15
                   EQU(I+15) = EQU(I)
             END DO
-! Restore original order of FN2
+C Restore original order of FN2
             DO J = 1,3
                   DO I = 1,102
                         FN2(J,I) = FNSTORE(J,I)
                   END DO
             END DO
       END IF
-! Call equns1 for star 1
+C Call equns1 for star 1
       CALL EQUNS1(K, K1, K2, 1, 0)
 
       DO J = NX, NY
             M = ID(J+NZ)
             S(J, N12) = EQU(M)
       END DO
-! By varying each independent variable in turn, evaluate numeric derivative
+C BY VARYING EACH INDEPENDENT VARIABLE IN TURN, EVALUATE NUMERIC DERIVAT
       L3 = MM*NV - NV
 
       DO II = MM, 3
@@ -266,34 +266,34 @@
                   END DO
 
                   IF (IMODE.EQ.2) THEN
-! Store FN2 prior to shunting numbers around
+C Store FN2 prior to shunting numbers around
                         DO J = 1,3
                               DO I = 1,102
                                     FNSTORE(J,I) = FN2(J,I)
                               END DO
                         END DO
-! Move star 2 stuff to front of FN2
+C Move star 2 stuff to front of FN2
                         DO J = 1,3
                               DO I = 1, 51
                                     FN2(J,I) = FN2(J,I+51)
                               END DO
                         END DO
-! Stuff to get composition accretion right
+C Stuff to get composition accretion right
                         L = ID(JI)
-! Call equns1 for star 2
+C Call equns1 for star 2
                         CALL EQUNS1(K, K1, K2, 2, L)
-! Store output in latter half of OUTE
+C Store output in latter half of OUTE
                         DO I = 1,15
                               EQU(I+15) = EQU(I)
                         END DO
-! Restore original order of FN2
+C Restore original order of FN2
                         DO J = 1,3
                               DO I = 1,102
                                     FN2(J,I) = FNSTORE(J,I)
                               END DO
                         END DO
                   END IF
-! Call equns1 for star 1
+C Call equns1 for star 1
                   CALL EQUNS1(K, K1, K2, 1, L)
 
                   DO I = 1, NF
@@ -323,7 +323,7 @@
       CALL EQUNS2(K, K1, K2, NE)
 
       DO J = NX, NY
-! 29/9/03 RJS - no longer using ID
+C 29/9/03 RJS - no longer using ID
             IF (J.LE.30) THEN
                   M = ID(J+NZ)        ! finds equation no.
             ELSE

@@ -2,9 +2,9 @@
 
 ---
 
-Welcome to Aotearoa STARS! This is the main repository for the *Aotearoa STARS Code* that is in use by Professor Jan Eldridge's research group, "Stars 'n' Supernovae".
+This is the repository for my fork of the *Aotearoa STARS Code* that is in use by Professor Jan Eldridge's research group, "Stars 'n' Supernovae". This repository contains the version of the code used during my PhD.
 
-It is a fork of the Cambridge STARS code originally written by Peter Eggleton, [original code here](https://people.ast.cam.ac.uk/~stars/#download).
+The *Aotearoa STARS Code* itself is a fork of the Cambridge STARS code originally written by Peter Eggleton, [original code here](https://people.ast.cam.ac.uk/~stars/#download).
 
 # Documentation
 

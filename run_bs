@@ -33,7 +33,7 @@ rm -f \
 out modout plot out2 plot2 \
 syntha syntha2 synthb synthb2 synthc synthc2 \
 centre centre2 surface surface2 \
-sneplot sneplot2
+sneplot sneplot2 accplot accplot2 overflow
 #cd ..
 #alias rm rm -i
 #rm -f *
@@ -61,6 +61,16 @@ ln -s centre fort.40  ; ln -s sprocess fort.41  ;
 ln -s montage fort.42 ; ln -s adata fort.45     ;
 ln -s extra fort.47   ; ln -s sneplot fort.49
 
+# LInk JLG's accretion output file for star 1
+ln -s accplot fort.44
+
+# Link output file for overflow routine
+ln -s overflow fort.999
+ln -s timestep fort.899
+
+# Lin JLG's RMT file
+ln -s RMT fort.799
+
 # Link output for star 2
 ln -s out2 fort.52    ; ln -s plot2 fort.53     ;
 ln -s modout2 fort.54 ; ln -s nucmodout2 fort.55;
@@ -70,7 +80,6 @@ ln -s centre2 fort.60 ; ln -s sprocess2 fort.61 ;
 ln -s montage2 fort.62; ln -s sneplot2 fort.69
 ln -s extra2 fort.67
 # need to add - sprocess?
-
 
 # Run.
 $EXEDIR/bs

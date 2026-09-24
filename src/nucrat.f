@@ -1,24 +1,23 @@
-!     Compute rates of (at present) 20 nuclear reactions, and the corresponding
-!     energy and neutrino release
+C     Compute rates of (at present) 20 nuclear reactions, and the corresponding
+C     energy and neutrino release
       SUBROUTINE NUCRAT(TL)
 
       IMPLICIT NONE
 
       REAL*8 CDUM, T6R, RANE, CAT, N12, RCO, RPNA
-      REAL*8 CNSTS, QRT, ABUND, SQRT, VX, CZB, TT, CRT
-      REAL*8 RHB, R33, N14, W1, AVM, FPNG, CZA, ENX
-      REAL*8 RBE, TL, N20, XB, ABS, ZW, STAT2, CSA
-      REAL*8 WC, DSTR, CLN10, RPNG, DLOG, EXH, N56, CZW
-      REAL*8 CZD, STAT1, ZT, N1, CZC, EXC, N, VZ
-      REAL*8 QNT, RAO, NE, R34, ZB, RCC, PI4, VL
-      REAL*8 EXP, N16, STRN, CSD, ZC, RHO, ROO, CBRT
-      REAL*8 RN, N28, RPO, XA, NCDATA, RRT, N3, RPP
-      REAL*8 EQ, ZD, CSB, CDUM2, RGMG, SCRN, CSC, W2
-      REAL*8 RAN, WB, CXD, N4, RCCG, R3A, WR, CMEVMU
+      REAL*8 QRT, CZB, TT, CRT, RHB, R33, N14, W1
+      REAL*8 AVM, FPNG, CZA, ENX, RBE, TL, N20, XB
+      REAL*8 ZW, CSA, WC, DSTR, CLN10, RPNG, EXH
+      REAL*8 N56, CZW, CZD, ZT, N1, CZC, EXC, N, VX
+      REAL*8 VZ, QNT, RAO, NE, R34, ZB, RCC, PI4
+      REAL*8 VL, N16, STRN, CSD, ZC, RHO, ROO, RN
+      REAL*8 N28, RPO, XA, RRT, N3, RPP, EQ, ZD
+      REAL*8 CSB, CDUM2, RGMG, SCRN, CSC, W2, RAN
+      REAL*8 WB, CXD, N4, RCCG, R3A, WR, CMEVMU
       REAL*8 NZZ, RR, EXHE, ZA, W3, N24, RPN, RPC
       REAL*8 RCCA, CPL, EX, GE, CPI, TF, RAC, RGNE
-      REAL*8 AUXIN, FCCG, RBP, WA, DEXP, TU, NI
-      INTEGER INT, JW, IML, JCSX, IMO, ICN, IOP, IDIFF
+      REAL*8 FCCG, RBP, WA, TU, NI, T9, RAC2, RCC2, CBRT
+      INTEGER JW, IML, JCSX, IMO, ICN, IOP, IDIFF
       INTEGER ISGTH, IT, INUC, IBC, J
       INTEGER ION, I, ICL, LT
 
@@ -37,17 +36,17 @@
       DATA CSA, CSB, CSC, CSD, CXD /0.624, 0.316, 0.460, 0.38, 0.86/
       DATA czw /2,8,8,0,8,12,14,16,16,24,28,32,40,72,96,128,0,0,0,0/
 
-! RHB is 'baryon density': 1 amu * number of baryons per cm3
+* RHB is 'baryon density': 1 amu * number of baryons per cm3
       RHB = RHO/AVM
-! Electron screening theory from Graboske, DeWitt, Grossman & Cooper (1973),
-! for strong (ZA, ZB, ZC) are intermediate screening (ZD). The reaction
-! dependent charge parameters are stored in CZA ... CZD.
+* Electron screening theory from Graboske, DeWitt, Grossman & Cooper (1973),
+* for strong (ZA, ZB, ZC) are intermediate screening (ZD). The reaction
+* dependent charge parameters are stored in CZA ... CZD.
       WC = 0.0
 
       DO I = 1, 10
             WC = WC + N(I)*VZ(I)
       END DO
-! Ionization details for He3 not worked out - RJS
+C Ionization details for He3 not worked out - RJS
 
       N1 = N(1)
       N4 = N(2)
@@ -68,9 +67,9 @@
       ZB = CSB*XB*ZA
       ZC = CSC/(XB*XB)
       ZD = CSD*WC*WA*EXP(LOG(VL/(WA*ZT))*CXD)
-! weak screening
+* weak screening
       zw = 0.5*zt*vl
-! Reaction rates interpolated in T, mostly from Caughlan & Fowler (1988)
+* Reaction rates interpolated in T, mostly from Caughlan & Fowler (1988)
       TF = TL/CLN10
 
       DO J = 1, 19
@@ -88,9 +87,9 @@
                         IF (DSTR .LT. 0.29*STRN) THEN
                               SCRN = MIN(SCRN, STRN - DSTR)
                         END IF
-! weak screening
+* weak screening
                         IF (INUC.GE.10) THEN
-                              SCRN = zw*czw(j)
+                              SCRN = ZW*CZW(J)
                         END IF
 
                         RN = EXP(CLN10*(RR + 20.0D0) + SCRN)*1.0D-20
@@ -99,7 +98,7 @@
 
             RRT(J+1) = RN
       END DO
-! Sort out rates
+C Sort out rates
       RPP = RRT(2)
       R33 = RRT(3)
       R34 = RRT(4)
@@ -122,25 +121,25 @@
       RPNG = RRT(21)
 
       IF(MOD(INUC,10).EQ.1) THEN
-! correct rates to simulate Bahcall (1992) cross sections
-         rpp = rpp*0.9828
-         r33 = r33*0.971
-         r34 = r34*0.987
-         t6r = 10.0**(0.5*tf - 3.0)
-         rbe = 5.54d-9/t6r*(0.936 + 0.004*t6r*t6r)
-         rbp = rbp*0.933
+* correct rates to simulate Bahcall (1992) cross sections
+         RPP = RPP*0.9828
+         R33 = R33*0.971
+         R34 = R34*0.987
+         T6R = 10.0**(0.5*TF - 3.0)
+         RBE = 5.54d-9/T6R*(0.936 + 0.004*T6R*T6R)
+         RBP = RBP*0.933
       ELSE IF (MOD(INUC,10).EQ.2) THEN
-! idem, for Bahcall (1995) cross sections
-         rpp = rpp*0.9557
-         r33 = r33*0.969
-         r34 = r34*0.970
-         t6r = 10.0**(0.5*tf - 3.0)
-         rbe = 5.54d-9/t6r*(0.936 + 0.004*t6r*t6r)
-         rbp = rbp*0.933
-         rpn = rpn*0.991
+* idem, for Bahcall (1995) cross sections
+         RPP = RPP*0.9557
+         R33 = R33*0.969
+         R34 = R34*0.970
+         T6R = 10.0**(0.5*TF - 3.0)
+         RBE = 5.54d-9/T6R*(0.936 + 0.004*T6R*T6R)
+         RBP = RBP*0.933
+         RPN = RPN*0.991
       END IF
-! Multiply with density and abundances to get rates per baryon per second,
-! note that abundances of He3 and Be7 are not needed in equilibrium
+* Multiply with density and abundances to get rates per baryon per second,
+* note that abundances of He3 and Be7 are not needed in equilibrium
 
       RPP = RHB*N1*N1*RPP/2.0
       R33 = RHB*N3*N3*R33/2.0 !RHB*R33/2.0
@@ -152,15 +151,32 @@
       RPO = RHB*N1*N16*RPO
       R3A = RHB*RHB*N4*N4*N4*R3A/6.0
       RAC = RHB*N4*N12*RAC
+
+C Taken from Jan's nucrat.f, added by JLG 08/09/2026
+      T9 = 10e0**(TF-9d0)
+	  RAC2=1.21d8/(T9**2d0 *(1d0+6.06d-2*T9**(-2d0/3d0))**2d0)*DEXP(-32.12/T9**(1d0/3d0)-(T9/1.7)**2d0)
+     :     +7.4d8*DEXP(-32.12/T9**(1d0/3d0))/(T9**2d0*(1d0+0.47*T9**(-2d0/3d0))**2d0)
+     :     +1.53d4*(1d0+2d6*T9**(1d0/3d0))*DEXP(-38.534/T9**(1d0/3d0))/T9**(2d0/3d0)
+	  IF (RAC.GT.0d0) RAC=RHB*N4*N12*RAC2
+	 
       RAN = RHB*N4*N14*RAN
       RAO = RHB*N4*N16*RAO
       RANE = RHB*N4*N20*RANE
       RCC = RHB*N12*N12*RCC/2.0
+	  
+C Taken from Jan's nucrat.f, added by JLG 08/09/2026
+      RCC2 = RHB*N12*N12/2.0*
+     :     (DEXP(7.63d1+4.97d-2/T9-9.37d1/(T9**(1d0/3d0))-7.60d0*(T9**(1d0/3d0))
+     :     -4.19d-1*T9+2.97d-2*(T9**(5d0/3d0))+3.53d-1*DLOG(T9))
+     :     +DEXP(3.42d-1-2.48d1/T9+3.25d-1/(T9**(1d0/3d0))-3.65d-1*(T9**(1d0/3d0))
+     :     +1.64d-2*T9-7.65d-4*(T9**(5d0/3d0))-1.29d0*DLOG(T9)))
+      IF(RCC.GT.0d0) RCC=RCC2
+
       RCO = RHB*N12*N16*RCO
       ROO = RHB*N16*N16*ROO/2.0
       RGNE = N20*RGNE
       RGMG = N24*RGMG
-! Branching of pN and CC reactions
+* Branching of pN and CC reactions
       FPNG = 8.0D-4
       RPNA = (1.0 - FPNG)*RPN
       RPNG = FPNG*RPN
@@ -169,17 +185,17 @@
       RCCA = (1.0 - FCCG)*RCC
       RCCG = FCCG*RCC
       RCC = RCCA
-! PP chain in equilibrium, RPP becomes effective rate of 2 H1 -> 0.5 He4
-!      F34 = 0.0
-!      IF (R34 .GT. 1.0D-20)
-!     :     F34 = 2.0/(1.0 + SQRT(1.0 + 8.0*RPP*R33/(R34*R34)))
-!      RPP = RPP*(1.0 + F34)
-!      PP2 = 1.0
-!      IF (RBE+RBP .GT. 1.0D-20) PP2 = RBE/(RBE + RBP)
-!      PP3 = 1.0 - PP2
-!      QPP = QRT(1) + 0.5*QRT(2)
-!      QNPP = (QNT(1) + F34*(QNT(4)*PP2 + QNT(5)*PP3))/(1.0 + F34)
-! Put rates back to RRT
+* PP chain in equilibrium, RPP becomes effective rate of 2 H1 -> 0.5 He4
+C      F34 = 0.0
+C      IF (R34 .GT. 1.0D-20)
+C     :     F34 = 2.0/(1.0 + SQRT(1.0 + 8.0*RPP*R33/(R34*R34)))
+C      RPP = RPP*(1.0 + F34)
+C      PP2 = 1.0
+C      IF (RBE+RBP .GT. 1.0D-20) PP2 = RBE/(RBE + RBP)
+C      PP3 = 1.0 - PP2
+C      QPP = QRT(1) + 0.5*QRT(2)
+C      QNPP = (QNT(1) + F34*(QNT(4)*PP2 + QNT(5)*PP3))/(1.0 + F34)
+C Put rates back to RRT
       RRT(2) = RPP
       RRT(3) = R33
       RRT(4) = R34
@@ -200,7 +216,7 @@
       RRT(19) = RGMG
       RRT(20) = RCCG
       RRT(21) = RPNG
-! calculate energy release and neutrino loss, in erg/gram/sec
+* calculate energy release and neutrino loss, in erg/gram/sec
       EX = 0d0
       ENX = 0d0
 
@@ -208,15 +224,15 @@
             EX = EX + QRT(J)*RRT(J+1)
             ENX = ENX + QNT(J)*RRT(J+1)
       END DO
-!      EX = QPP*RPP
-!      EXH = CMEVMU*((QPP + 0.5*Q33)*RPP + QPC*RPC + QPO*RPO + QPNA*RPN
-!     :     + QPNG*RPNG)/AVM
-!      EXHE = CMEVMU*(Q3A*R3A + QAC*RAC + QAN*RAN + QAO*RAO + QANE*RANE)
-!     :     /AVM
-!      EXC = CMEVMU*(QCCA*RCC + QCCG*RCCG + QCO*RCO + QOO*ROO + QGNE*RGNE
-!     :     + QGMG*RGMG)/AVM
-!      EX = EXH + EXHE + EXC
-!      ENX = QNPP*RPP
+C      EX = QPP*RPP
+c      EXH = CMEVMU*((QPP + 0.5*Q33)*RPP + QPC*RPC + QPO*RPO + QPNA*RPN 
+c     :     + QPNG*RPNG)/AVM
+c      EXHE = CMEVMU*(Q3A*R3A + QAC*RAC + QAN*RAN + QAO*RAO + QANE*RANE)
+c     :     /AVM
+c      EXC = CMEVMU*(QCCA*RCC + QCCG*RCCG + QCO*RCO + QOO*ROO + QGNE*RGNE
+c     :     + QGMG*RGMG)/AVM
+c      EX = EXH + EXHE + EXC
+C      ENX = QNPP*RPP
       DO J = 6, 20
             EX = EX + QRT(J)*RRT(J+1)
             ENX = ENX + QNT(J)*RRT(J+1)
